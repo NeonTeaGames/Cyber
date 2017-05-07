@@ -5,9 +5,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
     public Character Character;
 
-    void FixedUpdate() {
+    void Update() {
         Vector3 Move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        Move = transform.TransformDirection(Move);
-        Character.Move(Move);
+        if (Move.sqrMagnitude != 0) {
+            Character.Move(transform.TransformDirection(Move));
+        } else if (Character.Moving()) {
+            Character.Stop();
+        }
     }
 }
