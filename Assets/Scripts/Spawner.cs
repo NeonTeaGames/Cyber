@@ -41,7 +41,7 @@ public class Spawner : MonoBehaviour {
     }
 
     private void Update() {
-        if (Input.GetButtonDown("Jump")) {
+        if (Input.GetButtonDown("Jump") && !Term.IsVisible()) {
             Spawn(EntityType.NPC, new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-2f, 2f)));
         }
     }
