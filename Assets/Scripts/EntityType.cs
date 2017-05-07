@@ -3,5 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EntityType {
-	PC, NPC
+    PC,
+    NPC
 }
