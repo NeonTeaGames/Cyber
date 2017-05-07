@@ -42,8 +42,8 @@ Version 0.2.0 - Juniper
 
 Version 0.1.0 - Gigantic
 ------------------------
-- [ ] Spawning basic capsule characters.
-- [ ] ...With movement capabilities.
+- [x] Spawning basic capsule characters.
+- [x] ...With movement capabilities.
 - [ ] Client-server connectivity, players can see each other moving around.
   - [ ] 1. Client-server connectivity: the clients can connect to the server and send some messages back and forth.
   - [ ] 2. Players can see eachothers capsule-characters and send commands to move them around.
