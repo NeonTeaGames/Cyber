@@ -46,3 +46,6 @@ sysinfo.txt
 
 # Emacs #
 *~
+
+# Distribution #
+/Dist/
