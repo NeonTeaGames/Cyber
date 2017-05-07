@@ -16,6 +16,7 @@ Version 0.6.0 - Snub
 - [ ] Clothes models with rig.
 - [ ] Pistol model.
 - [ ] Furniture models: bed, nightstand, high lamp, wardrobe.
+- [ ] Invent more roadmap
 
 Version 0.5.0 - Overrate
 ------------------------
