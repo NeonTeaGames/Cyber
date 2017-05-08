@@ -14,6 +14,40 @@ public class DebugConsole : MonoBehaviour {
 
     private Dictionary<string, DebugConsoleAction> Actions = new Dictionary<string, DebugConsoleAction>();
 
+    public DebugConsole() {
+        AddCommand("help", "Lists all commands.", (args) => {
+            Println("Commands:");
+            foreach (string Action in Actions.Keys) {
+                Println("- " + Action);
+            }
+        });
+
+        AddCommand("help (command)", "Describes the given command.", (args) => {
+            // Check complete versions of the names (so you can do eg. help "help (command)")
+            foreach (string Action in Actions.Keys) {
+                if (Action.Equals(args[0])) {
+                    Println(Actions[Action].Description);
+                    return;
+                }
+            }
+            // Check just names
+            foreach (string Action in Actions.Keys) {
+                string[] Parts = Action.Split(' ');
+                if (Parts[0].Equals(args[0])) {
+                    Println(Actions[Action].Description);
+                    return;
+                }
+            }
+            Println("That command doesn't exist.");
+        });
+
+        AddCommand("print (text)", "Prints the given text.", (args) => {
+            Println(args[0]);
+        });
+
+        Term.SetDebugConsole(this);
+    }
+
     public void CallCommand() {
         if (InputField.text.Length == 0) {
             return;
@@ -58,40 +92,6 @@ public class DebugConsole : MonoBehaviour {
     // TODO: Handle removing history when it gets very long. Very long console logs might cause problems when displaying new prints.
     public void Print(string text) {
         TextField.text += text;
-    }
-
-    private void Start() {
-        AddCommand("help", "Lists all commands.", (args) => {
-            Println("Commands:");
-            foreach (string Action in Actions.Keys) {
-                Println("- " + Action);
-            }
-        });
-
-        AddCommand("help (command)", "Describes the given command.", (args) => {
-            // Check complete versions of the names (so you can do eg. help "help (command)")
-            foreach (string Action in Actions.Keys) {
-                if (Action.Equals(args[0])) {
-                    Println(Actions[Action].Description);
-                    return;
-                }
-            }
-            // Check just names
-            foreach (string Action in Actions.Keys) {
-                string[] Parts = Action.Split(' ');
-                if (Parts[0].Equals(args[0])) {
-                    Println(Actions[Action].Description);
-                    return;
-                }
-            }
-            Println("That command doesn't exist.");
-        });
-
-        AddCommand("print (text)", "Prints the given text.", (args) => {
-            Println(args[0]);
-        });
-
-        Term.SetDebugConsole(this);
     }
 
     private void Update() {
