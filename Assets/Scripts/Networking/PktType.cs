@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class PktType {
 
-    public const short TestMessage = 200;
+    public const short TextMessage = 200;
 }

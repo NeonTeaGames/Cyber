@@ -23,7 +23,7 @@ public class Server : MonoBehaviour {
 
         NetworkServer.Listen(port);
 
-        NetworkServer.RegisterHandler(PktType.TestMessage, HandlePacket);
+        NetworkServer.RegisterHandler(PktType.TextMessage, HandlePacket);
 
         NetworkServer.RegisterHandler(MsgType.Connect, OnConnected);
         NetworkServer.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -31,23 +31,30 @@ public class Server : MonoBehaviour {
 
         Debug.Log("Server started on port " + port);
         Term.Println("Server started on port " + port);
+
+        Term.AddCommand("send (message)", "Howl at the darkness of space. Does it echo though?", (args) => {
+            Term.Println("You: " + args[0]);
+            SendToAll(PktType.TextMessage, new TextMessage("Server: " + args[0]));
+        });
     }
 
     public void HandlePacket(NetworkMessage msg) {
 
         switch(msg.msgType) {
-        case PktType.TestMessage:
+        case PktType.TextMessage:
             TextMessage TextMsg = new TextMessage();
             TextMsg.Deserialize(msg.reader);
-            Debug.Log("Received message: " + TextMsg.Message);
-            Term.Println("Received message: " + TextMsg.Message);
+            Term.Println(TextMsg.Message);
             break;
         default:
             Debug.LogError("Received an unknown packet, id: " + msg.msgType);
             Term.Println("Received an unknown packet, id: " + msg.msgType);
             break;
         }
+    }
 
+    public void SendToAll(short type, MessageBase message) {
+        NetworkServer.SendToAll(type, message);
     }
 
     public void OnConnected(NetworkMessage msg) {

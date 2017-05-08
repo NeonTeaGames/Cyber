@@ -33,6 +33,8 @@ public class Client : MonoBehaviour {
 
         Running = true;
 
+        NetClient.RegisterHandler(PktType.TextMessage, HandlePacket);
+
         NetClient.RegisterHandler(MsgType.Connect, OnConnected);
         NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
         NetClient.RegisterHandler(MsgType.Error, OnError);
@@ -43,10 +45,32 @@ public class Client : MonoBehaviour {
         Term.Println("Client launched!");
     }
 
+    public void HandlePacket(NetworkMessage msg) {
+        switch (msg.msgType) {
+        case (PktType.TextMessage):
+            TextMessage TextMsg = new TextMessage();
+            TextMsg.Deserialize(msg.reader);
+            Term.Println(TextMsg.Message);
+            break;
+        default:
+            Debug.LogError("Received an unknown packet, id: " + msg.msgType);
+            Term.Println("Received an unknown packet, id: " + msg.msgType);
+            break;
+        }
+    }
+
+    public void Send(short type, MessageBase message) {
+        NetClient.Send(type, message);
+    }
+
     public void OnConnected(NetworkMessage msg) {
         Debug.Log("Connected!");
         Term.Println("Connected!");
-        NetClient.Send(PktType.TestMessage, new TextMessage("Hai, I connected!"));
+
+        Term.AddCommand("send (message)", "Send a message across the vastness of space and time!", (args) => {
+            Term.Println("You: " + args[0]);
+            Send(PktType.TextMessage, new TextMessage("A Client: " + args[0]));
+        });
     }
 
     public void OnDisconnected(NetworkMessage msg) {
