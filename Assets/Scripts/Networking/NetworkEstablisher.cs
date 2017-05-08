@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cyber.Console;
 
 /// <summary>
 /// This class is used pretty much anywhere in order to make the "first step" of networking.

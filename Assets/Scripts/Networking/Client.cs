@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Cyber.Console;
 
 /// <summary>
 /// Client-class used to connecting to a server and communicating to it.

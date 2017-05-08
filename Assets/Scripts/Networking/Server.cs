@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Cyber.Console;
 
 /// <summary>
 /// Server-class used to host a server and communicate to clients.
