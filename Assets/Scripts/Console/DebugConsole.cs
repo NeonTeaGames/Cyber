@@ -4,50 +4,44 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Controls an input and an output to implement a console interface to call 
+/// arbitrary commands which can be set from anywhere in the program.
+/// <seealso cref="Term"/>
+/// </summary>
 public class DebugConsole : MonoBehaviour {
     private static readonly Regex CommandPartRegex = new Regex("([^ \"]+ )|(\"[^\"]+\")");
 
+    /// <summary>
+    /// The parent of the <see cref="InputField"/> and <see cref="TextField"/>.
+    /// </summary>
     public GameObject Panel;
+    /// <summary>
+    /// The input for the console.
+    /// </summary>
     public InputField InputField;
+    /// <summary>
+    /// The output for the console.
+    /// </summary>
     public Text TextField;
+    /// <summary>
+    /// Controls the visibility of the console. For how this is controlled in-game, see <see cref="Update"/>.
+    /// </summary>
     public bool Visible = false;
 
     private Dictionary<string, DebugConsoleAction> Actions = new Dictionary<string, DebugConsoleAction>();
 
+    /// <summary>
+    /// Creates a new <see cref="DebugConsole"/>, and sets the <see cref="Term"/>'s singleton.
+    /// <seealso cref="Term.SetDebugConsole"/>
+    /// </summary>
     public DebugConsole() {
-        AddCommand("help", "Lists all commands.", (args) => {
-            Println("Commands:");
-            foreach (string Action in Actions.Keys) {
-                Println("- " + Action);
-            }
-        });
-
-        AddCommand("help (command)", "Describes the given command.", (args) => {
-            // Check complete versions of the names (so you can do eg. help "help (command)")
-            foreach (string Action in Actions.Keys) {
-                if (Action.Equals(args[0])) {
-                    Println(Actions[Action].Description);
-                    return;
-                }
-            }
-            // Check just names
-            foreach (string Action in Actions.Keys) {
-                string[] Parts = Action.Split(' ');
-                if (Parts[0].Equals(args[0])) {
-                    Println(Actions[Action].Description);
-                    return;
-                }
-            }
-            Println("That command doesn't exist.");
-        });
-
-        AddCommand("print (text)", "Prints the given text.", (args) => {
-            Println(args[0]);
-        });
-
         Term.SetDebugConsole(this);
     }
 
+    /// <summary>
+    /// Tries to call the command in the <see cref="InputField"/>. 
+    /// </summary>
     public void CallCommand() {
         if (InputField.text.Length == 0) {
             return;
@@ -85,13 +79,53 @@ public class DebugConsole : MonoBehaviour {
         Actions[command] = new DebugConsoleAction(PrettyDescription, action);
     }
 
+    /// <summary>
+    /// Prints text into the DebugConsole and adds a newline.
+    /// </summary>
+    /// <param name="text">Text.</param>
     public void Println(string text) {
         Print(text + "\n");
     }
 
     // TODO: Handle removing history when it gets very long. Very long console logs might cause problems when displaying new prints.
+    /// <summary>
+    /// Prints text into the Console.
+    /// </summary>
+    /// <param name="text">Text.</param>
     public void Print(string text) {
         TextField.text += text;
+    }
+
+    private void Start() {
+        AddCommand("help", "Lists all commands.", (args) => {
+            Println("Commands:");
+            foreach (string Action in Actions.Keys) {
+                Println("- " + Action);
+            }
+        });
+
+        AddCommand("help (command)", "Describes the given command.", (args) => {
+            // Check complete versions of the names (so you can do eg. help "help (command)")
+            foreach (string Action in Actions.Keys) {
+                if (Action.Equals(args[0])) {
+                    Println(Actions[Action].Description);
+                    return;
+                }
+            }
+            // Check just names
+            foreach (string Action in Actions.Keys) {
+                string[] Parts = Action.Split(' ');
+                if (Parts[0].Equals(args[0])) {
+                    Println(Actions[Action].Description);
+                    return;
+                }
+            }
+            Println("That command doesn't exist.");
+        });
+
+        AddCommand("print (text)", "Prints the given text.", (args) => {
+            Println(args[0]);
+        });
     }
 
     private void Update() {

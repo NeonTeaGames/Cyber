@@ -11,6 +11,10 @@ public class DebugConsoleAction {
         this.ActionFunc = actionFunc;
     }
 
+    /// <summary>
+    /// Executes the <see cref="ActionFunc"/>.
+    /// </summary>
+    /// <param name="command">Command.</param>
     public void Call(List<string> command) {
         ActionFunc(command);
     }
