@@ -49,3 +49,6 @@ sysinfo.txt
 
 # Distribution #
 /Dist/
+
+# Project Version #
+/ProjectSettings/ProjectVersion.txt

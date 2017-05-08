@@ -592,7 +592,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 213.20001, y: 81.69998}
+  m_AnchoredPosition: {x: 213.15, y: 81.4}
   m_SizeDelta: {x: 426.3, y: 162.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &564042475
@@ -607,9 +607,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IPField: {fileID: 1974014777}
-  clientPortField: {fileID: 2124238381}
-  serverPortField: {fileID: 1813464171}
-  worldRoot: {fileID: 605817613}
+  ClientPortField: {fileID: 0}
+  ServerPortField: {fileID: 0}
+  WorldRoot: {fileID: 0}
 --- !u!114 &564042476
 MonoBehaviour:
   m_ObjectHideFlags: 0
