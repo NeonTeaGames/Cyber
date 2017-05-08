@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
+/// <summary>
+/// Server-class used to host a server and communicate to clients.
+/// </summary>
 public class Server : MonoBehaviour {
 
     private static Server Singleton;

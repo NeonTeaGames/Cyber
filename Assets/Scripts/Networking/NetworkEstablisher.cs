@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-/**
- * This class is used pretty much anywhere in order to make the "first step" of networking.
- * It adds the proper components to World Root and tells them to start.
- * */
+/// <summary>
+/// This class is used pretty much anywhere in order to make the "first step" of networking.
+/// It adds the proper components to World Root and tells them to start.
+/// </summary>
 public class NetworkEstablisher : MonoBehaviour {
 
     /// <summary>
