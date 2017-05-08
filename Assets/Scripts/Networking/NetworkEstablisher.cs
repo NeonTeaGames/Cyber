@@ -65,8 +65,8 @@ public class NetworkEstablisher : MonoBehaviour {
     }
 
     public void StartClient(string ip, int port) {
-        Client Client = WorldRoot.AddComponent<Client>();
-        Client.LaunchClient(ip, port);
+        WorldRoot.AddComponent<Client>();
+        Client.Launch(ip, port);
     }
 
     public void StartServer() {
@@ -79,7 +79,7 @@ public class NetworkEstablisher : MonoBehaviour {
     }
 
     public void StartServer(int port) {
-        Server Server = WorldRoot.AddComponent<Server>();
-        Server.LaunchServer(port);
+        WorldRoot.AddComponent<Server>();
+        Server.Launch(port);
     }
 }
