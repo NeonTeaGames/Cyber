@@ -39,7 +39,6 @@ namespace Cyber.Console {
 
         /// <summary>
         /// Creates a new <see cref="DebugConsole"/>, and sets the <see cref="Term"/>'s singleton.
-        /// <seealso cref="Term.SetDebugConsole"/>
         /// </summary>
         public DebugConsole() {
             Term.SetDebugConsole(this);

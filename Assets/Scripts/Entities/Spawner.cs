@@ -7,7 +7,7 @@ namespace Cyber.Entities {
     
     /// <summary>
     /// A utility class to spawn entities into the world based on 
-    /// their <see cref="EntityType"/> and .
+    /// their <see cref="EntityType"/>.
     /// </summary>
     public class Spawner : MonoBehaviour {
         
