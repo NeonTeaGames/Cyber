@@ -22,8 +22,29 @@ public class NetworkEstablisher : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
-	}
+        Term.AddCommand("join", "joins a server at localhost:3935", (args) => {
+            StartClient("localhost", 3935);
+        });
+        Term.AddCommand("join (ip)", "joins a server at given ip and port 3935", (args) => {
+            string ip = args[0];
+            StartClient(ip, 3935);
+        });
+        Term.AddCommand("join (ip) (port)", "joins a server at given ip and port", (args) => {
+            string ip = args[0];
+            int port = 3935;
+            int.TryParse(args[1], out port);
+            StartClient(ip, port);
+        });
+
+        Term.AddCommand("host", "host a server at port 3935", (args) => {
+            StartServer(3935);
+        });
+        Term.AddCommand("host (port)", "host a server at given port", (args) => {
+            int port = 3935;
+            int.TryParse(args[0], out port);
+            StartServer(port);
+        });
+    }
 	
 	// Update is called once per frame
 	void Update () {

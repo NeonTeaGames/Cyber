@@ -30,6 +30,7 @@ public class Server : MonoBehaviour {
         NetworkServer.RegisterHandler(MsgType.Error, OnError);
 
         Debug.Log("Server started on port " + port);
+        Term.Println("Server started on port " + port);
     }
 
     public void HandlePacket(NetworkMessage msg) {
@@ -39,9 +40,11 @@ public class Server : MonoBehaviour {
             TextMessage TextMsg = new TextMessage();
             TextMsg.Deserialize(msg.reader);
             Debug.Log("Received message: " + TextMsg.Message);
+            Term.Println("Received message: " + TextMsg.Message);
             break;
         default:
             Debug.LogError("Received an unknown packet, id: " + msg.msgType);
+            Term.Println("Received an unknown packet, id: " + msg.msgType);
             break;
         }
 
@@ -49,13 +52,16 @@ public class Server : MonoBehaviour {
 
     public void OnConnected(NetworkMessage msg) {
         Debug.Log("Someone connected!");
+        Term.Println("Someone connected!");
     }
 
     public void OnDisconnected(NetworkMessage msg) {
-        Debug.Log("Someone disconnected?");
+        Debug.Log("Someone disconnected.");
+        Term.Println("Someone disconnected.");
     }
 
     public void OnError(NetworkMessage msg) {
         Debug.LogError("Encountered a network error on server");
+        Term.Println("Encountered a network error on server");
     }
 }

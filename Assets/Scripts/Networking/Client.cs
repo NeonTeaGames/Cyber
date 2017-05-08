@@ -40,19 +40,23 @@ public class Client : MonoBehaviour {
         NetClient.Connect(ip, port);
 
         Debug.Log("Client launched!");
+        Term.Println("Client launched!");
     }
 
     public void OnConnected(NetworkMessage msg) {
         Debug.Log("Connected!");
+        Term.Println("Connected!");
         NetClient.Send(PktType.TestMessage, new TextMessage("Hai, I connected!"));
     }
 
     public void OnDisconnected(NetworkMessage msg) {
         Debug.Log("Disconnected!");
+        Term.Println("Disconnected!");
     }
 
     public void OnError(NetworkMessage msg) {
         Debug.LogError("Encountered a network error. Shutting down.");
+        Term.Println("Encountered a network error. Shutting down.");
         NetClient.Disconnect();
         Running = false;
     }
