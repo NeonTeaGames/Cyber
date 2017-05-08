@@ -2,21 +2,21 @@
 
 public class TextMessage : MessageBase {
 
-    public string message;
+    public string Message;
     
     public TextMessage(string message) {
-        this.message = message;
+        this.Message = message;
     }
 
     public TextMessage() {
     }
 
     public override void Deserialize(NetworkReader reader) {
-        message = reader.ReadString();
+        Message = reader.ReadString();
     }
 
     public override void Serialize(NetworkWriter writer) {
-        writer.Write(message);
+        writer.Write(Message);
     }
 
 }

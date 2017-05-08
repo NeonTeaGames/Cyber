@@ -16,10 +16,10 @@ public class Server : MonoBehaviour {
 
     public void LaunchServer(int port) {
 
-        ConnectionConfig config = new ConnectionConfig();
-        config.AddChannel(QosType.ReliableSequenced);
-        config.AddChannel(QosType.UnreliableSequenced);
-        NetworkServer.Configure(config, 10);
+        ConnectionConfig Config = new ConnectionConfig();
+        Config.AddChannel(QosType.ReliableSequenced);
+        Config.AddChannel(QosType.UnreliableSequenced);
+        NetworkServer.Configure(Config, 10);
 
         NetworkServer.Listen(port);
 
@@ -36,9 +36,9 @@ public class Server : MonoBehaviour {
 
         switch(msg.msgType) {
         case PktType.TestMessage:
-            TextMessage textMsg = new TextMessage();
-            textMsg.Deserialize(msg.reader);
-            Debug.Log("Received message: " + textMsg.message);
+            TextMessage TextMsg = new TextMessage();
+            TextMsg.Deserialize(msg.reader);
+            Debug.Log("Received message: " + TextMsg.Message);
             break;
         default:
             Debug.LogError("Received an unknown packet, id: " + msg.msgType);

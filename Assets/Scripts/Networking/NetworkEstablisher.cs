@@ -13,12 +13,12 @@ public class NetworkEstablisher : MonoBehaviour {
     [Tooltip("Required field only if StartClient() is used.")]
     public InputField IPField;
     [Tooltip("Required field only if StartClient() is used.")]
-    public InputField clientPortField;
+    public InputField ClientPortField;
 
     [Tooltip("Required field only if StartServer() is used.")]
-    public InputField serverPortField;
+    public InputField ServerPortField;
 
-    public GameObject worldRoot;
+    public GameObject WorldRoot;
 
 	// Use this for initialization
 	void Start () {
@@ -31,34 +31,34 @@ public class NetworkEstablisher : MonoBehaviour {
 	}
 
     public void StartClient() {
-        string ip = IPField.text;
-        if (ip.Length == 0) {
-            ip = "localhost";
+        string IP = IPField.text;
+        if (IP.Length == 0) {
+            IP = "localhost";
         }
-        string portText = clientPortField.text;
-        int port = 3935;
-        if (portText.Length > 0) {
-            port = Int32.Parse(portText);
+        string PortText = ClientPortField.text;
+        int Port = 3935;
+        if (PortText.Length > 0) {
+            Port = Int32.Parse(PortText);
         }
-        StartClient(ip, port);
+        StartClient(IP, Port);
     }
 
     public void StartClient(string ip, int port) {
-        Client client = worldRoot.AddComponent<Client>();
-        client.LaunchClient(ip, port);
+        Client Client = WorldRoot.AddComponent<Client>();
+        Client.LaunchClient(ip, port);
     }
 
     public void StartServer() {
-        string portText = serverPortField.text;
-        int port = 3935;
-        if (portText.Length > 0) {
-            port = Int32.Parse(portText);
+        string PortText = ServerPortField.text;
+        int Port = 3935;
+        if (PortText.Length > 0) {
+            Port = Int32.Parse(PortText);
         }
-        StartServer(port);
+        StartServer(Port);
     }
 
     public void StartServer(int port) {
-        Server server = worldRoot.AddComponent<Server>();
-        server.LaunchServer(port);
+        Server Server = WorldRoot.AddComponent<Server>();
+        Server.LaunchServer(port);
     }
 }
