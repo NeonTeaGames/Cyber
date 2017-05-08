@@ -4,9 +4,12 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 public class Server : MonoBehaviour {
+
+    private static Server Singleton;
     
 	// Use this for initialization
 	void Start () {
+        Singleton = this;
 	}
 	
 	// Update is called once per frame
@@ -14,7 +17,10 @@ public class Server : MonoBehaviour {
 		
 	}
 
-    public void LaunchServer(int port) {
+    private bool LaunchServer(int port) {
+        if (NetworkServer.active) {
+            return false;
+        }
 
         ConnectionConfig Config = new ConnectionConfig();
         Config.AddChannel(QosType.ReliableSequenced);
@@ -36,9 +42,13 @@ public class Server : MonoBehaviour {
             Term.Println("You: " + args[0]);
             SendToAll(PktType.TextMessage, new TextMessage("Server: " + args[0]));
         });
+
+        return true;
     }
 
-    public void HandlePacket(NetworkMessage msg) {
+    // Custon packet handler
+
+    private void HandlePacket(NetworkMessage msg) {
 
         switch(msg.msgType) {
         case PktType.TextMessage:
@@ -53,22 +63,73 @@ public class Server : MonoBehaviour {
         }
     }
 
-    public void SendToAll(short type, MessageBase message) {
-        NetworkServer.SendToAll(type, message);
-    }
+    // Internal built-in event handler
 
-    public void OnConnected(NetworkMessage msg) {
+    private void OnConnected(NetworkMessage msg) {
         Debug.Log("Someone connected!");
         Term.Println("Someone connected!");
     }
 
-    public void OnDisconnected(NetworkMessage msg) {
+    private void OnDisconnected(NetworkMessage msg) {
         Debug.Log("Someone disconnected.");
         Term.Println("Someone disconnected.");
     }
 
-    public void OnError(NetworkMessage msg) {
+    private void OnError(NetworkMessage msg) {
         Debug.LogError("Encountered a network error on server");
         Term.Println("Encountered a network error on server");
+    }
+
+    // Static methods for public usage
+
+    /// <summary>
+    /// Launches the server if not already launched.
+    /// Returns false if the server was already launched, true otherwise.
+    /// </summary>
+    /// <param name="port"></param>
+    /// <returns></returns>
+    public static bool Launch(int port) {
+        return Singleton.LaunchServer(port);
+    }
+
+    /// <summary>
+    /// Attempts to send a message to all clients who are listening.
+    /// Returns false if server wasn't active, true otherwise.
+    /// </summary>
+    /// <param name="msgType"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static bool SendToAll(short msgType, MessageBase message) {
+        if (NetworkServer.active) {
+            NetworkServer.SendToAll(msgType, message);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Attempts to send a message to a specific client.
+    /// Returns false if server wasn't active, true otherwise.
+    /// </summary>
+    /// <param name="clientID"></param>
+    /// <param name="msgType"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public static bool Send(int clientID, short msgType, MessageBase message) {
+        if (NetworkServer.active) {
+            NetworkServer.SendToClient(clientID, msgType, message);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Is the server currently active.
+    /// </summary>
+    /// <returns></returns>
+    public static bool isRunning() {
+        return NetworkServer.active;
     }
 }
