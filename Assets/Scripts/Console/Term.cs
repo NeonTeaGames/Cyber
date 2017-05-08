@@ -35,4 +35,10 @@ public class Term {
             Console.Print(text);
         }
     }
+
+    public static void AddCommand(string command, string description, DebugConsoleAction.Action action) {
+        if (Console != null) {
+            Console.AddCommand(command, description, action);
+        }
+    }
 }
