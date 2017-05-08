@@ -10,14 +10,26 @@ using UnityEngine.UI;
  * */
 public class NetworkEstablisher : MonoBehaviour {
 
+    /// <summary>
+    /// Input field for the IP to which connect to.
+    /// </summary>
     [Tooltip("Required field only if StartClient() is used.")]
     public InputField IPField;
+    /// <summary>
+    /// Input field for the client port
+    /// </summary>
     [Tooltip("Required field only if StartClient() is used.")]
     public InputField ClientPortField;
 
+    /// <summary>
+    /// Input field for the server port
+    /// </summary>
     [Tooltip("Required field only if StartServer() is used.")]
     public InputField ServerPortField;
 
+    /// <summary>
+    /// World Root node, a GameObject.
+    /// </summary>
     public GameObject WorldRoot;
 
 	// Use this for initialization
@@ -45,12 +57,10 @@ public class NetworkEstablisher : MonoBehaviour {
             StartServer(port);
         });
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
+    /// <summary>
+    /// Starts the client using given input fields. Otherwise functions like <see cref="StartClient(string, int)"/>.
+    /// </summary>
     public void StartClient() {
         string IP = IPField.text;
         if (IP.Length == 0) {
@@ -64,11 +74,20 @@ public class NetworkEstablisher : MonoBehaviour {
         StartClient(IP, Port);
     }
 
+    /// <summary>
+    /// Starts the client with the given ip and port.
+    /// This initializes the Client component and launches it properly.
+    /// </summary>
+    /// <param name="ip">IP used to connect.</param>
+    /// <param name="port">port of the host.</param>
     public void StartClient(string ip, int port) {
         WorldRoot.AddComponent<Client>();
         Client.Launch(ip, port);
     }
 
+    /// <summary>
+    /// Starts the server using given input fields. Otherwise functions like <see cref="StartServer(int)"/>.
+    /// </summary>
     public void StartServer() {
         string PortText = ServerPortField.text;
         int Port = 3935;
@@ -78,6 +97,11 @@ public class NetworkEstablisher : MonoBehaviour {
         StartServer(Port);
     }
 
+    /// <summary>
+    /// Starts the server using given port.
+    /// This initializes the port and launches the server properly.
+    /// </summary>
+    /// <param name="port">port used for the server.</param>
     public void StartServer(int port) {
         WorldRoot.AddComponent<Server>();
         Server.Launch(port);

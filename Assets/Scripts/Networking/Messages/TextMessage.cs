@@ -14,7 +14,7 @@ public class TextMessage : MessageBase {
     /// <summary>
     /// Create a TextMessage containing the message to be sent.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">Message to be sent.</param>
     public TextMessage(string message) {
         this.Message = message;
     }
