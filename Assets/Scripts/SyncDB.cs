@@ -45,11 +45,11 @@ public class SyncDB : MonoBehaviour {
         uint ID;
         try {
             ID = IDCounter++;
-        } catch (OverflowException Ex) {
+        } catch (OverflowException) {
             ID = 0;
             IDCounter = 1;
         }
-        while (Database.ContainsKey(ID) && Database.Keys.Count < uint.MaxValue && ID < uint.MaxValue) {
+        while (Database.ContainsKey(ID) && ID < uint.MaxValue) {
             ID++;
             if (ID < uint.MaxValue - 1) IDCounter = ID + 1;
         }
