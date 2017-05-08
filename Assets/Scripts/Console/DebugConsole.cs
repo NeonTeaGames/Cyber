@@ -92,11 +92,11 @@ namespace Cyber.Console {
             Print(text + "\n");
         }
 
-        // TODO: Handle removing history when it gets very long. Very long console logs might cause problems when displaying new prints.
         /// <summary>
         /// Prints text into the Console.
         /// </summary>
         /// <param name="text">Text.</param>
+        /// \todo Handle removing history when it gets very long. Very long console logs might cause problems when displaying new prints.
         public void Print(string text) {
             TextField.text += text;
         }
