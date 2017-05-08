@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cyber.Networking.Clientside;
 using Cyber.Networking.Serverside;
+using Cyber.Console;
 
 namespace Cyber.Networking {
 
