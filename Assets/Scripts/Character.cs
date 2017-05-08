@@ -2,14 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A syncable component that all characters have. Controls the character's subsystems.
+/// </summary>
 public class Character : SyncBase {
+    /// <summary>
+    /// How fast the player should move in Unity's spatial units per second.
+    /// </summary>
     public float MovementSpeed = 5.0f;
+    /// <summary>
+    /// The character controller, used to move the character. Handles collisions.
+    /// </summary>
     public CharacterController CharacterController;
 
     private Vector3 MovementDirection = new Vector3();
 
     /// <summary>
-    /// Moves the character in the wanted direction.
+    /// Moves the character in the given direction.
     /// </summary>
     /// <param name="Direction">Movement direction.</param>
     public void Move(Vector3 Direction) {
@@ -27,6 +36,9 @@ public class Character : SyncBase {
         }
     }
 
+    /// <summary>
+    /// Whether the player is moving or not.
+    /// </summary>
     public bool Moving() {
         return MovementDirection.sqrMagnitude != 0;
     }

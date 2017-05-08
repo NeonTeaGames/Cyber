@@ -6,8 +6,8 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Controls an input and an output to implement a console interface to call 
-/// arbitrary commands which can be set from anywhere in the program.
-/// <seealso cref="Term"/>
+/// arbitrary commands which can be set from anywhere in the program through
+/// <see cref="Term"/>.
 /// </summary>
 public class DebugConsole : MonoBehaviour {
     private static readonly Regex CommandPartRegex = new Regex("([^ \"]+ )|(\"[^\"]+\")");
@@ -68,7 +68,7 @@ public class DebugConsole : MonoBehaviour {
     /// Adds a command to be used in the console.
     /// </summary>
     /// <param name="command">The command template that should be used.
-    /// eg. "print (text)" or "add (number) (number)"</param>
+    /// eg. "print (text)" or "add (number) (number)".</param>
     /// <param name="description">Description.</param>
     /// <param name="action">Action.</param>
     public void AddCommand(string command, string description, DebugConsoleAction.Action action) {

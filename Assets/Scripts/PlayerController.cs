@@ -2,7 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Controls the player character. Shouldn't exist on the server, and only one
+/// should exist per client (the character that client is controlling).
+/// </summary>
 public class PlayerController : MonoBehaviour {
+    /// <summary>
+    /// The character this controller should control.
+    /// </summary>
     public Character Character;
 
     private void Update() {

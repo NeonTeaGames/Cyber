@@ -2,9 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A utility class to spawn entities into the world based on 
+/// their <see cref="EntityType"/> and .
+/// </summary>
 public class Spawner : MonoBehaviour {
+    /// <summary>
+    /// The <see cref="SyncDB"/> this <see cref="Spawner"/> should be using to
+    /// set entities' IDs.
+    /// </summary>
     public SyncDB SyncDB;
+    /// <summary>
+    /// The <see cref="EntityType.PC"/> prefab.
+    /// </summary>
     public GameObject PCEntityPrefab;
+    /// <summary>
+    /// The <see cref="EntityType.NPC"/> prefab.
+    /// </summary>
     public GameObject NPCEntityPrefab;
 
     /// <summary>
@@ -12,6 +26,10 @@ public class Spawner : MonoBehaviour {
     /// </summary>
     /// <param name="type">Type.</param>
     /// <param name="position">Position.</param>
+    /// <param name="ids">The ids of the entity's synced components. Should be
+    /// set if they exist already (eg. the server has sent them over). These 
+    /// ids should be from <see cref="SyncDB.GetEntityIDs"/>. To create new 
+    /// ids, leave as the default (null).</param>
     public GameObject Spawn(EntityType type, Vector3 position, uint[] ids = null) {
         GameObject Spawned = null;
         switch (type) {
