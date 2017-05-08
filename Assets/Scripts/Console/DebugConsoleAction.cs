@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 
 public class DebugConsoleAction {
-    public delegate void Action(List<string> args);
+    public delegate void Action(List<string> command);
+    public readonly string Description;
 
-    private string Description;
     private Action ActionFunc;
 
     public DebugConsoleAction(string description, Action actionFunc) {
@@ -11,7 +11,7 @@ public class DebugConsoleAction {
         this.ActionFunc = actionFunc;
     }
 
-    public void Call(List<string> args) {
-        ActionFunc(args);
+    public void Call(List<string> command) {
+        ActionFunc(command);
     }
 }
