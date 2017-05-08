@@ -22,11 +22,14 @@ public class SyncDB : MonoBehaviour {
         }
     }
 
-    public uint[] GetEntityIDs(GameObject gameObject) {
+    public uint[] GetEntityIDs(GameObject gameObject, bool newIDs = false) {
         List<uint> IDs = new List<uint>();
         for (int i = 0; i < SyncableClasses.Length; i++) {
             SyncBase Syncable = (SyncBase) gameObject.GetComponent(SyncableClasses[i]);
             if (Syncable != null) {
+                if (newIDs) {
+                    Syncable.ID = CreateID();
+                }
                 IDs.Add(Syncable.ID);
             }
         }
@@ -35,6 +38,10 @@ public class SyncDB : MonoBehaviour {
             IDArray[i] = IDs[i];
         }
         return IDArray;
+    }
+
+    public uint[] GetNewEntityIDs(GameObject gameObject) {
+        return GetEntityIDs(gameObject, true);
     }
 
     public SyncBase Get(uint id) {

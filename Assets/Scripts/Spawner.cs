@@ -12,7 +12,7 @@ public class Spawner : MonoBehaviour {
     /// </summary>
     /// <param name="type">Type.</param>
     /// <param name="position">Position.</param>
-    public GameObject Spawn(EntityType type, Vector3 position, uint[] ids) {
+    public GameObject Spawn(EntityType type, Vector3 position, uint[] ids = null) {
         GameObject Spawned = null;
         switch (type) {
         case EntityType.PC:
@@ -23,18 +23,22 @@ public class Spawner : MonoBehaviour {
             break;
         }
         if (Spawned != null) {
-            SyncDB.AddEntity(Spawned, ids);
+            if (ids != null) {
+                SyncDB.AddEntity(Spawned, ids);
+            } else {
+                SyncDB.AddEntity(Spawned, SyncDB.GetNewEntityIDs(Spawned));
+            }
         }
         return Spawned;
     }
 
     private void Start() {
-        Spawn(EntityType.PC, new Vector3(), new uint[]{ SyncDB.CreateID() });
+        Spawn(EntityType.PC, new Vector3());
     }
 
     private void Update() {
         if (Input.GetButtonDown("Jump") && !Term.IsVisible()) {
-            Spawn(EntityType.NPC, new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-2f, 2f)), new uint[]{ SyncDB.CreateID() });
+            Spawn(EntityType.NPC, new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-2f, 2f)));
         }
     }
 }
