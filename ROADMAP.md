@@ -32,8 +32,8 @@ Version 0.4.0 - Hug
 
 Version 0.3.0 - Mortician
 -------------------------
-- [ ] In-game console.
-- [ ] API for the console, should be able to print stuff on the screen on command.
+- [x] In-game console.
+- [x] API for the console, should be able to print stuff on the screen on command.
 
 Version 0.2.0 - Juniper
 -----------------------
