@@ -33,7 +33,6 @@ namespace Cyber.Networking.Clientside {
             if (LatestSyncID < SyncPacket.SyncPacketID) {
                 LatestSyncID = SyncPacket.SyncPacketID;
                 SyncPacket.ApplySync(message.reader);
-                Debug.Log("Applied Sync " + LatestSyncID);
             }
             // Otherwise disregard the sync.
 

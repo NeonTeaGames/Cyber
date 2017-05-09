@@ -168,7 +168,10 @@ namespace Cyber.Networking.Clientside {
                     // Change it into a PC instead.
                     EntityType = EntityType.PC;
                 }
-                Spawner.Spawn(EntityType, SpawnPkt.Position, SpawnPkt.SyncBaseIDList);
+                GameObject Obj = Spawner.Spawn(EntityType, SpawnPkt.Position, SpawnPkt.SyncBaseIDList);
+                if (SpawnPkt.OwnerID > -1) {
+                    Players[SpawnPkt.OwnerID].Character = Obj.GetComponent<Character>();
+                }
                 break;
             case (PktType.MoveCreature):
                 MoveCreaturePkt MoveCreature = new MoveCreaturePkt();
