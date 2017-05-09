@@ -14,6 +14,6 @@ namespace Cyber.Entities {
         /// The ID this syncable component can be found with from its parent
         /// <see cref="SyncDB"/>.
         /// </summary>
-        public uint ID;
+        public int ID;
     }
 }

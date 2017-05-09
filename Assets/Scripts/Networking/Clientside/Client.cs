@@ -1,4 +1,5 @@
 ﻿using Cyber.Console;
+using Cyber.Entities;
 using Cyber.Networking.Messages;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,11 +25,13 @@ namespace Cyber.Networking.Clientside {
 
         private static Client Singleton;
 
+        private Spawner Spawner;
+
         /// <summary>
         /// The player of this client
         /// </summary>
         private CConnectedPlayer Player;
-        private List<CConnectedPlayer> Players = new List<CConnectedPlayer>();
+        private Dictionary<int, CConnectedPlayer> Players = new Dictionary<int, CConnectedPlayer>();
 
         /// <summary>
         /// Creates the client and sets it as the signleton.
@@ -86,6 +89,11 @@ namespace Cyber.Networking.Clientside {
             return Singleton.NetClient.isConnected;
         }
 
+
+        private void Start() {
+            Spawner = GetComponent<Spawner>();
+        }
+
         private bool LaunchClient(string ip, int port) {
             if (Running) {
                 return false;
@@ -104,6 +112,7 @@ namespace Cyber.Networking.Clientside {
             NetClient.RegisterHandler(PktType.TextMessage, HandlePacket);
             NetClient.RegisterHandler(PktType.Identity, HandlePacket);
             NetClient.RegisterHandler(PktType.MassIdentity, HandlePacket);
+            NetClient.RegisterHandler(PktType.SpawnEntity, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -134,14 +143,26 @@ namespace Cyber.Networking.Clientside {
                         Debug.Log(Conn.ConnectionID + " connected!");
                         Term.Println(Conn.ConnectionID + " connected!");
                     }
-                    Players.Add(Conn);
+                    Players.Add(Conn.ConnectionID, Conn);
                     break;
                 case (PktType.MassIdentity):
                     MassIdentityPkt Identities = new MassIdentityPkt();
                     Identities.Deserialize(msg.reader);
                     foreach (int currId in Identities.IdList) {
-                        Players.Add(new CConnectedPlayer(currId));
+                        Players.Add(currId, new CConnectedPlayer(currId));
                     }
+                    break;
+                case (PktType.SpawnEntity):
+                    SpawnEntityPkt SpawnPkt = new SpawnEntityPkt();
+                    SpawnPkt.Deserialize(msg.reader);
+
+                    EntityType EntityType = SpawnPkt.EntityType;
+                    // Check if you are the owner and if they are spawning an NPC
+                    if (SpawnPkt.OwnerID == Player.ConnectionID && EntityType == EntityType.NPC) {
+                        // Change it into a PC instead.
+                        EntityType = EntityType.PC;
+                    }
+                    Spawner.Spawn(EntityType, SpawnPkt.Position, SpawnPkt.SyncBaseIDList);
                     break;
                 default:
                     Debug.LogError("Received an unknown packet, id: " + msg.msgType);

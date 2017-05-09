@@ -11,9 +11,10 @@ namespace Cyber.Networking.Serverside {
     /// Server-class used to host a server and communicate to clients.
     /// </summary>
     /// \todo Change connection channels to Unreliable to optimize ping.
+    /// \todo Remove PC/NPC and make a Human-type entity instead.
     public class Server : MonoBehaviour {
 
-        private List<SConnectedPlayer> Players = new List<SConnectedPlayer>();
+        private Dictionary<int, SConnectedPlayer> Players = new Dictionary<int, SConnectedPlayer>();
         private static Server Singleton;
 
         private Spawner Spawner;
@@ -130,28 +131,51 @@ namespace Cyber.Networking.Serverside {
 
         // Internal built-in event handler
 
-        private void OnConnected(NetworkMessage msg) {            
+        private void OnConnected(NetworkMessage msg) {           
+            // Get client's ID
             int Id = msg.conn.connectionId;
 
             Debug.Log(Id + " connected!");
             Term.Println(Id + " connected!");
 
+            // Send all other clients a notification and collect their id's
             int[] IdList = new int[Players.Count];
-            for (int i = 0; i < Players.Count; i++) {
-                SConnectedPlayer P = Players[i];
-                IdList[i] = P.ConnectionID;
+            int TempCounter = 0;
+            foreach (SConnectedPlayer P in Players.Values) {
+                IdList[TempCounter++] = P.ConnectionID;
                 NetworkServer.SendToClient(P.ConnectionID, PktType.Identity, new IdentityPkt(Id, false));
             }
-            foreach (int id in IdList) {
-                Debug.Log("id: " + id);
-            }
+
+            // Then send the client a list of all other clients
             NetworkServer.SendToClient(Id, PktType.MassIdentity, new MassIdentityPkt(IdList));
 
+            // Add the player to the list
             SConnectedPlayer Player = new SConnectedPlayer(msg.conn.connectionId);
-            Players.Add(Player);
+            Players.Add(Id, Player);
 
+            // Send the previously collected list to the player
             NetworkServer.SendToClient(msg.conn.connectionId, 
                 PktType.Identity, new IdentityPkt(msg.conn.connectionId, true));
+
+            // Spawn the player and collet it's IDs
+            Vector3 Position = new Vector3(0, 0, 0);
+            GameObject Obj = Spawner.Spawn(EntityType.NPC, Position);
+            int[] EntityIdList = Spawner.SyncDB.GetEntityIDs(Obj);
+            Player.Character = Obj.GetComponent<Character>();
+
+            NetworkServer.SendToAll(PktType.SpawnEntity, new SpawnEntityPkt(EntityType.NPC, Position, EntityIdList, Id));
+
+            // Send every entity to the player who just connected.
+            foreach (var Entry in Players) {
+                if (Entry.Key == Id) {
+                    continue;
+                }
+                Character Char = Players[Entry.Key].Character;
+                GameObject CurrObj = Char.gameObject;
+                int[] CurrEntityIdList = Spawner.SyncDB.GetNewEntityIDs(CurrObj);
+                NetworkServer.SendToClient(Id, PktType.SpawnEntity, 
+                    new SpawnEntityPkt(EntityType.NPC, CurrObj.transform.position, CurrEntityIdList, Entry.Key));
+            }
         }
 
         private void OnDisconnected(NetworkMessage msg) {

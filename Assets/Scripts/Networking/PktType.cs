@@ -20,5 +20,10 @@ namespace Cyber.Networking {
         /// Packet containing the identification details about everyone on the server before the client connected.
         /// </summary>
         public const short MassIdentity = 202;
+
+        /// <summary>
+        /// Packet containing necessary information about spawning an entity.
+        /// </summary>
+        public const short SpawnEntity = 203;
     }
 }

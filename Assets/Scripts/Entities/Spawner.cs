@@ -34,7 +34,7 @@ namespace Cyber.Entities {
         /// set if they exist already (eg. the server has sent them over). These 
         /// ids should be from <see cref="SyncDB.GetEntityIDs"/>. To create new 
         /// ids, leave as the default (null).</param>
-        public GameObject Spawn(EntityType type, Vector3 position, uint[] ids = null) {
+        public GameObject Spawn(EntityType type, Vector3 position, int[] ids = null) {
             GameObject Spawned = null;
             switch (type) {
             case EntityType.PC:
@@ -55,7 +55,6 @@ namespace Cyber.Entities {
         }
 
         private void Start() {
-            Spawn(EntityType.PC, new Vector3());
         }
 
         private void Update() {

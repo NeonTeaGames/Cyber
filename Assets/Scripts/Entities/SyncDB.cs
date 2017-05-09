@@ -15,8 +15,8 @@ namespace Cyber.Entities {
             typeof(Character)
         };
 
-        private uint IDCounter = 0;
-        private Dictionary<uint, SyncBase> Database = new Dictionary<uint, SyncBase>();
+        private int IDCounter = 0;
+        private Dictionary<int, SyncBase> Database = new Dictionary<int, SyncBase>();
 
         /// <summary>
         /// Add an entity to the database with the given IDs.
@@ -24,7 +24,7 @@ namespace Cyber.Entities {
         /// <param name="gameObject">Game object.</param>
         /// <param name="ids">The IDs. Should be from <see cref="GetEntityIDs"/> or
         /// <see cref="GetNewEntityIDs"/>, since the order is important.</param>
-        public void AddEntity(GameObject gameObject, uint[] ids) {
+        public void AddEntity(GameObject gameObject, int[] ids) {
             int Index = 0;
             for (int i = 0; i < SyncableClasses.Length; i++) {
                 SyncBase Syncable = (SyncBase)gameObject.GetComponent(SyncableClasses[i]);
@@ -44,8 +44,8 @@ namespace Cyber.Entities {
         /// <param name="newIDs">Whether or not new IDs are created. 
         /// <see cref="GetNewEntityIDs"/> is a shorthand for this function with 
         /// this parameter set to true.</param>
-        public uint[] GetEntityIDs(GameObject gameObject, bool newIDs = false) {
-            List<uint> IDs = new List<uint>();
+        public int[] GetEntityIDs(GameObject gameObject, bool newIDs = false) {
+            List<int> IDs = new List<int>();
             for (int i = 0; i < SyncableClasses.Length; i++) {
                 SyncBase Syncable = (SyncBase)gameObject.GetComponent(SyncableClasses[i]);
                 if (Syncable != null) {
@@ -55,7 +55,7 @@ namespace Cyber.Entities {
                     IDs.Add(Syncable.ID);
                 }
             }
-            uint[] IDArray = new uint[IDs.Count];
+            int[] IDArray = new int[IDs.Count];
             for (int i = 0; i < IDs.Count; i++) {
                 IDArray[i] = IDs[i];
             }
@@ -68,7 +68,7 @@ namespace Cyber.Entities {
         /// </summary>
         /// <returns>The new IDs.</returns>
         /// <param name="gameObject">Game object.</param>
-        public uint[] GetNewEntityIDs(GameObject gameObject) {
+        public int[] GetNewEntityIDs(GameObject gameObject) {
             return GetEntityIDs(gameObject, true);
         }
 
@@ -76,7 +76,7 @@ namespace Cyber.Entities {
         /// Get a synced component by its ID.
         /// </summary>
         /// <param name="id">The ID.</param>
-        public SyncBase Get(uint id) {
+        public SyncBase Get(int id) {
             return Database[id];
         }
 
@@ -84,17 +84,17 @@ namespace Cyber.Entities {
         /// Creates a new ID which isn't in use yet.
         /// </summary>
         /// <returns>A new, free ID.</returns>
-        public uint CreateID() {
-            uint ID;
+        public int CreateID() {
+            int ID;
             try {
                 ID = IDCounter++;
             } catch (OverflowException) {
                 ID = 0;
                 IDCounter = 1;
             }
-            while (Database.ContainsKey(ID) && ID < uint.MaxValue) {
+            while (Database.ContainsKey(ID) && ID < int.MaxValue) {
                 ID++;
-                if (ID < uint.MaxValue - 1)
+                if (ID < int.MaxValue - 1)
                     IDCounter = ID + 1;
             }
             if (Database.ContainsKey(ID)) {
