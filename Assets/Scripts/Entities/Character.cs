@@ -17,6 +17,11 @@ namespace Cyber.Entities {
         /// </summary>
         public CharacterController CharacterController;
 
+        /// <summary>
+        /// The head transform for looking around.
+        /// </summary>
+        public Transform Head;
+
         private Vector3 MovementDirection = new Vector3();
 
         /// <summary>
@@ -36,6 +41,14 @@ namespace Cyber.Entities {
             if (Moving()) {
                 MovementDirection = new Vector3();
             }
+        }
+
+        /// <summary>
+        /// Sets the character's rotation.
+        /// </summary>
+        /// <param name="EulerAngles">Rotation in euler angles.</param>
+        public void SetRotation(Vector3 EulerAngles) {
+            Head.localEulerAngles = EulerAngles;
         }
 
         /// <summary>
