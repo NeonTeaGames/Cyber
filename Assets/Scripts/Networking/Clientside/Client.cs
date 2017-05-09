@@ -91,6 +91,13 @@ namespace Cyber.Networking.Clientside {
             return Singleton.NetClient.isConnected;
         }
 
+        /// <summary>
+        /// Returns the connected player.
+        /// </summary>
+        /// <returns>The connected player.</returns>
+        public static CConnectedPlayer GetConnectedPlayer() {
+            return Singleton.Player;
+        }
 
         private void Start() {
             Spawner = GetComponent<Spawner>();

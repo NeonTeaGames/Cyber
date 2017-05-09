@@ -6,7 +6,7 @@ namespace Cyber.Networking.Clientside {
     /// Represents a connected player on the clientside. This class is used by clients.
     /// The C stands for "Client".
     /// </summary>
-    class CConnectedPlayer {
+    public class CConnectedPlayer {
 
         /// <summary>
         /// Connection ID on the global perspective.

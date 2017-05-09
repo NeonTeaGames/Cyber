@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using Cyber.Networking.Clientside;
 
 namespace Cyber.Entities {
     
@@ -25,6 +26,8 @@ namespace Cyber.Entities {
         public Transform Head;
 
         private Vector3 MovementDirection = new Vector3();
+        private Vector3 ServerPosition = new Vector3();
+        private bool ServerPositionShouldLerpSync = false;
 
         /// <summary>
         /// Moves the character in the given direction.
@@ -90,14 +93,23 @@ namespace Cyber.Entities {
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
-            Vector3 ServerPosition = reader.ReadVector3();
+            ServerPosition = reader.ReadVector3();
             Vector3 ServerMovementDirection = reader.ReadVector3();
             Vector3 ServerRotation = reader.ReadVector3();
 
             float Drift = (ServerPosition - transform.position).magnitude;
-            if (Drift > MovementSpeed * 0.5f) {
+
+            // Update position if this is the local player
+            if (Drift > MovementSpeed * 0.5f && Client.GetConnectedPlayer().Character.Equals(this)) {
                 transform.position = ServerPosition;
                 MovementDirection = ServerMovementDirection;
+            }
+
+            // Update position more often (with lerping) if this is not the local player
+            if (Drift < 0.1) {
+                ServerPositionShouldLerpSync = false;
+            } else if (!Client.GetConnectedPlayer().Character.Equals(this)) {
+                ServerPositionShouldLerpSync = true;
             }
         }
 
@@ -109,6 +121,12 @@ namespace Cyber.Entities {
             writer.Write(transform.position);
             writer.Write(MovementDirection);
             writer.Write(GetRotation());
+        }
+
+        private void Update() {
+            if (ServerPositionShouldLerpSync) {
+                transform.position = Vector3.Lerp(transform.position, ServerPosition, 10f * Time.deltaTime);
+            }
         }
 
         private void FixedUpdate() {
