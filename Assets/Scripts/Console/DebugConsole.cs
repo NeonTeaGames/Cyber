@@ -138,9 +138,15 @@ namespace Cyber.Console {
         }
 
         private void Update() {
+            // Inputs
             if (Input.GetButtonDown("Console Toggle")) {
                 Visible = !Visible;
             }
+            if (Input.GetButtonDown("Enter Command")) {
+                CallCommand();
+            }
+
+            // Slide up/down animation
             RectTransform Rect = Panel.GetComponent<RectTransform>();
             Vector2 OffsetMin = Rect.offsetMin;
             if (Visible) {
