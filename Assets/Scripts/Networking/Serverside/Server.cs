@@ -1,5 +1,7 @@
 ﻿using Cyber.Console;
+using Cyber.Entities;
 using Cyber.Networking.Messages;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -8,9 +10,13 @@ namespace Cyber.Networking.Serverside {
     /// <summary>
     /// Server-class used to host a server and communicate to clients.
     /// </summary>
+    /// \todo Change connection channels to Unreliable to optimize ping.
     public class Server : MonoBehaviour {
 
+        private List<SConnectedPlayer> Players = new List<SConnectedPlayer>();
         private static Server Singleton;
+
+        private Spawner Spawner;
 
         /// <summary>
         /// Creates the server-component, and sets the singleton as itself.
@@ -81,6 +87,8 @@ namespace Cyber.Networking.Serverside {
                 return false;
             }
 
+            Spawner = GetComponent<Spawner>();
+
             ConnectionConfig Config = new ConnectionConfig();
             Config.AddChannel(QosType.ReliableSequenced);
             Config.AddChannel(QosType.UnreliableSequenced);
@@ -99,7 +107,7 @@ namespace Cyber.Networking.Serverside {
 
             Term.AddCommand("send (message)", "Howl at the darkness of space. Does it echo though?", (args) => {
                 Term.Println("You: " + args[0]);
-                SendToAll(PktType.TextMessage, new TextMessage("Server: " + args[0]));
+                SendToAll(PktType.TextMessage, new TextMessagePkt("Server: " + args[0]));
             });
 
             return true;
@@ -109,7 +117,7 @@ namespace Cyber.Networking.Serverside {
 
             switch (msg.msgType) {
                 case PktType.TextMessage:
-                    TextMessage TextMsg = new TextMessage();
+                    TextMessagePkt TextMsg = new TextMessagePkt();
                     TextMsg.Deserialize(msg.reader);
                     Term.Println(TextMsg.Message);
                     break;
@@ -122,9 +130,28 @@ namespace Cyber.Networking.Serverside {
 
         // Internal built-in event handler
 
-        private void OnConnected(NetworkMessage msg) {
-            Debug.Log("Someone connected!");
-            Term.Println("Someone connected!");
+        private void OnConnected(NetworkMessage msg) {            
+            int Id = msg.conn.connectionId;
+
+            Debug.Log(Id + " connected!");
+            Term.Println(Id + " connected!");
+
+            int[] IdList = new int[Players.Count];
+            for (int i = 0; i < Players.Count; i++) {
+                SConnectedPlayer P = Players[i];
+                IdList[i] = P.ConnectionID;
+                NetworkServer.SendToClient(P.ConnectionID, PktType.Identity, new IdentityPkt(Id, false));
+            }
+            foreach (int id in IdList) {
+                Debug.Log("id: " + id);
+            }
+            NetworkServer.SendToClient(Id, PktType.MassIdentity, new MassIdentityPkt(IdList));
+
+            SConnectedPlayer Player = new SConnectedPlayer(msg.conn.connectionId);
+            Players.Add(Player);
+
+            NetworkServer.SendToClient(msg.conn.connectionId, 
+                PktType.Identity, new IdentityPkt(msg.conn.connectionId, true));
         }
 
         private void OnDisconnected(NetworkMessage msg) {

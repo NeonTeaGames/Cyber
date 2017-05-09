@@ -1,5 +1,6 @@
 ﻿using Cyber.Console;
 using Cyber.Networking.Messages;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,12 +10,25 @@ namespace Cyber.Networking.Clientside {
     /// Client-class used to connecting to a server and communicating to it.
     /// Also handles all events incoming from the server and forwards them where they should be handled.
     /// </summary>
+    /// <remarks>
+    /// The pipeline of requests sent by the client:
+    /// 1. Player sends command to server (e.g. player presses 'w') and then processes it on the client.
+    /// 2. Server receives the command and determines weather it's possible
+    /// 3. Server then sends the results(along with a timestamp) to the clients
+    /// 4. Clients receive their results and if the action was possible, starts the action and catches up to the server with the timestamp
+    /// </remarks>
     public class Client : MonoBehaviour {
 
         private NetworkClient NetClient;
         private bool Running = false;
 
         private static Client Singleton;
+
+        /// <summary>
+        /// The player of this client
+        /// </summary>
+        private CConnectedPlayer Player;
+        private List<CConnectedPlayer> Players = new List<CConnectedPlayer>();
 
         /// <summary>
         /// Creates the client and sets it as the signleton.
@@ -88,6 +102,8 @@ namespace Cyber.Networking.Clientside {
             Running = true;
 
             NetClient.RegisterHandler(PktType.TextMessage, HandlePacket);
+            NetClient.RegisterHandler(PktType.Identity, HandlePacket);
+            NetClient.RegisterHandler(PktType.MassIdentity, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -104,9 +120,28 @@ namespace Cyber.Networking.Clientside {
         private void HandlePacket(NetworkMessage msg) {
             switch (msg.msgType) {
                 case (PktType.TextMessage):
-                    TextMessage TextMsg = new TextMessage();
+                    TextMessagePkt TextMsg = new TextMessagePkt();
                     TextMsg.Deserialize(msg.reader);
                     Term.Println(TextMsg.Message);
+                    break;
+                case (PktType.Identity):
+                    IdentityPkt Identity = new IdentityPkt();
+                    Identity.Deserialize(msg.reader);
+                    var Conn = new CConnectedPlayer(Identity.ConnectionID);
+                    if (Identity.Owned) {
+                        Player = Conn;
+                    } else {
+                        Debug.Log(Conn.ConnectionID + " connected!");
+                        Term.Println(Conn.ConnectionID + " connected!");
+                    }
+                    Players.Add(Conn);
+                    break;
+                case (PktType.MassIdentity):
+                    MassIdentityPkt Identities = new MassIdentityPkt();
+                    Identities.Deserialize(msg.reader);
+                    foreach (int currId in Identities.IdList) {
+                        Players.Add(new CConnectedPlayer(currId));
+                    }
                     break;
                 default:
                     Debug.LogError("Received an unknown packet, id: " + msg.msgType);
@@ -123,7 +158,7 @@ namespace Cyber.Networking.Clientside {
 
             Term.AddCommand("send (message)", "Send a message across the vastness of space and time!", (args) => {
                 Term.Println("You: " + args[0]);
-                NetClient.Send(PktType.TextMessage, new TextMessage("A Client: " + args[0]));
+                NetClient.Send(PktType.TextMessage, new TextMessagePkt("A Client: " + args[0]));
             });
         }
 

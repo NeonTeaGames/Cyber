@@ -6,7 +6,7 @@ namespace Cyber.Networking.Messages {
     /// Generic Text Message for chat etc.
     /// To be removed later when no longer necessary.
     /// </summary>
-    public class TextMessage : MessageBase {
+    public class TextMessagePkt : MessageBase {
 
         /// <summary>
         /// Message inside the Text Message. Does not container sender information.
@@ -17,14 +17,14 @@ namespace Cyber.Networking.Messages {
         /// Create a TextMessage containing the message to be sent.
         /// </summary>
         /// <param name="message">Message to be sent.</param>
-        public TextMessage(string message) {
+        public TextMessagePkt(string message) {
             this.Message = message;
         }
 
         /// <summary>
         /// Parameter-less constructor using when deserializing the message.
         /// </summary>
-        public TextMessage() {
+        public TextMessagePkt() {
         }
 
         /// <summary>
