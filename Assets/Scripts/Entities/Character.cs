@@ -71,7 +71,7 @@ namespace Cyber.Entities {
         /// </summary>
         /// <returns>The rotation.</returns>
         public Vector3 GetRotation() {
-            Vector3 Rotation = new Vector3(Head.localEulerAngles.x, 
+            return new Vector3(Head.localEulerAngles.x, 
                 transform.localEulerAngles.y, Head.localEulerAngles.z);
         }
 
