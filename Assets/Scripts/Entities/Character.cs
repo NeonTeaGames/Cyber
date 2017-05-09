@@ -91,12 +91,14 @@ namespace Cyber.Entities {
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
             Vector3 ServerPosition = reader.ReadVector3();
+            Vector3 ServerMovementDirection = reader.ReadVector3();
+            Vector3 ServerRotation = reader.ReadVector3();
+
             float Drift = (ServerPosition - transform.position).magnitude;
             if (Drift > MovementSpeed * 0.5f) {
                 transform.position = ServerPosition;
-                MovementDirection = reader.ReadVector3();
+                MovementDirection = ServerMovementDirection;
             }
-            Vector3 rot = reader.ReadVector3();
         }
 
         /// <summary>
