@@ -90,8 +90,7 @@ namespace Cyber.Entities {
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
-            Vector3 pos = reader.ReadVector3();
-            transform.position.Set(pos.x, pos.y, pos.z);
+            transform.position = reader.ReadVector3();
             Move(reader.ReadVector3());
             Vector3 rot = reader.ReadVector3();
         }
