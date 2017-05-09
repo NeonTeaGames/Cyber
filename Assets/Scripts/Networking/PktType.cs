@@ -32,5 +32,11 @@ namespace Cyber.Networking {
         /// to inform actual movement.
         /// </summary>
         public const short MoveCreature = 204;
+
+        /// <summary>
+        /// Packet containing sync data.
+        /// </summary>
+        public const short SyncPacket = 205;
+
     }
 }

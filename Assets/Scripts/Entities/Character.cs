@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Cyber.Entities {
     
@@ -73,6 +75,35 @@ namespace Cyber.Entities {
         public Vector3 GetRotation() {
             return new Vector3(Head.localEulerAngles.x, 
                 transform.localEulerAngles.y, Head.localEulerAngles.z);
+        }
+
+        /// <summary>
+        /// Gets the Sync Handletype for Character, which doesn't require hash differences and syncs every tick.
+        /// </summary>
+        /// <returns></returns>
+        public override SyncHandletype GetSyncHandletype() {
+            return new SyncHandletype(false, 1);
+        }
+
+        /// <summary>
+        /// Deserializes the character.
+        /// </summary>
+        /// <param name="reader"></param>
+        public override void Deserialize(NetworkReader reader) {
+            Vector3 pos = reader.ReadVector3();
+            transform.position.Set(pos.x, pos.y, pos.z);
+            Move(reader.ReadVector3());
+            Vector3 rot = reader.ReadVector3();
+        }
+
+        /// <summary>
+        /// Serializes the character.
+        /// </summary>
+        /// <param name="writer"></param>
+        public override void Serialize(NetworkWriter writer) {
+            writer.Write(transform.position);
+            writer.Write(MovementDirection);
+            writer.Write(GetRotation());
         }
 
         private void FixedUpdate() {

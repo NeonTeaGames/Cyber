@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using UnityEngine;
+using Cyber.Networking.Serverside;
 
 namespace Cyber.Entities {
     
@@ -17,6 +17,8 @@ namespace Cyber.Entities {
 
         private int IDCounter = 0;
         private Dictionary<int, SyncBase> Database = new Dictionary<int, SyncBase>();
+        private Dictionary<Type, List<int>> CategorizedDatabase = new Dictionary<Type, List<int>>();
+        private Dictionary<Type, SyncHandletype> SyncHandletypes = new Dictionary<Type, SyncHandletype>();
 
         /// <summary>
         /// Add an entity to the database with the given IDs.
@@ -31,6 +33,14 @@ namespace Cyber.Entities {
                 if (Syncable != null) {
                     Syncable.ID = ids[Index];
                     Database[ids[Index++]] = Syncable;
+                    if (Server.IsRunning()) {
+                        Type Type = Syncable.GetType();
+                        if (!CategorizedDatabase.ContainsKey(Type)) {
+                            CategorizedDatabase.Add(Type, new List<int>());
+                            SyncHandletypes.Add(Type, Syncable.GetSyncHandletype());
+                        }
+                        CategorizedDatabase[Type].Add(Syncable.ID);
+                    }
                 }
             }
         }
@@ -81,6 +91,22 @@ namespace Cyber.Entities {
                 return null;
             }
             return Database[id];
+        }
+
+        /// <summary>
+        /// Gives the database categorized into lists of their types.
+        /// </summary>
+        /// <returns>A dictionary of categorized SyncBases.</returns>
+        public Dictionary<Type, List<int>> GetCategorizedDatabase() {
+            return CategorizedDatabase;
+        }
+
+        /// <summary>
+        /// Gets the Sync Handletypes currently known by the SyncDB.
+        /// </summary>
+        /// <returns>The Sync Handletypes by Type.</returns>
+        public Dictionary<Type, SyncHandletype> GetSyncHandletypes() {
+            return SyncHandletypes;
         }
 
         /// <summary>

@@ -41,6 +41,23 @@ namespace Cyber.Networking.Serverside {
         }
 
         /// <summary>
+        /// Sends Message to all clients using specified channel. 
+        /// <see cref="SendToAll(short, MessageBase)"/> defaults to <see cref="NetworkChannelID.ReliableSequenced"/>.
+        /// </summary>
+        /// <param name="msgType">Message type being sent.</param>
+        /// <param name="message">Message contents.</param>
+        /// <param name="channel">Channel being used.</param>
+        /// <returns></returns>
+        public static bool SendToAllByChannel(short msgType, MessageBase message, byte channel) {
+            if (NetworkServer.active) {
+                NetworkServer.SendByChannelToAll(msgType, message, channel);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Attempts to send a message to all clients who are listening.
         /// Returns false if server wasn't active, true otherwise.
         /// </summary>
@@ -91,8 +108,9 @@ namespace Cyber.Networking.Serverside {
             Spawner = GetComponent<Spawner>();
 
             ConnectionConfig Config = new ConnectionConfig();
-            Config.AddChannel(QosType.ReliableSequenced);
-            Config.AddChannel(QosType.UnreliableSequenced);
+            NetworkChannelID.ReliableSequenced = Config.AddChannel(QosType.ReliableSequenced);
+            NetworkChannelID.UnreliableSequenced = Config.AddChannel(QosType.UnreliableSequenced);
+            NetworkChannelID.Unreliable = Config.AddChannel(QosType.Unreliable);
             NetworkServer.Configure(Config, 10);
 
             NetworkServer.Listen(port);
@@ -112,6 +130,8 @@ namespace Cyber.Networking.Serverside {
                 SendToAll(PktType.TextMessage, new TextMessagePkt("Server: " + args[0]));
             });
 
+            gameObject.AddComponent<Syncer>();
+
             return true;
         }
 
@@ -129,8 +149,6 @@ namespace Cyber.Networking.Serverside {
 
                     // Check if the player is allowed to move this character
                     Character Controlled = Players[msg.conn.connectionId].Character.GetComponent<Character>();
-                    Debug.Log(Controlled.ID);
-                    Debug.Log(MoveCreature.SyncBaseID);
                     if (Controlled.ID != MoveCreature.SyncBaseID) {
                         break;
                     }
