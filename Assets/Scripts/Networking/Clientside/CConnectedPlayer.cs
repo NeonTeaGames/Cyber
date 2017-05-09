@@ -18,6 +18,10 @@ namespace Cyber.Networking.Clientside {
         /// </summary>
         public Character Character;
 
+        /// <summary>
+        /// Create a connected player on the Clientside and give it it's ID.
+        /// </summary>
+        /// <param name="connectionID">Connection ID of the player.</param>
         public CConnectedPlayer(int connectionID) {
             ConnectionID = connectionID;
         }

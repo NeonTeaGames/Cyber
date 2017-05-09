@@ -113,6 +113,7 @@ namespace Cyber.Networking.Clientside {
             NetClient.RegisterHandler(PktType.Identity, HandlePacket);
             NetClient.RegisterHandler(PktType.MassIdentity, HandlePacket);
             NetClient.RegisterHandler(PktType.SpawnEntity, HandlePacket);
+            NetClient.RegisterHandler(PktType.MoveCreature, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -163,6 +164,20 @@ namespace Cyber.Networking.Clientside {
                         EntityType = EntityType.PC;
                     }
                     Spawner.Spawn(EntityType, SpawnPkt.Position, SpawnPkt.SyncBaseIDList);
+                    break;
+                case (PktType.MoveCreature):
+                    MoveCreaturePkt MoveCreature = new MoveCreaturePkt();
+                    MoveCreature.Deserialize(msg.reader);
+
+                    SyncBase SyncBase = Spawner.SyncDB.Get(MoveCreature.SyncBaseID);
+                    if (SyncBase != null || SyncBase is Character ) {
+                        Character Character = (Character) SyncBase;
+                        Character.Move(MoveCreature.Direction);
+                    } else {
+                        Debug.LogError("SyncBase " + MoveCreature.SyncBaseID + " is not a Creature");
+                        Term.Println("SyncBase " + MoveCreature.SyncBaseID + " is not a Creature");
+                    }
+
                     break;
                 default:
                     Debug.LogError("Received an unknown packet, id: " + msg.msgType);

@@ -98,6 +98,7 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.Listen(port);
 
             NetworkServer.RegisterHandler(PktType.TextMessage, HandlePacket);
+            NetworkServer.RegisterHandler(PktType.MoveCreature, HandlePacket);
 
             NetworkServer.RegisterHandler(MsgType.Connect, OnConnected);
             NetworkServer.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -121,6 +122,27 @@ namespace Cyber.Networking.Serverside {
                     TextMessagePkt TextMsg = new TextMessagePkt();
                     TextMsg.Deserialize(msg.reader);
                     Term.Println(TextMsg.Message);
+                    break;
+                case PktType.MoveCreature:
+                    MoveCreaturePkt MoveCreature = new MoveCreaturePkt();
+                    MoveCreature.Deserialize(msg.reader);
+
+                    // Check if the player is allowed to move this character
+                    Character Controlled = Players[msg.conn.connectionId].Character.GetComponent<Character>();
+                    Debug.Log(Controlled.ID);
+                    Debug.Log(MoveCreature.SyncBaseID);
+                    if (Controlled.ID != MoveCreature.SyncBaseID) {
+                        break;
+                    }
+
+                    Controlled.Move(MoveCreature.Direction);
+
+                    foreach (var Player in Players) {
+                        if (Player.Value.ConnectionID == msg.conn.connectionId) {
+                            continue;
+                        }
+                        NetworkServer.SendToClient(Player.Value.ConnectionID, PktType.MoveCreature, MoveCreature);
+                    }
                     break;
                 default:
                     Debug.LogError("Received an unknown packet, id: " + msg.msgType);
@@ -172,7 +194,7 @@ namespace Cyber.Networking.Serverside {
                 }
                 Character Char = Players[Entry.Key].Character;
                 GameObject CurrObj = Char.gameObject;
-                int[] CurrEntityIdList = Spawner.SyncDB.GetNewEntityIDs(CurrObj);
+                int[] CurrEntityIdList = Spawner.SyncDB.GetEntityIDs(CurrObj);
                 NetworkServer.SendToClient(Id, PktType.SpawnEntity, 
                     new SpawnEntityPkt(EntityType.NPC, CurrObj.transform.position, CurrEntityIdList, Entry.Key));
             }

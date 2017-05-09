@@ -25,5 +25,12 @@ namespace Cyber.Networking {
         /// Packet containing necessary information about spawning an entity.
         /// </summary>
         public const short SpawnEntity = 203;
+
+        /// <summary>
+        /// Packet informing a creature must be moved or stopped.
+        /// This Packet can be used by the client to inform a request to move or the server
+        /// to inform actual movement.
+        /// </summary>
+        public const short MoveCreature = 204;
     }
 }

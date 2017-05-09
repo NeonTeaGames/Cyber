@@ -77,6 +77,9 @@ namespace Cyber.Entities {
         /// </summary>
         /// <param name="id">The ID.</param>
         public SyncBase Get(int id) {
+            if (!Database.ContainsKey(id)) {
+                return null;
+            }
             return Database[id];
         }
 
