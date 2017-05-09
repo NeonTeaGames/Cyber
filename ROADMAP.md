@@ -45,7 +45,7 @@ Version 0.1.0 - Gigantic
 ------------------------
 - [x] Spawning basic capsule characters.
 - [x] ...With movement capabilities.
-- [ ] Client-server connectivity, players can see each other moving around.
+- [x] Client-server connectivity, players can see each other moving around.
   - [x] 1. Client-server connectivity: the clients can connect to the server and send some messages back and forth.
   - [x] 2. Players can see eachothers capsule-characters and send commands to move them around.
-  - [ ] 3. Basic syncing (Send sync packages at certain intervals) in order to sync positions correctly between server and client.
+  - [x] 3. Basic syncing (Send sync packages at certain intervals) in order to sync positions correctly between server and client.
