@@ -25,8 +25,6 @@ namespace Cyber.Entities {
         public Transform Head;
 
         private Vector3 MovementDirection = new Vector3();
-        private Vector3 ServerPosition = new Vector3();
-        private bool SyncToServerPosition = false;
 
         /// <summary>
         /// Moves the character in the given direction.
@@ -92,12 +90,11 @@ namespace Cyber.Entities {
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
-            ServerPosition = reader.ReadVector3();
+            Vector3 ServerPosition = reader.ReadVector3();
             float Drift = (ServerPosition - transform.position).magnitude;
-            if (Drift > 1) {
-                SyncToServerPosition = true;
-            } else if (Drift < 0.01) {
-                SyncToServerPosition = false;
+            if (Drift > MovementSpeed * 0.5f) {
+                transform.position = ServerPosition;
+                MovementDirection = reader.ReadVector3();
             }
             Vector3 rot = reader.ReadVector3();
         }
@@ -108,17 +105,8 @@ namespace Cyber.Entities {
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
             writer.Write(transform.position);
+            writer.Write(MovementDirection);
             writer.Write(GetRotation());
-        }
-
-        private void Update() {
-            if (SyncToServerPosition) {
-                // LERP version
-                //transform.position = Vector3.Lerp(transform.position, ServerPosition, 50f * Time.deltaTime);
-                // Non-LERP version
-                transform.position = ServerPosition;
-                SyncToServerPosition = false;
-            }
         }
 
         private void FixedUpdate() {
