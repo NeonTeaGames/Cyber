@@ -131,6 +131,10 @@ namespace Cyber.Console {
             AddCommand("print (text)", "Prints the given text.", (args) => {
                 Println(args[0]);
             });
+
+            AddCommand("shutdown", "Shuts the game down.", (args) => {
+                Application.Quit();
+            });
         }
 
         private void Update() {

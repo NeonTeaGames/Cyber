@@ -48,7 +48,14 @@ namespace Cyber.Entities {
         /// </summary>
         /// <param name="EulerAngles">Rotation in euler angles.</param>
         public void SetRotation(Vector3 EulerAngles) {
-            Head.localEulerAngles = EulerAngles;
+            Vector3 HeadRot = Head.localEulerAngles;
+            HeadRot.x = EulerAngles.x;
+            HeadRot.z = EulerAngles.z;
+            Head.localEulerAngles = HeadRot;
+
+            Vector3 BodyRot = transform.localEulerAngles;
+            BodyRot.y = EulerAngles.y;
+            transform.localEulerAngles = BodyRot;
         }
 
         /// <summary>
@@ -56,6 +63,16 @@ namespace Cyber.Entities {
         /// </summary>
         public bool Moving() {
             return MovementDirection.sqrMagnitude != 0;
+        }
+
+        /// <summary>
+        /// The character's rotation. Intended to be given as an input to 
+        /// <see cref="SetRotation"/>.
+        /// </summary>
+        /// <returns>The rotation.</returns>
+        public Vector3 GetRotation() {
+            Vector3 Rotation = new Vector3(Head.localEulerAngles.x, 
+                transform.localEulerAngles.y, Head.localEulerAngles.z);
         }
 
         private void FixedUpdate() {

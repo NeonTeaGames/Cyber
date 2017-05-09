@@ -450,7 +450,7 @@ GameObject:
   - component: {fileID: 605817614}
   - component: {fileID: 605817616}
   m_Layer: 0
-  m_Name: World Root
+  m_Name: WorldRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -468,7 +468,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SyncDB: {fileID: 605817616}
-  PCEntityPrefab: {fileID: 1422669118968396, guid: e8761b9491a974d1780e60dafbd372a2,
+  PCEntityPrefab: {fileID: 1297568499365208, guid: e8761b9491a974d1780e60dafbd372a2,
     type: 2}
   NPCEntityPrefab: {fileID: 1045762529817142, guid: 88dbba5a284f041afbfbb6e6f52935fa,
     type: 2}

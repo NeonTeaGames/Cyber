@@ -32,9 +32,9 @@ namespace Cyber.Controls {
                 // Handle inputs
                 Vector3 Move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
                 if (Move.sqrMagnitude != 0) {
-                    Character.Move(Character.Head.TransformDirection(Move));
+                    Character.Move(Character.transform.TransformDirection(Move));
 
-                    Client.Send(PktType.MoveCreature, new MoveCreaturePkt(transform.TransformDirection(Move), Character.ID));
+                    Client.Send(PktType.MoveCreature, new MoveCreaturePkt(Character.transform.TransformDirection(Move), Character.ID));
                 } else if (Character.Moving()) {
                     Character.Stop();
 
