@@ -1605,7 +1605,7 @@ MonoBehaviour:
   ID: 0
   Mesh: {fileID: 1229079791}
   BlinkLength: 1
-  BlinkBrightness: 1.5
+  BlinkBrightness: 2.5
   BlinkColor: {r: 1, g: 0.6, b: 0, a: 1}
 --- !u!65 &1988211394
 BoxCollider:

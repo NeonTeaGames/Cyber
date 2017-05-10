@@ -6,8 +6,9 @@ using Cyber.Networking;
 using Cyber.Console;
 
 namespace Cyber.Entities.SyncBases {
+
     /// <summary>
-    /// 
+    /// Object that blinks when interacted with.
     /// </summary>
     public class BlinkyBox : Interactable {
 
@@ -43,7 +44,7 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
-        /// Deserializes this SyncBase for further use.
+        /// Update the blink time if the server has a newer blinktime
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
@@ -54,7 +55,7 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
-        /// Serialize this SyncBase into a sync packet.
+        /// Write the blink time so others will sync if they have older blinks.
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
@@ -62,7 +63,7 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
-        /// The blinky boxes handletype is 
+        /// The blinky box doesn't need a hash and it should update every 5 ticks.
         /// </summary>
         /// <returns>Sync Handletype containing sync information.</returns>
         public override SyncHandletype GetSyncHandletype() {
