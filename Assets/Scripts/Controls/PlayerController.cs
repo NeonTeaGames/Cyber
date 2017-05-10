@@ -22,7 +22,7 @@ namespace Cyber.Controls {
         private Vector3 Rotation;
 
         private void Start() {
-            CursorHandler = GameObject.Find("/CursorHandler").GetComponent<CursorHandler>();
+            CursorHandler = GameObject.Find("/Systems/CursorHandler").GetComponent<CursorHandler>();
         }
 
         private void Update() {
