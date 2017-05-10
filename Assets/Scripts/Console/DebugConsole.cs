@@ -149,7 +149,7 @@ namespace Cyber.Console {
                 string NewLog = "";
                 Lines.RemoveRange(0, Lines.Count - LineCountSavedFromCleanup);
                 foreach (string Line in Lines) {
-                    NewLog += Line;
+                    NewLog += Line + "\n";
                 }
                 TextField.text = NewLog;
             }
