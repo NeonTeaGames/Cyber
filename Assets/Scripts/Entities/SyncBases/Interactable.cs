@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Cyber.Entities.SyncBases {
 
@@ -13,6 +15,12 @@ namespace Cyber.Entities.SyncBases {
         /// All interactables should implement their interactions by overriding this.
         /// </summary>
         public abstract void Interact();
+        
+        /// <summary>
+        /// Get Interaction information about this interactible.
+        /// </summary>
+        /// <returns>The Interaction information.</returns>
+        public abstract InteractableSyncdata GetInteractableSyncdata();
 
     }
 }

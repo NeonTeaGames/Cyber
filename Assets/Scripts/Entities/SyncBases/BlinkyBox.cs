@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Cyber.Networking;
 using Cyber.Console;
+using System;
 
 namespace Cyber.Entities.SyncBases {
 
@@ -44,22 +45,20 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
-        /// Update the blink time if the server has a newer blinktime
+        /// Does nothing, because it doesn't need to synced.
         /// </summary>
         /// <param name="reader"></param>
-        public override void Deserialize(NetworkReader reader) {
-            double ServerBlinkTime = reader.ReadDouble();
-            if (ServerBlinkTime > BlinkTime) {
-                BlinkTime = ServerBlinkTime;
-            }
-        }
+        public override void Deserialize(NetworkReader reader) {}
 
         /// <summary>
-        /// Write the blink time so others will sync if they have older blinks.
+        /// Does nothing, because it doesn't need to synced.
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
-            writer.Write(BlinkTime);
+        }
+
+        public override InteractableSyncdata GetInteractableSyncdata() {
+            return new InteractableSyncdata(false, true);
         }
 
         /// <summary>

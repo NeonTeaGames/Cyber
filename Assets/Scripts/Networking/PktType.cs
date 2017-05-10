@@ -38,5 +38,10 @@ namespace Cyber.Networking {
         /// </summary>
         public const short SyncPacket = 205;
 
+        /// <summary>
+        /// Packet telling that someone has made an interactive remark.
+        /// </summary>
+        public const short InteractPkt = 206;
+
     }
 }

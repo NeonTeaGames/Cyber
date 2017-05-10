@@ -127,6 +127,7 @@ namespace Cyber.Networking.Clientside {
             NetClient.RegisterHandler(PktType.SpawnEntity, HandlePacket);
             NetClient.RegisterHandler(PktType.MoveCreature, HandlePacket);
             NetClient.RegisterHandler(PktType.SyncPacket, HandlePacket);
+            NetClient.RegisterHandler(PktType.InteractPkt, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -194,6 +195,17 @@ namespace Cyber.Networking.Clientside {
                     Term.Println("SyncBase " + MoveCreature.SyncBaseID + " is not a Creature");
                 }
 
+                break;
+            case (PktType.InteractPkt):
+                InteractionPkt Interaction = new InteractionPkt();
+                Interaction.Deserialize(msg.reader);
+
+                SyncBase Target = Spawner.SyncDB.Get(Interaction.SyncBaseID);
+                if (Target != null && Target is Interactable) {
+                    ((Interactable) Target).Interact();
+                } else {
+                    Term.Println("Server has sent an erroneus SyncBase ID!");
+                }
                 break;
             case (PktType.SyncPacket):
                 SyncHandler.HandleSyncPkt(msg);
