@@ -456,7 +456,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 1000}
+  m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &566501562
 MonoBehaviour:
@@ -756,7 +756,7 @@ MonoBehaviour:
   m_Script: {fileID: 1980459831, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -1328,7 +1328,10 @@ MonoBehaviour:
   Panel: {fileID: 2000206069}
   InputField: {fileID: 270758323}
   TextField: {fileID: 1815899005}
-  Visible: 0
+  Visible: 1
+  RowLength: 80
+  MaxLinesUntilCleanup: 30
+  LineCountSavedFromCleanup: 15
 --- !u!4 &1463006272
 Transform:
   m_ObjectHideFlags: 0
@@ -1602,6 +1605,7 @@ MonoBehaviour:
   ID: 0
   Mesh: {fileID: 1229079791}
   BlinkLength: 1
+  BlinkBrightness: 1.5
   BlinkColor: {r: 1, g: 0.6, b: 0, a: 1}
 --- !u!65 &1988211394
 BoxCollider:

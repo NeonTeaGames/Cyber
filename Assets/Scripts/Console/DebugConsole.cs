@@ -35,7 +35,27 @@ namespace Cyber.Console {
         /// </summary>
         public bool Visible = false;
 
+        /// <summary>
+        /// The length of a row in the console in characters.
+        /// </summary>
+        public int RowLength = 80;
+
+        /// <summary>
+        /// The linecount threshold when the <see cref="TextField"/> is cleaned 
+        /// up so it has <see cref="LineCountSavedFromCleanup"/> lines left.
+        /// </summary>
+        public int MaxLinesUntilCleanup = 48;
+
+        /// <summary>
+        /// See <see cref="MaxLinesUntilCleanup"/>.
+        /// </summary>
+        public int LineCountSavedFromCleanup = 24;
+
         private Dictionary<string, DebugConsoleAction> Actions = new Dictionary<string, DebugConsoleAction>();
+        private List<string> Lines = new List<string>();
+        private List<string> Commands = new List<string>();
+        private int LastCommandIndex = 0;
+        private string LastUnexecutedCommand = "";
 
         /// <summary>
         /// Creates a new <see cref="DebugConsole"/>, and sets the <see cref="Term"/>'s singleton.
@@ -51,7 +71,11 @@ namespace Cyber.Console {
             if (InputField.text.Length == 0) {
                 return;
             }
+            // Log this command
             Println(InputField.text);
+            Commands.Add(InputField.text);
+            LastCommandIndex = Commands.Count;
+
             List<string> Arguments = new List<string>();
             MatchCollection Matches = CommandPartRegex.Matches(InputField.text + " ");
             for (int i = 0; i < Matches.Count; i++) {
@@ -65,6 +89,8 @@ namespace Cyber.Console {
                     break;
                 }
             }
+
+            // Clear the input field
             InputField.text = "";
             InputField.ActivateInputField();
         }
@@ -93,12 +119,40 @@ namespace Cyber.Console {
         }
 
         /// <summary>
-        /// Prints text into the Console.
+        /// Prints text into the Console. Wraps text at <see cref="RowLength"/>.
         /// </summary>
+        /// <remarks>
+        /// If the linecount exceeds <see cref="MaxLinesUntilCleanup"/>, the
+        /// console is cleared to the point that it only has
+        /// <see cref="LineCountSavedFromCleanup"/> lines.
+        /// </remarks>
         /// <param name="text">Text.</param>
-        /// \todo Handle removing history when it gets very long. Very long console logs might cause problems when displaying new prints.
         public void Print(string text) {
-            TextField.text += text;
+
+            // Wrap lines and log them to Lines
+            int Index = 0;
+            int EscapeIndex = 0;
+            do {
+                int NewLineIndex = text.IndexOf("\n", Index) + 1;
+                if (NewLineIndex == 0 || NewLineIndex > Index + RowLength) {
+                    NewLineIndex = Index + Mathf.Min(text.Length - Index, RowLength);
+                }
+                string Line = text.Substring(Index, NewLineIndex - Index).Replace("\n", "");
+                Index = NewLineIndex;
+                Lines.Add(Line);
+                TextField.text += Line + "\n";
+                EscapeIndex++;
+            } while (Index < text.Length && EscapeIndex < 10);
+            if (Lines.Count > MaxLinesUntilCleanup) {
+                // The print history is too long, clear up until there are only
+                // a small amount left (so the user doesn't notice the cleanup)
+                string NewLog = "";
+                Lines.RemoveRange(0, Lines.Count - LineCountSavedFromCleanup);
+                foreach (string Line in Lines) {
+                    NewLog += Line;
+                }
+                TextField.text = NewLog;
+            }
         }
 
         private void Start() {
@@ -135,6 +189,18 @@ namespace Cyber.Console {
             AddCommand("shutdown", "Shuts the game down.", (args) => {
                 Application.Quit();
             });
+
+            // Set an accurate row length (if the panel is set)
+            if (Panel != null && Panel.GetComponent<RectTransform>() != null) {
+                CharacterInfo CharInfo;
+                TextField.font.RequestCharactersInTexture("W", TextField.fontSize, 
+                    TextField.fontStyle);
+                TextField.font.GetCharacterInfo('W', out CharInfo, 
+                    TextField.fontSize, TextField.fontStyle);
+                float CharacterWidth = CharInfo.glyphWidth - 1;
+                float PanelWidth = Panel.GetComponent<RectTransform>().rect.width;
+                RowLength = (int) (PanelWidth / CharacterWidth);
+            }
         }
 
         private void Update() {
@@ -144,6 +210,24 @@ namespace Cyber.Console {
             }
             if (Input.GetButtonDown("Enter Command")) {
                 CallCommand();
+            }
+            if (Input.GetButtonDown("Previous Command")) {
+                if (LastCommandIndex - 1 >= 0) {
+                    if (LastCommandIndex == Commands.Count) {
+                        // The last command is the last one that was executed
+                        // Save the currently written command so it can be returned to
+                        LastUnexecutedCommand = InputField.text;
+                    }
+                    InputField.text = Commands[--LastCommandIndex];
+                }
+            }
+            if (Input.GetButtonDown("Next Command")) {
+                if (LastCommandIndex + 1 < Commands.Count) {
+                    InputField.text = Commands[++LastCommandIndex];
+                } else if (LastCommandIndex + 1 == Commands.Count) {
+                    LastCommandIndex++;
+                    InputField.text = LastUnexecutedCommand;
+                }
             }
 
             // Slide up/down animation
