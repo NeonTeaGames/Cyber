@@ -134,8 +134,8 @@ namespace Cyber.Networking.Clientside {
 
             NetClient.Connect(ip, port);
 
-            Debug.Log("Client launched!");
-            Term.Println("Client launched!");
+            Debug.Log("Connecting..");
+            Term.Println("Connecting..");
 
             return true;
         }

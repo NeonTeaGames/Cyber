@@ -53,25 +53,14 @@ namespace Cyber.Networking.Serverside {
 
                 foreach (Type type in Categorized.Keys) {
                     SyncHandletype Handletype = Database.GetSyncHandletypes()[type];
-                    if (Handletype.RequireHash) {
+                    if (TickCounter % Handletype.TickInterval == 0) {
                         foreach (int SyncBaseID in Categorized[type]) {
                             if (DirtySyncBases.Contains(SyncBaseID)) {
                                 QueueSyncBase(SyncBaseID);
                             }
                         }
-                    } else {
-                        if (TickCounter % Handletype.TickInterval == 0) {
-                            foreach (int SyncBaseID in Categorized[type]) {
-                                if (DirtySyncBases.Contains(SyncBaseID)) {
-                                    QueueSyncBase(SyncBaseID);
-                                }
-                            }
-                        }
                     }
                 }
-
-                TickCounter++;
-                TimeSinceLastTick -= TickInterval;
 
                 if (QueuedSyncs.Count > 0) {
                     int[] SyncIDs = QueuedSyncs.ToArray();
@@ -87,6 +76,14 @@ namespace Cyber.Networking.Serverside {
                         DirtSyncBase(i);
                     }
                 }
+
+
+                if (TickCounter < int.MaxValue) {
+                    TickCounter++;
+                } else {
+                    TickCounter = 0;
+                }
+                TimeSinceLastTick -= TickInterval;
             }
 
 
