@@ -1,5 +1,6 @@
 ﻿using Cyber.Console;
 using Cyber.Entities;
+using Cyber.Entities.SyncBases;
 using Cyber.Networking.Messages;
 using System.Collections.Generic;
 using UnityEngine;

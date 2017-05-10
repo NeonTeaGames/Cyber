@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Cyber.Entities {
+namespace Cyber.Entities.SyncBases {
     
     /// <summary>
     /// A base class for all syncable components. An instance of 

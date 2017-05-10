@@ -1,5 +1,6 @@
 ﻿
 using Cyber.Entities;
+using Cyber.Entities.SyncBases;
 using Cyber.Networking.Messages;
 using System;
 using System.Collections.Generic;

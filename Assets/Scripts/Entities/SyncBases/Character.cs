@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Cyber.Networking.Clientside;
 
-namespace Cyber.Entities {
+namespace Cyber.Entities.SyncBases {
     
     /// <summary>
     /// A syncable component that all characters have. Controls the character's subsystems.

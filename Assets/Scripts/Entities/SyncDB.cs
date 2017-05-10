@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using Cyber.Networking.Serverside;
+using Cyber.Entities.SyncBases;
 
 namespace Cyber.Entities {
     

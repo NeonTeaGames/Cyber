@@ -1,4 +1,4 @@
-﻿using Cyber.Entities;
+﻿using Cyber.Entities.SyncBases;
 
 namespace Cyber.Networking.Clientside {
 

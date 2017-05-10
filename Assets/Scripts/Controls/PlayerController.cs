@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Cyber.Entities;
+﻿using UnityEngine;
+using Cyber.Entities.SyncBases;
 using Cyber.Console;
 using Cyber.Networking.Clientside;
 using Cyber.Networking;
