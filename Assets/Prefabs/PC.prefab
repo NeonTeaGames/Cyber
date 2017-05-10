@@ -307,6 +307,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Character: {fileID: 114575501420754388}
+  Camera: {fileID: 20678872378488080}
 --- !u!114 &114390919699494652
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -332,6 +333,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 0
   MovementSpeed: 5
+  InteractionDistance: 2
   CharacterController: {fileID: 143869468979164672}
   Head: {fileID: 4883048021777868}
 --- !u!124 &124775686376978134

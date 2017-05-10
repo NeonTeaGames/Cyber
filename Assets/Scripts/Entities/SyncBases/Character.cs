@@ -16,6 +16,11 @@ namespace Cyber.Entities.SyncBases {
         public float MovementSpeed = 5.0f;
 
         /// <summary>
+        /// The interaction distance of this player.
+        /// </summary>
+        public float InteractionDistance = 2.0f;
+
+        /// <summary>
         /// The character controller, used to move the character. Handles collisions.
         /// </summary>
         public CharacterController CharacterController;
@@ -64,6 +69,14 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
+        /// Sets the position of this character.
+        /// </summary>
+        /// <param name="Position">Position.</param>
+        public void SetPosition(Vector3 Position) {
+            transform.position = Position;
+        }
+
+        /// <summary>
         /// Whether the player is moving or not.
         /// </summary>
         public bool Moving() {
@@ -78,6 +91,14 @@ namespace Cyber.Entities.SyncBases {
         public Vector3 GetRotation() {
             return new Vector3(Head.localEulerAngles.x, 
                 transform.localEulerAngles.y, Head.localEulerAngles.z);
+        }
+
+        /// <summary>
+        /// Returns the position of this character.
+        /// </summary>
+        /// <returns>The position.</returns>
+        public Vector3 GetPosition() {
+            return transform.position;
         }
 
         /// <summary>
@@ -97,18 +118,19 @@ namespace Cyber.Entities.SyncBases {
             Vector3 ServerMovementDirection = reader.ReadVector3();
             Vector3 ServerRotation = reader.ReadVector3();
 
-            float Drift = (ServerPosition - transform.position).magnitude;
+            float Drift = (ServerPosition - GetPosition()).magnitude;
 
             // Update position if this is the local player
-            if (Drift > MovementSpeed * 0.5f && Client.GetConnectedPlayer().Character.Equals(this)) {
-                transform.position = ServerPosition;
+            Character LocalCharacter = Client.GetConnectedPlayer().Character;
+            if (Drift > MovementSpeed * 0.5f && LocalCharacter.Equals(this)) {
+                SetPosition(ServerPosition);
                 MovementDirection = ServerMovementDirection;
             }
 
             // Update position more often (with lerping) if this is not the local player
             if (Drift < 0.1) {
                 ServerPositionShouldLerpSync = false;
-            } else if (!Client.GetConnectedPlayer().Character.Equals(this)) {
+            } else if (!LocalCharacter.Equals(this)) {
                 ServerPositionShouldLerpSync = true;
             }
         }
@@ -118,14 +140,14 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
-            writer.Write(transform.position);
+            writer.Write(GetPosition());
             writer.Write(MovementDirection);
             writer.Write(GetRotation());
         }
 
         private void Update() {
             if (ServerPositionShouldLerpSync) {
-                transform.position = Vector3.Lerp(transform.position, ServerPosition, 10f * Time.deltaTime);
+                SetPosition(Vector3.Lerp(GetPosition(), ServerPosition, 10f * Time.deltaTime));
             }
         }
 
