@@ -66,9 +66,6 @@ namespace Cyber.Util {
             string Hash = CreateHash(text);
             if (forceRender || !Cache.ContainsKey(Hash)) {
                 Cache[Hash] = Singleton.RenderText(text);
-                Term.Println("Created a new texture for:");
-                Term.Println(Hash);
-                Term.Println("====");
             }
             return Cache[Hash];
         }
