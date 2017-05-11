@@ -75,6 +75,15 @@ namespace Cyber.Networking.Clientside {
             }
         }
 
+        public static bool SendByChannel(short msgType, MessageBase message, byte channelID) {
+            if (Singleton.Running) {
+                Singleton.NetClient.SendByChannel(msgType, message, channelID);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Returns if the client is running or not. 
         /// This is independant weather the client is connected or not.
@@ -126,9 +135,9 @@ namespace Cyber.Networking.Clientside {
             NetClient.RegisterHandler(PktType.MassIdentity, HandlePacket);
             NetClient.RegisterHandler(PktType.SpawnEntity, HandlePacket);
             NetClient.RegisterHandler(PktType.MoveCreature, HandlePacket);
-            NetClient.RegisterHandler(PktType.SyncPacket, HandlePacket);
-            NetClient.RegisterHandler(PktType.InteractPkt, HandlePacket);
-            NetClient.RegisterHandler(PktType.StaticObjectIdsPkt, HandlePacket);
+            NetClient.RegisterHandler(PktType.Sync, HandlePacket);
+            NetClient.RegisterHandler(PktType.Interact, HandlePacket);
+            NetClient.RegisterHandler(PktType.StaticObjectIds, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -182,6 +191,10 @@ namespace Cyber.Networking.Clientside {
                 if (SpawnPkt.OwnerID > -1) {
                     Players[SpawnPkt.OwnerID].Character = Obj.GetComponent<Character>();
                 }
+
+                if (SpawnPkt.OwnerID == Player.ConnectionID) {
+                    gameObject.AddComponent<ClientSyncer>();
+                }
                 break;
             case (PktType.MoveCreature):
                 MoveCreaturePkt MoveCreature = new MoveCreaturePkt();
@@ -197,7 +210,7 @@ namespace Cyber.Networking.Clientside {
                 }
 
                 break;
-            case (PktType.InteractPkt):
+            case (PktType.Interact):
                 InteractionPkt Interaction = new InteractionPkt();
                 Interaction.Deserialize(msg.reader);
                 if (Interaction.OwnerSyncBaseID == Player.Character.ID) {
@@ -211,10 +224,10 @@ namespace Cyber.Networking.Clientside {
                     Term.Println("Server has sent an erroneus SyncBase ID!");
                 }
                 break;
-            case (PktType.SyncPacket):
+            case (PktType.Sync):
                 SyncHandler.HandleSyncPkt(msg);
                 break;
-            case (PktType.StaticObjectIdsPkt):
+            case (PktType.StaticObjectIds):
                 Term.Println("The static object id packet!");
                 IntListPkt StaticIds = new IntListPkt();
                 StaticIds.Deserialize(msg.reader);

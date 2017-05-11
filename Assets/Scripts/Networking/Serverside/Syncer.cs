@@ -65,7 +65,7 @@ namespace Cyber.Networking.Serverside {
                 if (QueuedSyncs.Count > 0) {
                     int[] SyncIDs = QueuedSyncs.ToArray();
                     SyncPkt SyncPacket = new SyncPkt(Database, SyncIDs, SyncPacketID++);
-                    Server.SendToAllByChannel(PktType.SyncPacket, SyncPacket, NetworkChannelID.Unreliable);
+                    Server.SendToAllByChannel(PktType.Sync, SyncPacket, NetworkChannelID.Unreliable);
 
                     QueuedSyncs.Clear();
                     DirtySyncBases.Clear();

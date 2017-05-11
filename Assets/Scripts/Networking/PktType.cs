@@ -35,20 +35,25 @@ namespace Cyber.Networking {
         public const short MoveCreature = 204;
 
         /// <summary>
-        /// Packet containing sync data.
+        /// Packet containing sync data from the server.
         /// </summary>
-        public const short SyncPacket = 205;
+        public const short Sync = 205;
 
         /// <summary>
         /// Packet telling that someone has made an interactive remark.
         /// </summary>
-        public const short InteractPkt = 206;
+        public const short Interact = 206;
 
         /// <summary>
         /// Packet containing an id list of static objects existing in the ready game.
         /// This packet contains an <see cref="IntListPkt"/>.
         /// </summary>
-        public const short StaticObjectIdsPkt = 207;
+        public const short StaticObjectIds = 207;
+
+        /// <summary>
+        /// Packet containing sync data from the client to the server, like movement direction and rotation.
+        /// </summary>
+        public const short ClientSync = 208;
 
     }
 }

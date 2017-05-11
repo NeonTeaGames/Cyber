@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 namespace Cyber.Networking.Messages {
 
     /// <summary>
-    /// Packet containing integers, used in many packet types, such as <see cref="PktType.MassIdentity"/> and <see cref="PktType.StaticObjectIdsPkt"/>.
+    /// Packet containing integers, used in many packet types, such as <see cref="PktType.MassIdentity"/> and <see cref="PktType.StaticObjectIds"/>.
     /// </summary>
     public class IntListPkt : MessageBase {
 

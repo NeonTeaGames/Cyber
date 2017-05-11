@@ -25,6 +25,8 @@ namespace Cyber.Networking.Serverside {
         /// </summary>
         public Syncer Syncer;
 
+        private ServerSyncHandler ServerSyncHandler;
+
         /// <summary>
         /// Creates the server-component, and sets the singleton as itself.
         /// </summary>
@@ -125,7 +127,8 @@ namespace Cyber.Networking.Serverside {
 
             NetworkServer.RegisterHandler(PktType.TextMessage, HandlePacket);
             NetworkServer.RegisterHandler(PktType.MoveCreature, HandlePacket);
-            NetworkServer.RegisterHandler(PktType.InteractPkt, HandlePacket);
+            NetworkServer.RegisterHandler(PktType.Interact, HandlePacket);
+            NetworkServer.RegisterHandler(PktType.ClientSync, HandlePacket);
 
             NetworkServer.RegisterHandler(MsgType.Connect, OnConnected);
             NetworkServer.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -140,6 +143,8 @@ namespace Cyber.Networking.Serverside {
             });
 
             gameObject.AddComponent<Syncer>();
+
+            ServerSyncHandler = new ServerSyncHandler(Players);
 
             return true;
         }
@@ -172,7 +177,7 @@ namespace Cyber.Networking.Serverside {
                     NetworkServer.SendToClient(Player.Value.ConnectionID, PktType.MoveCreature, MoveCreature);
                 }
                 break;
-            case PktType.InteractPkt:
+            case PktType.Interact:
                 InteractionPkt Interaction = new InteractionPkt();
                 Interaction.Deserialize(msg.reader);
 
@@ -187,7 +192,7 @@ namespace Cyber.Networking.Serverside {
                     float ServerInteractionDistance = Sender.InteractionDistance + Sender.MovementSpeed * 0.5f;
                     if (Delta.magnitude <= ServerInteractionDistance) {
                         Interacted.Interact(Sender);
-                        NetworkServer.SendToAll(PktType.InteractPkt, Interaction);
+                        NetworkServer.SendToAll(PktType.Interact, Interaction);
                         if (Interacted.GetInteractableSyncdata().RequiresSyncing) {
                             Syncer.DirtSyncBase(Interacted.ID);
                         }
@@ -196,6 +201,9 @@ namespace Cyber.Networking.Serverside {
                     Term.Println("Client has reported an erronous SyncBase ID!");
                 }
 
+                break;
+            case PktType.ClientSync:
+                ServerSyncHandler.HandleSyncPkt(msg);
                 break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);
@@ -241,7 +249,7 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.SendToAll(PktType.SpawnEntity, new SpawnEntityPkt(EntityType.NPC, Position, EntityIdList, Id));
 
             // Send ID's of every existing static SyncBase object in the world.
-            NetworkServer.SendToClient(Id, PktType.StaticObjectIdsPkt, new IntListPkt(Spawner.SyncDB.GetStaticSyncBaseIDList()));
+            NetworkServer.SendToClient(Id, PktType.StaticObjectIds, new IntListPkt(Spawner.SyncDB.GetStaticSyncBaseIDList()));
 
             // Send every entity to the player who just connected.
             foreach (var Entry in Players) {

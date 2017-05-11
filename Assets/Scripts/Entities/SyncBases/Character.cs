@@ -84,6 +84,14 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
+        /// Returns the current movement direction;
+        /// </summary>
+        /// <returns>The Movement Direction Vector3</returns>
+        public Vector3 GetMovementDirection() {
+            return MovementDirection;
+        }
+
+        /// <summary>
         /// The character's rotation. Intended to be given as an input to 
         /// <see cref="SetRotation"/>.
         /// </summary>

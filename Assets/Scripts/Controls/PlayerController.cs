@@ -39,10 +39,8 @@ namespace Cyber.Controls {
                 Vector3 Move = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
                 if (Move.sqrMagnitude != 0) {
                     Character.Move(Character.transform.TransformDirection(Move));
-                    Client.Send(PktType.MoveCreature, new MoveCreaturePkt(Character.transform.TransformDirection(Move), Character.ID));
                 } else if (Character.Moving()) {
                     Character.Stop();
-                    Client.Send(PktType.MoveCreature, new MoveCreaturePkt(new Vector3(), Character.ID));
                 }
 
                 // Rotation
@@ -58,7 +56,7 @@ namespace Cyber.Controls {
                         if (LookingAt != null && (LookingAt.transform.position - Character.GetPosition()).magnitude < Character.InteractionDistance) {
                             LookingAt.Interact(Character);
                             if (LookingAt.GetInteractableSyncdata().PublicInteractions) {
-                                Client.Send(PktType.InteractPkt, new InteractionPkt(LookingAt.ID));
+                                Client.Send(PktType.Interact, new InteractionPkt(LookingAt.ID));
                             }
                         }
                     }

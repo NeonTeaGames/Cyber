@@ -6,7 +6,7 @@ namespace Cyber.Networking.Serverside {
     /// Represents a player on the server. This class is used by the server.
     /// The S stands for "Server".
     /// </summary>
-    class SConnectedPlayer {
+    public class SConnectedPlayer {
 
         /// <summary>
         /// The player's connection ID.

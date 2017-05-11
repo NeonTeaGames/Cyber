@@ -1,7 +1,6 @@
 ﻿
 using Cyber.Entities;
 using Cyber.Networking.Messages;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Networking.Clientside {
@@ -24,7 +23,7 @@ namespace Cyber.Networking.Clientside {
         }
 
         /// <summary>
-        /// Handle a given Network message. Must be checked to be <see cref="PktType.SyncPacket"/> first.
+        /// Handle a given Network message. Must be checked to be <see cref="PktType.Sync"/> first.
         /// </summary>
         /// <param name="message"></param>
         public void HandleSyncPkt(NetworkMessage message) {
