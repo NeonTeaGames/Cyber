@@ -53,5 +53,10 @@ namespace Cyber.Entities {
             }
             return Spawned;
         }
+
+        public void Remove(GameObject gameObject) {
+            SyncDB.RemoveEntity(gameObject);
+            Destroy(gameObject);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Cyber.Networking.Clientside;
+using Cyber.Networking.Serverside;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -185,6 +186,12 @@ namespace Cyber.Console {
             });
 
             AddCommand("shutdown", "Shuts the game down.", (args) => {
+                if (Client.IsRunning()) {
+                    Client.Shutdown();
+                }
+                if (Server.IsRunning()) {
+                    Server.Shutdown();
+                }
                 Application.Quit();
             });
 

@@ -117,6 +117,20 @@ namespace Cyber.Networking.Clientside {
             return Singleton.Player;
         }
 
+        /// <summary>
+        /// Properly shut down the client.
+        /// </summary>
+        /// <returns>True if the client was active, false if not.</returns>
+        public static bool Shutdown() {
+            if (IsRunning()) {
+                Send(PktType.Disconnect, new DisconnectPkt());
+                Singleton.NetClient.Shutdown();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         private void Start() {
             Spawner = GetComponent<Spawner>();
             SyncHandler = new SyncHandler(Spawner.SyncDB);
@@ -146,6 +160,7 @@ namespace Cyber.Networking.Clientside {
             NetClient.RegisterHandler(PktType.Sync, HandlePacket);
             NetClient.RegisterHandler(PktType.Interact, HandlePacket);
             NetClient.RegisterHandler(PktType.StaticObjectIds, HandlePacket);
+            NetClient.RegisterHandler(PktType.Disconnect, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -240,6 +255,14 @@ namespace Cyber.Networking.Clientside {
                 StaticIds.Deserialize(msg.reader);
                 Spawner.SyncDB.SetStaticObjectsIDs(StaticIds.IdList);
                 break;
+            case (PktType.Disconnect):
+                DisconnectPkt Disconnect = new DisconnectPkt();
+                Disconnect.Deserialize(msg.reader);
+
+                Term.Println(Disconnect.ConnectionID + " disconnected!");
+                Spawner.Remove(Players[Disconnect.ConnectionID].Character.gameObject);
+                Players.Remove(Disconnect.ConnectionID);
+                break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);
                 Term.Println("Received an unknown packet, id: " + msg.msgType);
@@ -257,11 +280,20 @@ namespace Cyber.Networking.Clientside {
                 Term.Println("You: " + args[0]);
                 NetClient.Send(PktType.TextMessage, new TextMessagePkt("A Client: " + args[0]));
             });
+
+            Term.AddCommand("disconnect", "Disconnect from the server.", (args) => {
+                NetClient.Send(PktType.Disconnect, new DisconnectPkt());
+            });
         }
 
         private void OnDisconnected(NetworkMessage msg) {
             Debug.Log("Disconnected!");
             Term.Println("Disconnected!");
+
+            foreach (var Entry in Players) {
+                Spawner.Remove(Entry.Value.Character.gameObject);
+            }
+            Players.Clear();
             Running = false;
         }
 

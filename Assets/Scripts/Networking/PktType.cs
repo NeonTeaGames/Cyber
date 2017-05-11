@@ -55,5 +55,10 @@ namespace Cyber.Networking {
         /// </summary>
         public const short ClientSync = 208;
 
+        /// <summary>
+        /// Packet informing the reciever that the client either wishes to disconnect from the server, or is disconnected.
+        /// </summary>
+        public const short Disconnect = 209;
+
     }
 }

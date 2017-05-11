@@ -2,7 +2,6 @@
 using Cyber.Entities.SyncBases;
 using Cyber.Networking.Messages;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Networking.Serverside {
@@ -41,10 +40,12 @@ namespace Cyber.Networking.Serverside {
                 Character PlayerCharacter = Players[message.conn.connectionId].Character;
                 PlayerCharacter.Move(SyncPkt.MoveDirection);
                 PlayerCharacter.SetRotation(SyncPkt.Rotation);
-
-                Debug.Log("MoveDirection: " + SyncPkt.MoveDirection);
             }
             // Disregard the package, it's too old.
+        }
+
+        public void ClearConnectionFromSyncDict(int connectionID) {
+            LastSyncIDReceived.Remove(connectionID);
         }
 
     }

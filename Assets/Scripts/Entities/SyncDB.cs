@@ -45,6 +45,22 @@ namespace Cyber.Entities {
         }
 
         /// <summary>
+        /// Clears the given gameobject's <see cref="SyncBase"/>s from the Database.
+        /// </summary>
+        /// <param name="gameObject">The GameObject to remove.</param>
+        public void RemoveEntity(GameObject gameObject) {
+            for (int i = 0; i < SyncableClasses.Length; i++) {
+                SyncBase Syncable = (SyncBase) gameObject.GetComponent(SyncableClasses[i]);
+                if (Syncable != null) {
+                    Database.Remove(Syncable.ID);
+                    if (Server.IsRunning()) {
+                        CategorizedDatabase[Syncable.GetType()].RemoveAll(x => x == Syncable.ID);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Makes an ordered list of the given gameobject's syncable components' 
         /// IDs.
         /// </summary>

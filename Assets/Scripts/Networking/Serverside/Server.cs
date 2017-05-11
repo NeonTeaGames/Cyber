@@ -108,6 +108,24 @@ namespace Cyber.Networking.Serverside {
             return NetworkServer.active;
         }
 
+        /// <summary>
+        /// Properly shuts the server down.
+        /// \todo Server should inform all client that the server was shut down.
+        /// </summary>
+        /// <returns>True if the server was running, false if not.</returns>
+        public static bool Shutdown() {
+            if (NetworkServer.active) {
+                foreach (var Entry in Singleton.Players) {
+                    Singleton.Spawner.Remove(Entry.Value.Character.gameObject);
+                }
+                Singleton.Players.Clear();
+                NetworkServer.Shutdown();
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         private bool LaunchServer(int port) {
             if (NetworkServer.active) {
                 return false;
@@ -129,6 +147,7 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.RegisterHandler(PktType.MoveCreature, HandlePacket);
             NetworkServer.RegisterHandler(PktType.Interact, HandlePacket);
             NetworkServer.RegisterHandler(PktType.ClientSync, HandlePacket);
+            NetworkServer.RegisterHandler(PktType.Disconnect, HandlePacket);
 
             NetworkServer.RegisterHandler(MsgType.Connect, OnConnected);
             NetworkServer.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -140,6 +159,11 @@ namespace Cyber.Networking.Serverside {
             Term.AddCommand("send (message)", "Howl at the darkness of space. Does it echo though?", (args) => {
                 Term.Println("You: " + args[0]);
                 SendToAll(PktType.TextMessage, new TextMessagePkt("Server: " + args[0]));
+            });
+
+            Term.AddCommand("unhost", "Shuts down the server, shut it all down!", (args) => {
+                Term.Println("Unhosting the server.");
+                Shutdown();
             });
 
             Syncer = gameObject.AddComponent<Syncer>();
@@ -205,6 +229,9 @@ namespace Cyber.Networking.Serverside {
             case PktType.ClientSync:
                 ServerSyncHandler.HandleSyncPkt(msg);
                 break;
+            case PktType.Disconnect:
+                msg.conn.Disconnect();
+                break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);
                 Term.Println("Received an unknown packet, id: " + msg.msgType);
@@ -218,7 +245,6 @@ namespace Cyber.Networking.Serverside {
             // Get client's ID
             int Id = msg.conn.connectionId;
 
-            Debug.Log(Id + " connected!");
             Term.Println(Id + " connected!");
 
             // Send all other clients a notification and collect their id's
@@ -265,8 +291,18 @@ namespace Cyber.Networking.Serverside {
         }
 
         private void OnDisconnected(NetworkMessage msg) {
-            Debug.Log("Someone disconnected.");
-            Term.Println("Someone disconnected.");
+            // Get client's ID
+            int Id = msg.conn.connectionId;
+
+            Term.Println(Id + " disconnected.");
+
+            Spawner.Remove(Players[Id].Character.gameObject);
+            Players.Remove(Id);
+            ServerSyncHandler.ClearConnectionFromSyncDict(Id);
+
+            foreach (var Entry in Players) {
+                Send(Entry.Key, PktType.Disconnect, new DisconnectPkt(Id));
+            }
         }
 
         private void OnError(NetworkMessage msg) {
