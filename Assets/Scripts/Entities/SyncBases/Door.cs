@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Entities.SyncBases {
+
+    /// <summary>
+    /// Door that slides open and closed. Can be interacted to toggle openness.
+    /// </summary>
     public class Door : Interactable {
 
         /// <summary>
