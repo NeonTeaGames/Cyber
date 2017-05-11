@@ -133,8 +133,6 @@ namespace Cyber.Networking.Serverside {
 
             Spawner = GetComponent<Spawner>();
 
-            Spawner.SyncDB.SetStaticObjectsIDs();
-
             ConnectionConfig Config = new ConnectionConfig();
             NetworkChannelID.ReliableSequenced = Config.AddChannel(QosType.ReliableSequenced);
             NetworkChannelID.UnreliableSequenced = Config.AddChannel(QosType.UnreliableSequenced);
@@ -142,6 +140,8 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.Configure(Config, 10);
 
             NetworkServer.Listen(port);
+
+            Spawner.SyncDB.SetStaticObjectsIDs();
 
             NetworkServer.RegisterHandler(PktType.TextMessage, HandlePacket);
             NetworkServer.RegisterHandler(PktType.MoveCreature, HandlePacket);

@@ -1,4 +1,5 @@
 ﻿
+using Cyber.Console;
 using Cyber.Entities;
 using Cyber.Entities.SyncBases;
 using Cyber.Networking.Messages;
@@ -55,7 +56,8 @@ namespace Cyber.Networking.Serverside {
                     SyncHandletype Handletype = Database.GetSyncHandletypes()[type];
                     if (TickCounter % Handletype.TickInterval == 0) {
                         foreach (int SyncBaseID in Categorized[type]) {
-                            if (DirtySyncBases.Contains(SyncBaseID)) {
+                            bool Contains = DirtySyncBases.Contains(SyncBaseID);
+                            if (Contains == Handletype.RequireHash || Contains) {
                                 QueueSyncBase(SyncBaseID);
                             }
                         }
@@ -69,12 +71,6 @@ namespace Cyber.Networking.Serverside {
 
                     QueuedSyncs.Clear();
                     DirtySyncBases.Clear();
-                }
-
-                if (Categorized.ContainsKey(typeof(Character))) {
-                    foreach (int i in Categorized[typeof(Character)]) {
-                        DirtSyncBase(i);
-                    }
                 }
 
 
