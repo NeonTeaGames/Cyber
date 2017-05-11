@@ -41,21 +41,17 @@ namespace Cyber.Console {
         public int RowLength = 80;
 
         /// <summary>
-        /// The linecount threshold when the <see cref="TextField"/> is cleaned 
-        /// up so it has <see cref="LineCountSavedFromCleanup"/> lines left.
+        /// How many lines are included in the <see cref="TextField"/> when 
+        /// the total amount of lines exceeds this.
         /// </summary>
-        public int MaxLinesUntilCleanup = 48;
-
-        /// <summary>
-        /// See <see cref="MaxLinesUntilCleanup"/>.
-        /// </summary>
-        public int LineCountSavedFromCleanup = 24;
+        public int LinesRendered = 15;
 
         private Dictionary<string, DebugConsoleAction> Actions = new Dictionary<string, DebugConsoleAction>();
         private List<string> Lines = new List<string>();
         private List<string> Commands = new List<string>();
         private int LastCommandIndex = 0;
         private string LastUnexecutedCommand = "";
+        private int ScrollOffset = 1;
 
         /// <summary>
         /// Creates a new <see cref="DebugConsole"/>, and sets the <see cref="Term"/>'s singleton.
@@ -128,7 +124,6 @@ namespace Cyber.Console {
         /// </remarks>
         /// <param name="text">Text.</param>
         public void Print(string text) {
-
             // Wrap lines and log them to Lines
             int Index = 0;
             int EscapeIndex = 0;
@@ -143,16 +138,19 @@ namespace Cyber.Console {
                 TextField.text += Line + "\n";
                 EscapeIndex++;
             } while (Index < text.Length && EscapeIndex < 10);
-            if (Lines.Count > MaxLinesUntilCleanup) {
-                // The print history is too long, clear up until there are only
-                // a small amount left (so the user doesn't notice the cleanup)
-                string NewLog = "";
-                Lines.RemoveRange(0, Lines.Count - LineCountSavedFromCleanup);
-                foreach (string Line in Lines) {
-                    NewLog += Line + "\n";
+            UpdateTextField();
+        }
+
+        private void UpdateTextField() {
+            string NewLog = "";
+            int LineAmt = Mathf.Min(LinesRendered, Lines.Count);
+            for (int i = 0; i < LineAmt; i++) {
+                int Index = Lines.Count - (i + ScrollOffset);
+                if (Index >= 0 && Index < Lines.Count) {
+                    NewLog += Lines[i] + "\n";
                 }
-                TextField.text = NewLog;
             }
+            TextField.text = NewLog;
         }
 
         private void Start() {
@@ -228,6 +226,14 @@ namespace Cyber.Console {
                     LastCommandIndex++;
                     InputField.text = LastUnexecutedCommand;
                 }
+            }
+            if (Input.GetAxis("Mouse ScrollWheel") > 0 && ScrollOffset + 1 <= Lines.Count) {
+                ScrollOffset++;
+                UpdateTextField();
+            }
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && ScrollOffset - 1 > 1) {
+                ScrollOffset--;
+                UpdateTextField();
             }
 
             // Slide up/down animation
