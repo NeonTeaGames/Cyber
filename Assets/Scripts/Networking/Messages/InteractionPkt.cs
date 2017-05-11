@@ -1,4 +1,5 @@
 ﻿
+using Cyber.Entities;
 using UnityEngine.Networking;
 
 namespace Cyber.Networking.Messages {
@@ -19,11 +20,18 @@ namespace Cyber.Networking.Messages {
         public int OwnerSyncBaseID;
 
         /// <summary>
+        /// The interaction type that was made.
+        /// </summary>
+        public InteractionType InteractionType;
+
+        /// <summary>
         /// Creates an InteraktionPkt, which contains the message "someone interacted".
         /// </summary>
         /// <param name="syncBaseID">The Sync Base ID of the interacted thing.</param>
-        public InteractionPkt(int syncBaseID) {
+        /// <param name="interactionType">The type of interaction that was made.</param>
+        public InteractionPkt(int syncBaseID, InteractionType interactionType) {
             InteractSyncBaseID = syncBaseID;
+            InteractionType = interactionType;
         }
 
         /// <summary>
@@ -38,6 +46,7 @@ namespace Cyber.Networking.Messages {
         public override void Deserialize(NetworkReader reader) {
             InteractSyncBaseID = reader.ReadInt32();
             OwnerSyncBaseID = reader.ReadInt32();
+            InteractionType = (InteractionType) reader.ReadByte();
         }
 
         /// <summary>
@@ -47,6 +56,7 @@ namespace Cyber.Networking.Messages {
         public override void Serialize(NetworkWriter writer) {
             writer.Write(InteractSyncBaseID);
             writer.Write(OwnerSyncBaseID);
+            writer.Write((byte) InteractionType);
         }
 
     }

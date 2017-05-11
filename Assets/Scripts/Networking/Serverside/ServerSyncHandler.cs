@@ -44,6 +44,10 @@ namespace Cyber.Networking.Serverside {
             // Disregard the package, it's too old.
         }
 
+        /// <summary>
+        /// Clears the 'LastSyncIDReceived' from the given connection id, making sure that any new connections re-using this connectionID will be properly synced.
+        /// </summary>
+        /// <param name="connectionID">The connectionID to be cleared.</param>
         public void ClearConnectionFromSyncDict(int connectionID) {
             LastSyncIDReceived.Remove(connectionID);
         }

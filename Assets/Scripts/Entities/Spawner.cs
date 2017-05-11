@@ -54,6 +54,10 @@ namespace Cyber.Entities {
             return Spawned;
         }
 
+        /// <summary>
+        /// Removes the gameobject that was given as an argument from the world.
+        /// </summary>
+        /// <param name="gameObject">Gameobject to be removed.</param>
         public void Remove(GameObject gameObject) {
             SyncDB.RemoveEntity(gameObject);
             Destroy(gameObject);

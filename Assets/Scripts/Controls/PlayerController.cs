@@ -4,6 +4,7 @@ using Cyber.Console;
 using Cyber.Networking.Clientside;
 using Cyber.Networking;
 using Cyber.Networking.Messages;
+using Cyber.Entities;
 
 namespace Cyber.Controls {
     
@@ -56,7 +57,7 @@ namespace Cyber.Controls {
                         if (LookingAt != null && (LookingAt.transform.position - Character.GetPosition()).magnitude < Character.InteractionDistance) {
                             LookingAt.Interact(Character);
                             if (LookingAt.GetInteractableSyncdata().PublicInteractions) {
-                                Client.Send(PktType.Interact, new InteractionPkt(LookingAt.ID));
+                                Client.Send(PktType.Interact, new InteractionPkt(LookingAt.ID, InteractionType.Press));
                             }
                         }
                     }
