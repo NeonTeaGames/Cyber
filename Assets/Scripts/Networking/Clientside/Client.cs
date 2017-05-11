@@ -228,7 +228,6 @@ namespace Cyber.Networking.Clientside {
                 SyncHandler.HandleSyncPkt(msg);
                 break;
             case (PktType.StaticObjectIds):
-                Term.Println("The static object id packet!");
                 IntListPkt StaticIds = new IntListPkt();
                 StaticIds.Deserialize(msg.reader);
                 Spawner.SyncDB.SetStaticObjectsIDs(StaticIds.IdList);
