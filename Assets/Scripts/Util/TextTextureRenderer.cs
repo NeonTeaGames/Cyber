@@ -63,10 +63,20 @@ namespace Cyber.Util {
         /// <param name="forceRender">Whether the texture should be rendered 
         /// again even if it's cached.</param>
         public static Texture2D GetText(TextTextureProperties text, bool forceRender = false) {
-            if (forceRender || !Cache.ContainsKey(text.Text)) {
-                Cache[text.Text] = Singleton.RenderText(text);
+            string Hash = CreateHash(text);
+            if (forceRender || !Cache.ContainsKey(Hash)) {
+                Cache[Hash] = Singleton.RenderText(text);
+                Term.Println("Created a new texture for:");
+                Term.Println(Hash);
+                Term.Println("====");
             }
-            return Cache[text.Text];
+            return Cache[Hash];
+        }
+
+        private static string CreateHash(TextTextureProperties text) {
+            return text.Text + "," + text.Width + "," + text.Height + "," +
+                text.FontSize + "," + text.Background.r + "," +
+                text.Background.g + "," + text.Background.b;
         }
     }
 }

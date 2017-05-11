@@ -142,7 +142,7 @@ namespace Cyber.Networking.Serverside {
                 SendToAll(PktType.TextMessage, new TextMessagePkt("Server: " + args[0]));
             });
 
-            gameObject.AddComponent<Syncer>();
+            Syncer = gameObject.AddComponent<Syncer>();
 
             ServerSyncHandler = new ServerSyncHandler(Players);
 
