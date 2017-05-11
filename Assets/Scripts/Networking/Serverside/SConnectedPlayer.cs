@@ -1,4 +1,5 @@
 ﻿using Cyber.Entities.SyncBases;
+using UnityEngine.Networking;
 
 namespace Cyber.Networking.Serverside {
 
@@ -11,7 +12,7 @@ namespace Cyber.Networking.Serverside {
         /// <summary>
         /// The player's connection ID.
         /// </summary>
-        public readonly int ConnectionID;
+        public readonly NetworkConnection Connection;
 
         /// <summary>
         /// The player's controlled character
@@ -19,11 +20,11 @@ namespace Cyber.Networking.Serverside {
         public Character Character;
 
         /// <summary>
-        /// Create a connected player and give it a connection ID;
+        /// Create a connected player and give it a connection;
         /// </summary>
-        /// <param name="connectionID">The player's connection ID</param>
-        public SConnectedPlayer(int connectionID) {
-            ConnectionID = connectionID;
+        /// <param name="connectionID">The player's connection</param>
+        public SConnectedPlayer(NetworkConnection connectionID) {
+            Connection = connectionID;
         }
 
     }

@@ -194,11 +194,11 @@ namespace Cyber.Networking.Serverside {
                 Controlled.Move(MoveCreature.Direction);
 
                 foreach (var Player in Players) {
-                    if (Player.Value.ConnectionID == msg.conn.connectionId) {
+                    if (Player.Value.Connection.connectionId == msg.conn.connectionId) {
                         continue;
                     }
                     MoveCreature.Timestamp = NetworkHelper.GetCurrentSystemTime();
-                    NetworkServer.SendToClient(Player.Value.ConnectionID, PktType.MoveCreature, MoveCreature);
+                    NetworkServer.SendToClient(Player.Value.Connection.connectionId, PktType.MoveCreature, MoveCreature);
                 }
                 break;
             case PktType.Interact:
@@ -251,15 +251,15 @@ namespace Cyber.Networking.Serverside {
             int[] IdList = new int[Players.Count];
             int TempCounter = 0;
             foreach (SConnectedPlayer P in Players.Values) {
-                IdList[TempCounter++] = P.ConnectionID;
-                NetworkServer.SendToClient(P.ConnectionID, PktType.Identity, new IdentityPkt(Id, false));
+                IdList[TempCounter++] = P.Connection.connectionId;
+                NetworkServer.SendToClient(P.Connection.connectionId, PktType.Identity, new IdentityPkt(Id, false));
             }
 
             // Then send the client a list of all other clients
             NetworkServer.SendToClient(Id, PktType.MassIdentity, new IntListPkt(IdList));
 
             // Add the player to the list
-            SConnectedPlayer Player = new SConnectedPlayer(msg.conn.connectionId);
+            SConnectedPlayer Player = new SConnectedPlayer(msg.conn);
             Players.Add(Id, Player);
 
             // Send the previously collected list to the player
