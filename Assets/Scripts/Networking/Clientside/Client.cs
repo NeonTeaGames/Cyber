@@ -62,8 +62,8 @@ namespace Cyber.Networking.Clientside {
         /// Send messages to the server if the connection is active.
         /// If client is not active, this will return false, otherwise true.
         /// </summary>
-        /// <param name="msgType"></param>
-        /// <param name="message"></param>
+        /// <param name="msgType">The message type.</param>
+        /// <param name="message">The message contents.</param>
         /// <returns>Weather the send was successful or not.</returns>
         public static bool Send(short msgType, MessageBase message) {
             if (Singleton.Running) {
@@ -75,6 +75,14 @@ namespace Cyber.Networking.Clientside {
             }
         }
 
+        /// <summary>
+        /// Sends messages to the server by a specified channel.
+        /// If the client is not active, this will return false, otherwise true.
+        /// </summary>
+        /// <param name="msgType">The message type.</param>
+        /// <param name="message">The message contents.</param>
+        /// <param name="channelID">The ID of the channel to be used.</param>
+        /// <returns></returns>
         public static bool SendByChannel(short msgType, MessageBase message, byte channelID) {
             if (Singleton.Running) {
                 Singleton.NetClient.SendByChannel(msgType, message, channelID);
