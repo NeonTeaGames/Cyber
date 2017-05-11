@@ -23,8 +23,10 @@ namespace Cyber.Entities.SyncBases {
         /// <summary>
         /// Toggles the openness of the door.
         /// </summary>
-        public override void Interact(SyncBase Trigger) {
-            IsOpen = !IsOpen;
+        public override void Interact(SyncBase trigger, InteractionType type) {
+            if (type == InteractionType.Activate) {
+                IsOpen = !IsOpen;
+            }
         }
 
         /// <summary>

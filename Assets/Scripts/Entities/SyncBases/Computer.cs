@@ -56,15 +56,17 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         /// <param name="Trigger">Determines the keycode given to the 
         /// <see cref="Program"/>.</param>
-        public override void Interact(SyncBase Trigger) {
-            Hologram.Visible = true;
-            if (Trigger == KeyLeft) {
-                Screen.SetTextProperties(new TextTextureProperties("\n   Pressed left!"));
-            } else if (Trigger == KeyRight) {
-                Screen.SetTextProperties(new TextTextureProperties("\n   Pressed right!"));
-            } else {
-                Screen.SetTextProperties(new TextTextureProperties(""));
-                Hologram.Visible = false;
+        public override void Interact(SyncBase trigger, InteractionType type) {
+            if (type == InteractionType.Activate) {
+                Hologram.Visible = true;
+                if (trigger == KeyLeft) {
+                    Screen.SetTextProperties(new TextTextureProperties("\n   Pressed left!"));
+                } else if (trigger == KeyRight) {
+                    Screen.SetTextProperties(new TextTextureProperties("\n   Pressed right!"));
+                } else {
+                    Screen.SetTextProperties(new TextTextureProperties(""));
+                    Hologram.Visible = false;
+                }
             }
         }
 

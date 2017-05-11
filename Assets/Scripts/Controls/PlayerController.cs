@@ -26,6 +26,7 @@ namespace Cyber.Controls {
 
         private CursorHandler CursorHandler;
         private Vector3 Rotation;
+        private GameObject LastLookedAt;
 
         private void Start() {
             CursorHandler = GameObject.Find("/Systems/CursorHandler").GetComponent<CursorHandler>();
@@ -50,21 +51,38 @@ namespace Cyber.Controls {
                 Character.SetRotation(Rotation);
             
                 // Interactions
-                if (Input.GetButtonDown("Activate")) {
-                    GameObject LookedAtObject = GetLookedAtGameObject();
-                    if (LookedAtObject != null) {
-                        Interactable LookingAt = LookedAtObject.GetComponent<Interactable>();
-                        if (LookingAt != null && (LookingAt.transform.position - Character.GetPosition()).magnitude < Character.InteractionDistance) {
-                            LookingAt.Interact(Character);
-                            if (LookingAt.GetInteractableSyncdata().PublicInteractions) {
-                                Client.Send(PktType.Interact, new InteractionPkt(LookingAt.ID, InteractionType.Press));
+                GameObject LookedAtObject = GetLookedAtGameObject();
+                if (LookedAtObject != null) {
+                    Interactable LookingAt = LookedAtObject.GetComponent<Interactable>();
+                    if (LookingAt != null && (LookingAt.transform.position - Character.GetPosition()).magnitude < Character.InteractionDistance) {
+                        if (Input.GetButtonDown("Activate")) {
+                            InteractWith(LookingAt, InteractionType.Activate);
+                        }
+                        if (Input.GetButtonUp("Activate")) {
+                            InteractWith(LookingAt, InteractionType.Deactivate);
+                        }
+                        if (LookedAtObject != LastLookedAt) {
+                            InteractWith(LookingAt, InteractionType.Enter);
+                            if (LastLookedAt != null) {
+                                InteractWith(LastLookedAt.GetComponent<Interactable>(), InteractionType.Exit);
                             }
                         }
+                        LastLookedAt = LookedAtObject;
                     }
+                } else if (LastLookedAt != null) {
+                    InteractWith(LastLookedAt.GetComponent<Interactable>(), InteractionType.Exit);
+                    LastLookedAt = null;
                 }
             } else if (Character.Moving()) {
                 // The debug console is open, stop the player.
                 Character.Stop();
+            }
+        }
+
+        private void InteractWith(Interactable interactable, InteractionType type) {
+            interactable.Interact(Character, type);
+            if (interactable.GetInteractableSyncdata().PublicInteractions) {
+                Client.Send(PktType.Interact, new InteractionPkt(interactable.ID, type));
             }
         }
 

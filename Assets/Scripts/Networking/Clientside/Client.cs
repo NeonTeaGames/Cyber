@@ -242,7 +242,9 @@ namespace Cyber.Networking.Clientside {
 
                 SyncBase Target = Spawner.SyncDB.Get(Interaction.InteractSyncBaseID);
                 if (Target != null && Target is Interactable) {
-                    ((Interactable) Target).Interact(Spawner.SyncDB.Get(Interaction.OwnerSyncBaseID));
+                    ((Interactable) Target).Interact(
+                        Spawner.SyncDB.Get(Interaction.OwnerSyncBaseID),
+                        Interaction.InteractionType);
                 } else {
                     Term.Println("Server has sent an erroneus SyncBase ID!");
                 }

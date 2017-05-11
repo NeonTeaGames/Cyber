@@ -1713,7 +1713,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4689370038551000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4689370038551000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
       propertyPath: m_LocalRotation.z
@@ -1721,7 +1721,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4689370038551000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4689370038551000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
       propertyPath: m_RootOrder
@@ -1743,6 +1743,20 @@ Prefab:
     - target: {fileID: 4184625238098062, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
       propertyPath: m_LocalScale.z
       value: 0.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 114171175549544602, guid: 3da42b42c71f841c2a977cfb5255b00f,
+        type: 2}
+      propertyPath: TextProperties.Text
+      value: \n\n    Toggle Door
+      objectReference: {fileID: 0}
+    - target: {fileID: 4689370038551000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 114171175549544602, guid: 3da42b42c71f841c2a977cfb5255b00f,
+        type: 2}
+      propertyPath: TextProperties.FontSize
+      value: 36
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
@@ -2005,7 +2019,7 @@ Prefab:
     - target: {fileID: 114327153796435004, guid: 660bef6a67fed4941b963e96ff20a5e0,
         type: 2}
       propertyPath: WillTrigger.Array.size
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4974430339442808, guid: 660bef6a67fed4941b963e96ff20a5e0, type: 2}
       propertyPath: m_LocalPosition.x
@@ -2069,12 +2083,17 @@ Prefab:
         type: 2}
       propertyPath: WillTrigger.Array.data[0]
       value: 
-      objectReference: {fileID: 865482261}
+      objectReference: {fileID: 310461193}
     - target: {fileID: 114327153796435004, guid: 660bef6a67fed4941b963e96ff20a5e0,
         type: 2}
       propertyPath: WillTrigger.Array.data[1]
       value: 
       objectReference: {fileID: 310461193}
+    - target: {fileID: 114327153796435004, guid: 660bef6a67fed4941b963e96ff20a5e0,
+        type: 2}
+      propertyPath: Hologram
+      value: 
+      objectReference: {fileID: 865482261}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 660bef6a67fed4941b963e96ff20a5e0, type: 2}
   m_IsPrefabParent: 0
@@ -2575,6 +2594,11 @@ Prefab:
     - target: {fileID: 4689370038551000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114171175549544602, guid: 3da42b42c71f841c2a977cfb5255b00f,
+        type: 2}
+      propertyPath: TextProperties.Text
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3da42b42c71f841c2a977cfb5255b00f, type: 2}

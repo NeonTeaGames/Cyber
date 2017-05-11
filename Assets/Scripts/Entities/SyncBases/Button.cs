@@ -5,6 +5,7 @@ using UnityEngine.Networking;
 using Cyber.Networking;
 using Cyber.Console;
 using System;
+using Cyber.Util;
 
 namespace Cyber.Entities.SyncBases {
 
@@ -17,6 +18,12 @@ namespace Cyber.Entities.SyncBases {
         /// The interactable which this button will trigger.
         /// </summary>
         public Interactable[] WillTrigger;
+
+        /// <summary>
+        /// The informational hologram that will pop up when the player hovers
+        /// over this button.
+        /// </summary>
+        public Hologram Hologram;
 
         /// <summary>
         /// The button mesh that will blink.
@@ -46,14 +53,22 @@ namespace Cyber.Entities.SyncBases {
         /// for <see cref="BlinkLength"/> seconds, and calls Interact
         /// on the <see cref="WillTrigger"/>.
         /// </summary>
-        public override void Interact(SyncBase Trigger) {
-            BlinkTime = Time.time;
-            if (WillTrigger.Length > 0) {
-                foreach (Interactable Triggerable in WillTrigger) {
-                    Triggerable.Interact(this);
+        public override void Interact(SyncBase Trigger, InteractionType type) {
+            if (type == InteractionType.Activate) {
+                BlinkTime = Time.time;
+                if (WillTrigger.Length > 0) {
+                    foreach (Interactable Triggerable in WillTrigger) {
+                        Triggerable.Interact(this, InteractionType.Activate);
+                    }
+                } else {
+                    Term.Println("FIXME: The button '" + gameObject.name + "' was pressed, but it doesn't have anything to trigger.");
                 }
-            } else {
-                Term.Println("FIXME: The button '" + gameObject.name + "' was pressed, but it doesn't have anything to trigger.");
+            } else if (Hologram != null) {
+                if (type == InteractionType.Enter) {
+                    Hologram.Visible = true;
+                } else if (type == InteractionType.Exit) {
+                    Hologram.Visible = false;
+                }
             }
         }
 

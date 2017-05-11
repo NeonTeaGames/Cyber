@@ -14,7 +14,7 @@ namespace Cyber.Entities.SyncBases {
         /// <summary>
         /// All interactables should implement their interactions by overriding this.
         /// </summary>
-        public abstract void Interact(SyncBase Trigger);
+        public abstract void Interact(SyncBase trigger, InteractionType type);
         
         /// <summary>
         /// Get Interaction information about this interactible.

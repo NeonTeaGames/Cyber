@@ -6,7 +6,7 @@ namespace Cyber.Entities {
     /// </summary>
     public enum InteractionType : byte {
 
-        Press, Release, Enter, Exit
+        Activate, Deactivate, Enter, Exit
 
     }
 }
