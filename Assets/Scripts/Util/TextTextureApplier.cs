@@ -36,7 +36,6 @@ namespace Cyber.Util {
         /// </summary>
         public float Brightness = 1f;
 
-        private TextTextureProperties LastText = new TextTextureProperties("");
         private Material Material;
         private bool Dirty = true;
 

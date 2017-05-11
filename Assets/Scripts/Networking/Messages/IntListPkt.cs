@@ -4,27 +4,27 @@ using UnityEngine.Networking;
 namespace Cyber.Networking.Messages {
 
     /// <summary>
-    /// Packet containing a list of ID's of players currently connected.
+    /// Packet containing integers, used in many packet types, such as <see cref="PktType.MassIdentity"/> and <see cref="PktType.StaticObjectIdsPkt"/>.
     /// </summary>
-    public class MassIdentityPkt : MessageBase {
+    public class IntListPkt : MessageBase {
 
         /// <summary>
-        /// List of Connection ID's to send
+        /// List of Integers.
         /// </summary>
         public int[] IdList;
 
         /// <summary>
-        /// Create a Mass Identity packet used to send a list of currently online connections.
+        /// Create a packet containing integers.
         /// </summary>
         /// <param name="idList"></param>
-        public MassIdentityPkt(int[] idList) {
+        public IntListPkt(int[] idList) {
             IdList = idList;
         }
 
         /// <summary>
         /// Parameter-less constructor using when deserializing the message.
         /// </summary>
-        public MassIdentityPkt() {
+        public IntListPkt() {
 
         }
 

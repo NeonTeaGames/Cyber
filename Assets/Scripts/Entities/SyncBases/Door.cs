@@ -51,6 +51,10 @@ namespace Cyber.Entities.SyncBases {
             return new SyncHandletype(false, 10);
         }
 
+        public override InteractableSyncdata GetInteractableSyncdata() {
+            return new InteractableSyncdata(true, true);
+        }
+
         private void Update() {
             float DoorScale = IsOpen ? 0.01f : 1;
             if (DoorRoot.localScale.x != DoorScale) {

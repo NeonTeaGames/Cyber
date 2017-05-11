@@ -57,6 +57,9 @@ namespace Cyber.Controls {
                         Interactable LookingAt = LookedAtObject.GetComponent<Interactable>();
                         if (LookingAt != null && (LookingAt.transform.position - Character.GetPosition()).magnitude < Character.InteractionDistance) {
                             LookingAt.Interact();
+                            if (LookingAt.GetInteractableSyncdata().PublicInteractions) {
+                                Client.Send(PktType.InteractPkt, new InteractionPkt(LookingAt.ID));
+                            }
                         }
                     }
                 }

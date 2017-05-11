@@ -21,6 +21,11 @@ namespace Cyber.Networking.Serverside {
         private Spawner Spawner;
 
         /// <summary>
+        /// The Syncer which syncs. <see cref="Syncer"/>
+        /// </summary>
+        public Syncer Syncer;
+
+        /// <summary>
         /// Creates the server-component, and sets the singleton as itself.
         /// </summary>
         public Server() {
@@ -108,6 +113,8 @@ namespace Cyber.Networking.Serverside {
 
             Spawner = GetComponent<Spawner>();
 
+            Spawner.SyncDB.SetStaticObjectsIDs();
+
             ConnectionConfig Config = new ConnectionConfig();
             NetworkChannelID.ReliableSequenced = Config.AddChannel(QosType.ReliableSequenced);
             NetworkChannelID.UnreliableSequenced = Config.AddChannel(QosType.UnreliableSequenced);
@@ -118,6 +125,7 @@ namespace Cyber.Networking.Serverside {
 
             NetworkServer.RegisterHandler(PktType.TextMessage, HandlePacket);
             NetworkServer.RegisterHandler(PktType.MoveCreature, HandlePacket);
+            NetworkServer.RegisterHandler(PktType.InteractPkt, HandlePacket);
 
             NetworkServer.RegisterHandler(MsgType.Connect, OnConnected);
             NetworkServer.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -139,35 +147,60 @@ namespace Cyber.Networking.Serverside {
         private void HandlePacket(NetworkMessage msg) {
 
             switch (msg.msgType) {
-                case PktType.TextMessage:
-                    TextMessagePkt TextMsg = new TextMessagePkt();
-                    TextMsg.Deserialize(msg.reader);
-                    Term.Println(TextMsg.Message);
+            case PktType.TextMessage:
+                TextMessagePkt TextMsg = new TextMessagePkt();
+                TextMsg.Deserialize(msg.reader);
+                Term.Println(TextMsg.Message);
+                break;
+            case PktType.MoveCreature:
+                MoveCreaturePkt MoveCreature = new MoveCreaturePkt();
+                MoveCreature.Deserialize(msg.reader);
+
+                // Check if the player is allowed to move this character
+                Character Controlled = Players[msg.conn.connectionId].Character.GetComponent<Character>();
+                if (Controlled.ID != MoveCreature.SyncBaseID) {
                     break;
-                case PktType.MoveCreature:
-                    MoveCreaturePkt MoveCreature = new MoveCreaturePkt();
-                    MoveCreature.Deserialize(msg.reader);
+                }
 
-                    // Check if the player is allowed to move this character
-                    Character Controlled = Players[msg.conn.connectionId].Character.GetComponent<Character>();
-                    if (Controlled.ID != MoveCreature.SyncBaseID) {
-                        break;
+                Controlled.Move(MoveCreature.Direction);
+
+                foreach (var Player in Players) {
+                    if (Player.Value.ConnectionID == msg.conn.connectionId) {
+                        continue;
                     }
+                    MoveCreature.Timestamp = NetworkHelper.GetCurrentSystemTime();
+                    NetworkServer.SendToClient(Player.Value.ConnectionID, PktType.MoveCreature, MoveCreature);
+                }
+                break;
+            case PktType.InteractPkt:
+                InteractionPkt Interaction = new InteractionPkt();
+                Interaction.Deserialize(msg.reader);
 
-                    Controlled.Move(MoveCreature.Direction);
+                Character Sender = Players[msg.conn.connectionId].Character;
+                SyncBase Target = Spawner.SyncDB.Get(Interaction.InteractSyncBaseID);
 
-                    foreach (var Player in Players) {
-                        if (Player.Value.ConnectionID == msg.conn.connectionId) {
-                            continue;
+                Interaction.OwnerSyncBaseID = Sender.ID;
+
+                if (Target != null && Target is Interactable) {
+                    Interactable Interacted = (Interactable) Target;
+                    Vector3 Delta = Interacted.gameObject.transform.position - Sender.gameObject.transform.position;
+                    float ServerInteractionDistance = Sender.InteractionDistance + Sender.MovementSpeed * 0.5f;
+                    if (Delta.magnitude <= ServerInteractionDistance) {
+                        Interacted.Interact();
+                        NetworkServer.SendToAll(PktType.InteractPkt, Interaction);
+                        if (Interacted.GetInteractableSyncdata().RequiresSyncing) {
+                            Syncer.DirtSyncBase(Interacted.ID);
                         }
-                        MoveCreature.Timestamp = NetworkHelper.GetCurrentSystemTime();
-                        NetworkServer.SendToClient(Player.Value.ConnectionID, PktType.MoveCreature, MoveCreature);
                     }
-                    break;
-                default:
-                    Debug.LogError("Received an unknown packet, id: " + msg.msgType);
-                    Term.Println("Received an unknown packet, id: " + msg.msgType);
-                    break;
+                } else {
+                    Term.Println("Client has reported an erronous SyncBase ID!");
+                }
+
+                break;
+            default:
+                Debug.LogError("Received an unknown packet, id: " + msg.msgType);
+                Term.Println("Received an unknown packet, id: " + msg.msgType);
+                break;
             }
         }
 
@@ -189,7 +222,7 @@ namespace Cyber.Networking.Serverside {
             }
 
             // Then send the client a list of all other clients
-            NetworkServer.SendToClient(Id, PktType.MassIdentity, new MassIdentityPkt(IdList));
+            NetworkServer.SendToClient(Id, PktType.MassIdentity, new IntListPkt(IdList));
 
             // Add the player to the list
             SConnectedPlayer Player = new SConnectedPlayer(msg.conn.connectionId);
@@ -199,13 +232,16 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.SendToClient(msg.conn.connectionId, 
                 PktType.Identity, new IdentityPkt(msg.conn.connectionId, true));
 
-            // Spawn the player and collet it's IDs
+            // Spawn the player and collect it's IDs
             Vector3 Position = new Vector3(0, 0, 0);
             GameObject Obj = Spawner.Spawn(EntityType.NPC, Position);
             int[] EntityIdList = Spawner.SyncDB.GetEntityIDs(Obj);
             Player.Character = Obj.GetComponent<Character>();
 
             NetworkServer.SendToAll(PktType.SpawnEntity, new SpawnEntityPkt(EntityType.NPC, Position, EntityIdList, Id));
+
+            // Send ID's of every existing static SyncBase object in the world.
+            NetworkServer.SendToClient(Id, PktType.StaticObjectIdsPkt, new IntListPkt(Spawner.SyncDB.GetStaticSyncBaseIDList()));
 
             // Send every entity to the player who just connected.
             foreach (var Entry in Players) {

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Cyber.Networking;
 using Cyber.Console;
+using System;
 
 namespace Cyber.Entities.SyncBases {
 
@@ -55,17 +56,20 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
-        /// Buttons only act as triggers, so only interact is sent to the server.
+        /// Does nothing, because it doesn't need to synced.
         /// </summary>
         /// <param name="reader"></param>
-        public override void Deserialize(NetworkReader reader) {
-        }
+        public override void Deserialize(NetworkReader reader) {}
 
         /// <summary>
-        /// Buttons only act as triggers, so only interact is sent to the server.
+        /// Does nothing, because it doesn't need to synced.
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
+        }
+
+        public override InteractableSyncdata GetInteractableSyncdata() {
+            return new InteractableSyncdata(false, true);
         }
 
         /// <summary>

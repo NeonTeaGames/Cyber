@@ -127,6 +127,8 @@ namespace Cyber.Networking.Clientside {
             NetClient.RegisterHandler(PktType.SpawnEntity, HandlePacket);
             NetClient.RegisterHandler(PktType.MoveCreature, HandlePacket);
             NetClient.RegisterHandler(PktType.SyncPacket, HandlePacket);
+            NetClient.RegisterHandler(PktType.InteractPkt, HandlePacket);
+            NetClient.RegisterHandler(PktType.StaticObjectIdsPkt, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -160,7 +162,7 @@ namespace Cyber.Networking.Clientside {
                 Players.Add(Conn.ConnectionID, Conn);
                 break;
             case (PktType.MassIdentity):
-                MassIdentityPkt Identities = new MassIdentityPkt();
+                IntListPkt Identities = new IntListPkt();
                 Identities.Deserialize(msg.reader);
                 foreach (int currId in Identities.IdList) {
                     Players.Add(currId, new CConnectedPlayer(currId));
@@ -195,8 +197,27 @@ namespace Cyber.Networking.Clientside {
                 }
 
                 break;
+            case (PktType.InteractPkt):
+                InteractionPkt Interaction = new InteractionPkt();
+                Interaction.Deserialize(msg.reader);
+                if (Interaction.OwnerSyncBaseID == Player.Character.ID) {
+                    break;
+                }
+
+                SyncBase Target = Spawner.SyncDB.Get(Interaction.InteractSyncBaseID);
+                if (Target != null && Target is Interactable) {
+                    ((Interactable) Target).Interact();
+                } else {
+                    Term.Println("Server has sent an erroneus SyncBase ID!");
+                }
+                break;
             case (PktType.SyncPacket):
                 SyncHandler.HandleSyncPkt(msg);
+                break;
+            case (PktType.StaticObjectIdsPkt):
+                IntListPkt StaticIds = new IntListPkt();
+                StaticIds.Deserialize(msg.reader);
+                Spawner.SyncDB.SetStaticObjectsIDs(StaticIds.IdList);
                 break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);
