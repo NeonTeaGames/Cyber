@@ -37,9 +37,9 @@ Version 0.3.0 - Mortician
 
 Version 0.2.0 - Juniper
 -----------------------
-- [ ] Basic interactions and an environment for testing.
-  - [ ] A room with a door, a button and a screen.
-  - [ ] Both players should be able to open the door and press the button, and see a reaction in the world (door opening, screen flashing).
+- [x] Basic interactions and an environment for testing.
+  - [x] A room with a door, a button and a screen.
+  - [x] Both players should be able to open the door and press the button, and see a reaction in the world (door opening, screen flashing).
 
 Version 0.1.0 - Gigantic
 ------------------------
