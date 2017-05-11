@@ -13,13 +13,16 @@ namespace Cyber.Entities {
     public class SyncDB : MonoBehaviour {
         
         private static readonly Type[] SyncableClasses = new Type[] {
-            typeof(Character)
+            typeof(Character),
+            typeof(BlinkyBox)
         };
 
         private int IDCounter = 0;
         private Dictionary<int, SyncBase> Database = new Dictionary<int, SyncBase>();
         private Dictionary<Type, List<int>> CategorizedDatabase = new Dictionary<Type, List<int>>();
         private Dictionary<Type, SyncHandletype> SyncHandletypes = new Dictionary<Type, SyncHandletype>();
+
+        private List<int> StaticSyncBaseIDList = new List<int>();
 
         /// <summary>
         /// Add an entity to the database with the given IDs.
@@ -32,16 +35,8 @@ namespace Cyber.Entities {
             for (int i = 0; i < SyncableClasses.Length; i++) {
                 SyncBase Syncable = (SyncBase)gameObject.GetComponent(SyncableClasses[i]);
                 if (Syncable != null) {
-                    Syncable.ID = ids[Index];
-                    Database[ids[Index++]] = Syncable;
-                    if (Server.IsRunning()) {
-                        Type Type = Syncable.GetType();
-                        if (!CategorizedDatabase.ContainsKey(Type)) {
-                            CategorizedDatabase.Add(Type, new List<int>());
-                            SyncHandletypes.Add(Type, Syncable.GetSyncHandletype());
-                        }
-                        CategorizedDatabase[Type].Add(Syncable.ID);
-                    }
+                    Syncable.ID = ids[Index++];
+                    AddSyncBaseToDatabase(Syncable);
                 }
             }
         }
@@ -133,6 +128,50 @@ namespace Cyber.Entities {
                 Debug.LogError("!!!WARNING!!! The SyncDB is full. Update the game to use longs instead of uints. !!!WARNING!!!");
             }
             return ID;
+        }
+
+        /// <summary>
+        /// Sets static objects for all objects in the world. This method should be called once per game launch ever.
+        /// </summary>
+        /// <param name="idList">The list of id's to be set. If null, will create new ids.</param>
+        public void SetStaticObjectsIDs(int[] idList = null) {
+            SyncBase[] SyncBases = FindObjectsOfType<SyncBase>();
+            Array.Sort(SyncBases, (a, b) => {
+                Vector3 APos = a.gameObject.transform.position;
+                float AComparison = APos.x + APos.y + APos.z + Array.IndexOf(SyncableClasses, a);
+                Vector3 BPos = b.gameObject.transform.position;
+                float BComparison = BPos.x + BPos.y + BPos.z + Array.IndexOf(SyncableClasses, b);
+
+                return AComparison.CompareTo(BComparison);
+            });
+            if (idList == null) {
+                foreach (SyncBase SyncBase in SyncBases) {
+                    SyncBase.ID = CreateID();
+                    AddSyncBaseToDatabase(SyncBase);
+                    StaticSyncBaseIDList.Add(SyncBase.ID);
+                }
+            } else {
+                for (int i = 0; i < Math.Min(SyncBases.Length, idList.Length); i++) {
+                    SyncBases[i].ID = idList[i];
+                    AddSyncBaseToDatabase(SyncBases[i]);
+                }
+            }
+        }
+
+        public int[] GetStaticSyncBaseIDList() {
+            return StaticSyncBaseIDList.ToArray();
+        }
+
+        private void AddSyncBaseToDatabase(SyncBase syncBase) {
+            Database[syncBase.ID] = syncBase;
+            if (Server.IsRunning()) {
+                Type Type = syncBase.GetType();
+                if (!CategorizedDatabase.ContainsKey(Type)) {
+                    CategorizedDatabase.Add(Type, new List<int>());
+                    SyncHandletypes.Add(Type, syncBase.GetSyncHandletype());
+                }
+                CategorizedDatabase[Type].Add(syncBase.ID);
+            }
         }
     }
 }

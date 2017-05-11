@@ -113,6 +113,8 @@ namespace Cyber.Networking.Serverside {
 
             Spawner = GetComponent<Spawner>();
 
+            Spawner.SyncDB.SetStaticObjectsIDs();
+
             ConnectionConfig Config = new ConnectionConfig();
             NetworkChannelID.ReliableSequenced = Config.AddChannel(QosType.ReliableSequenced);
             NetworkChannelID.UnreliableSequenced = Config.AddChannel(QosType.UnreliableSequenced);
@@ -218,7 +220,7 @@ namespace Cyber.Networking.Serverside {
             }
 
             // Then send the client a list of all other clients
-            NetworkServer.SendToClient(Id, PktType.MassIdentity, new MassIdentityPkt(IdList));
+            NetworkServer.SendToClient(Id, PktType.MassIdentity, new IntListPkt(IdList));
 
             // Add the player to the list
             SConnectedPlayer Player = new SConnectedPlayer(msg.conn.connectionId);
@@ -228,13 +230,16 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.SendToClient(msg.conn.connectionId, 
                 PktType.Identity, new IdentityPkt(msg.conn.connectionId, true));
 
-            // Spawn the player and collet it's IDs
+            // Spawn the player and collect it's IDs
             Vector3 Position = new Vector3(0, 0, 0);
             GameObject Obj = Spawner.Spawn(EntityType.NPC, Position);
             int[] EntityIdList = Spawner.SyncDB.GetEntityIDs(Obj);
             Player.Character = Obj.GetComponent<Character>();
 
             NetworkServer.SendToAll(PktType.SpawnEntity, new SpawnEntityPkt(EntityType.NPC, Position, EntityIdList, Id));
+
+            // Send ID's of every existing static SyncBase object in the world.
+            NetworkServer.SendToClient(Id, PktType.StaticObjectIdsPkt, new IntListPkt(Spawner.SyncDB.GetStaticSyncBaseIDList()));
 
             // Send every entity to the player who just connected.
             foreach (var Entry in Players) {

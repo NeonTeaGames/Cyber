@@ -18,6 +18,7 @@ namespace Cyber.Networking {
 
         /// <summary>
         /// Packet containing the identification details about everyone on the server before the client connected.
+        /// This packet contains an <see cref="IntListPkt"/>.
         /// </summary>
         public const short MassIdentity = 202;
 
@@ -42,6 +43,12 @@ namespace Cyber.Networking {
         /// Packet telling that someone has made an interactive remark.
         /// </summary>
         public const short InteractPkt = 206;
+
+        /// <summary>
+        /// Packet containing an id list of static objects existing in the ready game.
+        /// This packet contains an <see cref="IntListPkt"/>.
+        /// </summary>
+        public const short StaticObjectIdsPkt = 207;
 
     }
 }
