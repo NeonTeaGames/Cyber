@@ -200,8 +200,11 @@ namespace Cyber.Networking.Clientside {
             case (PktType.InteractPkt):
                 InteractionPkt Interaction = new InteractionPkt();
                 Interaction.Deserialize(msg.reader);
+                if (Interaction.OwnerSyncBaseID == Player.Character.ID) {
+                    break;
+                }
 
-                SyncBase Target = Spawner.SyncDB.Get(Interaction.SyncBaseID);
+                SyncBase Target = Spawner.SyncDB.Get(Interaction.InteractSyncBaseID);
                 if (Target != null && Target is Interactable) {
                     ((Interactable) Target).Interact();
                 } else {

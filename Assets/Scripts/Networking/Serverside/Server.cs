@@ -177,7 +177,9 @@ namespace Cyber.Networking.Serverside {
                 Interaction.Deserialize(msg.reader);
 
                 Character Sender = Players[msg.conn.connectionId].Character;
-                SyncBase Target = Spawner.SyncDB.Get(Interaction.SyncBaseID);
+                SyncBase Target = Spawner.SyncDB.Get(Interaction.InteractSyncBaseID);
+
+                Interaction.OwnerSyncBaseID = Sender.ID;
 
                 if (Target != null && Target is Interactable) {
                     Interactable Interacted = (Interactable) Target;

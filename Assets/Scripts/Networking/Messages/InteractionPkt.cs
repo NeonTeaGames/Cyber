@@ -11,14 +11,19 @@ namespace Cyber.Networking.Messages {
         /// <summary>
         /// ID of the interactible.
         /// </summary>
-        public int SyncBaseID;
+        public int InteractSyncBaseID;
+
+        /// <summary>
+        /// Id of the interactor.
+        /// </summary>
+        public int OwnerSyncBaseID;
 
         /// <summary>
         /// Creates an InteraktionPkt, which contains the message "someone interacted".
         /// </summary>
         /// <param name="SyncBaseID"></param>
         public InteractionPkt(int syncBaseID) {
-            SyncBaseID = syncBaseID;
+            InteractSyncBaseID = syncBaseID;
         }
 
         /// <summary>
@@ -31,7 +36,8 @@ namespace Cyber.Networking.Messages {
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
-            SyncBaseID = reader.ReadInt32();
+            InteractSyncBaseID = reader.ReadInt32();
+            OwnerSyncBaseID = reader.ReadInt32();
         }
 
         /// <summary>
@@ -39,7 +45,8 @@ namespace Cyber.Networking.Messages {
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
-            writer.Write(SyncBaseID);
+            writer.Write(InteractSyncBaseID);
+            writer.Write(OwnerSyncBaseID);
         }
 
     }
