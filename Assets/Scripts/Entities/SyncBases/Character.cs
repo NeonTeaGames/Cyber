@@ -33,6 +33,8 @@ namespace Cyber.Entities.SyncBases {
         private Vector3 MovementDirection = new Vector3();
         private Vector3 ServerPosition = new Vector3();
         private bool ServerPositionShouldLerpSync = false;
+        private Vector3 ServerRotation = new Vector3();
+        private bool ServerRotationShouldLerpSync = false;
 
         /// <summary>
         /// Moves the character in the given direction.
@@ -124,7 +126,7 @@ namespace Cyber.Entities.SyncBases {
         public override void Deserialize(NetworkReader reader) {
             ServerPosition = reader.ReadVector3();
             Vector3 ServerMovementDirection = reader.ReadVector3();
-            Vector3 ServerRotation = reader.ReadVector3();
+            ServerRotation = reader.ReadVector3();
 
             float Drift = (ServerPosition - GetPosition()).magnitude;
 
@@ -135,12 +137,10 @@ namespace Cyber.Entities.SyncBases {
                 MovementDirection = ServerMovementDirection;
             }
 
-            // Update position more often (with lerping) if this is not the local player
-            if (Drift < 0.1) {
-                ServerPositionShouldLerpSync = false;
-            } else if (!LocalCharacter.Equals(this)) {
-                ServerPositionShouldLerpSync = true;
-            }
+            // Update position and rotation more often (with lerping) 
+            // if this is not the local player
+            ServerRotationShouldLerpSync = !LocalCharacter.Equals(this);
+            ServerPositionShouldLerpSync = !LocalCharacter.Equals(this) && Drift > 0.1;
         }
 
         /// <summary>
@@ -156,6 +156,13 @@ namespace Cyber.Entities.SyncBases {
         private void Update() {
             if (ServerPositionShouldLerpSync) {
                 SetPosition(Vector3.Lerp(GetPosition(), ServerPosition, 10f * Time.deltaTime));
+            }
+            if (ServerRotationShouldLerpSync) {
+                Quaternion ServerRot = Quaternion.Euler(ServerRotation);
+                Quaternion LocalRot = Quaternion.Euler(GetRotation());
+                Vector3 NewRot = Quaternion.Lerp(LocalRot, ServerRot, 
+                    10f * Time.deltaTime).eulerAngles;
+                SetRotation(NewRot);
             }
         }
 
