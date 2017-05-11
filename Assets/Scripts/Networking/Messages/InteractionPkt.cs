@@ -21,7 +21,7 @@ namespace Cyber.Networking.Messages {
         /// <summary>
         /// Creates an InteraktionPkt, which contains the message "someone interacted".
         /// </summary>
-        /// <param name="SyncBaseID"></param>
+        /// <param name="syncBaseID">The Sync Base ID of the interacted thing.</param>
         public InteractionPkt(int syncBaseID) {
             InteractSyncBaseID = syncBaseID;
         }

@@ -158,6 +158,10 @@ namespace Cyber.Entities {
             }
         }
 
+        /// <summary>
+        /// Returns the list of id's on the static objects that exist on the world by default.
+        /// </summary>
+        /// <returns></returns>
         public int[] GetStaticSyncBaseIDList() {
             return StaticSyncBaseIDList.ToArray();
         }
