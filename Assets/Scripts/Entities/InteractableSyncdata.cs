@@ -1,5 +1,9 @@
 ﻿
 namespace Cyber.Entities {
+
+    /// <summary>
+    /// Contains information about the interactable SyncBase's syncing style.
+    /// </summary>
     public struct InteractableSyncdata {
 
         /// <summary>
@@ -15,8 +19,8 @@ namespace Cyber.Entities {
         /// <summary>
         /// Creates an InteractibleSyncdata struct.
         /// </summary>
-        /// <param name="RequiresSyncing">Weather this interactible requires syncing (like a door) or not (like a bell).</param>
-        /// <param name="PublicInteractions">Weather interacting with this interactible should send a TCP-packet (like a bell or a door) or not (like opening a screen where you can type).</param>
+        /// <param name="requiresSyncing">Weather this interactible requires syncing (like a door) or not (like a bell).</param>
+        /// <param name="publicInteractions">Weather interacting with this interactible should send a TCP-packet (like a bell or a door) or not (like opening a screen where you can type).</param>
         public InteractableSyncdata(bool requiresSyncing, bool publicInteractions) {
             RequiresSyncing = requiresSyncing;
             PublicInteractions = publicInteractions;
