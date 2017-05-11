@@ -6,11 +6,19 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Networking.Serverside {
+
+    /// <summary>
+    /// The Server sync handler handles sync packets coming from the client, see <see cref="PktType.ClientSync"/>.
+    /// </summary>
     public class ServerSyncHandler {
 
         private Dictionary<int, int> LastSyncIDReceived = new Dictionary<int, int>();
         private Dictionary<int, SConnectedPlayer> Players;
 
+        /// <summary>
+        /// Creates a nwe Server Sync handler for handling sync packets that are coming from the client.
+        /// </summary>
+        /// <param name="players"></param>
         public ServerSyncHandler(Dictionary<int, SConnectedPlayer> players) {
             Players = players;
         }
