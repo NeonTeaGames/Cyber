@@ -16,7 +16,7 @@ namespace Cyber.Entities.SyncBases {
         /// <summary>
         /// The interactable which this button will trigger.
         /// </summary>
-        public Interactable WillTrigger;
+        public Interactable[] WillTrigger;
 
         /// <summary>
         /// The button mesh that will blink.
@@ -48,10 +48,12 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         public override void Interact(SyncBase Trigger) {
             BlinkTime = Time.time;
-            if (WillTrigger != null) {
-                WillTrigger.Interact(this);
+            if (WillTrigger.Length > 0) {
+                foreach (Interactable Triggerable in WillTrigger) {
+                    Triggerable.Interact(this);
+                }
             } else {
-                Term.Println("FIXME: The button '" + gameObject.name + "' was pressed, but it doesn't have a WillTrigger.");
+                Term.Println("FIXME: The button '" + gameObject.name + "' was pressed, but it doesn't have anything to trigger.");
             }
         }
 
