@@ -44,7 +44,7 @@ namespace Cyber.Util {
         /// <param name="fontSize">Font size.</param>
         /// <param name="width">Width.</param>
         /// <param name="height">Height.</param>
-        public TextTextureProperties(string text, Color background = new Color(), int fontSize = 32, int width = 128, int height = 128) {
+        public TextTextureProperties(string text, Color background = new Color(), int fontSize = 32, int width = 256, int height = 256) {
             Text = text;
             Background = background;
             FontSize = fontSize;

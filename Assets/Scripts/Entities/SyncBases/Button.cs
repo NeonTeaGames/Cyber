@@ -46,10 +46,10 @@ namespace Cyber.Entities.SyncBases {
         /// for <see cref="BlinkLength"/> seconds, and calls Interact
         /// on the <see cref="WillTrigger"/>.
         /// </summary>
-        public override void Interact() {
+        public override void Interact(SyncBase Trigger) {
             BlinkTime = Time.time;
             if (WillTrigger != null) {
-                WillTrigger.Interact();
+                WillTrigger.Interact(this);
             } else {
                 Term.Println("FIXME: The button '" + gameObject.name + "' was pressed, but it doesn't have a WillTrigger.");
             }

@@ -3,6 +3,7 @@ using System;
 using UnityEngine;
 using Cyber.Networking.Serverside;
 using Cyber.Entities.SyncBases;
+using Cyber.Console;
 
 namespace Cyber.Entities {
     
@@ -14,7 +15,9 @@ namespace Cyber.Entities {
         
         private static readonly Type[] SyncableClasses = new Type[] {
             typeof(Character),
-            typeof(Button)
+            typeof(Button),
+            typeof(Door),
+            typeof(Computer)
         };
 
         private int IDCounter = 0;
@@ -135,12 +138,12 @@ namespace Cyber.Entities {
         /// </summary>
         /// <param name="idList">The list of id's to be set. If null, will create new ids.</param>
         public void SetStaticObjectsIDs(int[] idList = null) {
-            SyncBase[] SyncBases = FindObjectsOfType<SyncBase>();
+            SyncBase[] SyncBases = GameObject.Find("/StaticWorld").GetComponentsInChildren<SyncBase>();
             Array.Sort(SyncBases, (a, b) => {
                 Vector3 APos = a.gameObject.transform.position;
-                float AComparison = APos.x + APos.y + APos.z + Array.IndexOf(SyncableClasses, a);
+                float AComparison = APos.x * 677 + APos.y * 881 + APos.z * 313 + Array.IndexOf(SyncableClasses, a) * 463;
                 Vector3 BPos = b.gameObject.transform.position;
-                float BComparison = BPos.x + BPos.y + BPos.z + Array.IndexOf(SyncableClasses, b);
+                float BComparison = BPos.x * 677 + BPos.y * 881 + BPos.z * 313 + Array.IndexOf(SyncableClasses, b) * 463;
 
                 return AComparison.CompareTo(BComparison);
             });

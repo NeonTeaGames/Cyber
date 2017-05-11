@@ -186,7 +186,7 @@ namespace Cyber.Networking.Serverside {
                     Vector3 Delta = Interacted.gameObject.transform.position - Sender.gameObject.transform.position;
                     float ServerInteractionDistance = Sender.InteractionDistance + Sender.MovementSpeed * 0.5f;
                     if (Delta.magnitude <= ServerInteractionDistance) {
-                        Interacted.Interact();
+                        Interacted.Interact(Sender);
                         NetworkServer.SendToAll(PktType.InteractPkt, Interaction);
                         if (Interacted.GetInteractableSyncdata().RequiresSyncing) {
                             Syncer.DirtSyncBase(Interacted.ID);

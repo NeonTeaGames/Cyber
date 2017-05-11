@@ -206,7 +206,7 @@ namespace Cyber.Networking.Clientside {
 
                 SyncBase Target = Spawner.SyncDB.Get(Interaction.InteractSyncBaseID);
                 if (Target != null && Target is Interactable) {
-                    ((Interactable) Target).Interact();
+                    ((Interactable) Target).Interact(Spawner.SyncDB.Get(Interaction.OwnerSyncBaseID));
                 } else {
                     Term.Println("Server has sent an erroneus SyncBase ID!");
                 }
@@ -215,6 +215,7 @@ namespace Cyber.Networking.Clientside {
                 SyncHandler.HandleSyncPkt(msg);
                 break;
             case (PktType.StaticObjectIdsPkt):
+                Term.Println("The static object id packet!");
                 IntListPkt StaticIds = new IntListPkt();
                 StaticIds.Deserialize(msg.reader);
                 Spawner.SyncDB.SetStaticObjectsIDs(StaticIds.IdList);
