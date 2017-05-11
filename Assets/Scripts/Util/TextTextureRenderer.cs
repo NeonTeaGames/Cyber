@@ -31,7 +31,6 @@ namespace Cyber.Util {
         }
 
         private Texture2D RenderText(TextTextureProperties text) {
-            Term.Println("Rendering: " + text.Text);
             Text.text = text.Text.Replace("\\n", "\n");
             Text.fontSize = text.FontSize;
             Text.characterSize = 0.5f * text.FontSize / text.Width;
