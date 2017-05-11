@@ -27,6 +27,12 @@ namespace Cyber.Entities.SyncBases {
         public TextTextureApplier Screen;
 
         /// <summary>
+        /// If the computer has a hologram as a screen, and is set here, the
+        /// hologram will be animated properly when the computer is shut down.
+        /// </summary>
+        public Transform Hologram;
+
+        /// <summary>
         /// The "left" key for this computer. Might cause actions depending 
         /// on the program.
         /// </summary>
@@ -44,6 +50,8 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         public RunProgram Program;
 
+        private bool ComputerOn = true;
+
         /// <summary>
         /// Runs the <see cref="Program"/> with some input, determined by the
         /// Trigger.
@@ -51,12 +59,14 @@ namespace Cyber.Entities.SyncBases {
         /// <param name="Trigger">Determines the keycode given to the 
         /// <see cref="Program"/>.</param>
         public override void Interact(SyncBase Trigger) {
+            ComputerOn = true;
             if (Trigger == KeyLeft) {
                 Screen.SetTextProperties(new TextTextureProperties("\n   Pressed left!"));
             } else if (Trigger == KeyRight) {
                 Screen.SetTextProperties(new TextTextureProperties("\n   Pressed right!"));
             } else {
                 Screen.SetTextProperties(new TextTextureProperties(""));
+                ComputerOn = false;
             }
         }
 
@@ -92,6 +102,14 @@ namespace Cyber.Entities.SyncBases {
         /// <returns>The Interaction information.</returns>
         public override InteractableSyncdata GetInteractableSyncdata() {
             return new InteractableSyncdata(true, true);
+        }
+
+        private void Update() {
+            if (Hologram != null) {
+                float Scale = ComputerOn ? 1 : 0;
+                Hologram.localScale = Vector3.Lerp(Hologram.localScale, 
+                    new Vector3(Scale, Scale, Scale), 8f * Time.deltaTime);
+            }
         }
     }
 }
