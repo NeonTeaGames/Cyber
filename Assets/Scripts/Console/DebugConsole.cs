@@ -51,7 +51,7 @@ namespace Cyber.Console {
         private List<string> Commands = new List<string>();
         private int LastCommandIndex = 0;
         private string LastUnexecutedCommand = "";
-        private int ScrollOffset = 1;
+        private int ScrollOffset = 0;
 
         /// <summary>
         /// Creates a new <see cref="DebugConsole"/>, and sets the <see cref="Term"/>'s singleton.
@@ -144,10 +144,10 @@ namespace Cyber.Console {
         private void UpdateTextField() {
             string NewLog = "";
             int LineAmt = Mathf.Min(LinesRendered, Lines.Count);
-            for (int i = 0; i < LineAmt; i++) {
+            for (int i = LineAmt; i > 0; i--) {
                 int Index = Lines.Count - (i + ScrollOffset);
                 if (Index >= 0 && Index < Lines.Count) {
-                    NewLog += Lines[i] + "\n";
+                    NewLog += Lines[Index] + "\n";
                 }
             }
             TextField.text = NewLog;
@@ -188,6 +188,8 @@ namespace Cyber.Console {
                 Application.Quit();
             });
 
+            Println("Use the \"help\" command for a list of commands.");
+
             // Set an accurate row length (if the panel is set)
             if (Panel != null && Panel.GetComponent<RectTransform>() != null) {
                 CharacterInfo CharInfo;
@@ -227,11 +229,11 @@ namespace Cyber.Console {
                     InputField.text = LastUnexecutedCommand;
                 }
             }
-            if (Input.GetAxis("Mouse ScrollWheel") > 0 && ScrollOffset + 1 <= Lines.Count) {
+            if (Input.GetAxis("Mouse ScrollWheel") > 0 && ScrollOffset + 1 < Lines.Count) {
                 ScrollOffset++;
                 UpdateTextField();
             }
-            if (Input.GetAxis("Mouse ScrollWheel") < 0 && ScrollOffset - 1 > 1) {
+            if (Input.GetAxis("Mouse ScrollWheel") < 0 && ScrollOffset - 1 >= 0) {
                 ScrollOffset--;
                 UpdateTextField();
             }

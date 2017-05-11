@@ -1987,8 +1987,7 @@ MonoBehaviour:
   TextField: {fileID: 1815899005}
   Visible: 1
   RowLength: 80
-  MaxLinesUntilCleanup: 30
-  LineCountSavedFromCleanup: 15
+  LinesRendered: 15
 --- !u!4 &1463006272
 Transform:
   m_ObjectHideFlags: 0
@@ -2320,9 +2319,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Use the "help" command for a list of commands.
-
-'
+  m_Text: 
 --- !u!222 &1815899006
 CanvasRenderer:
   m_ObjectHideFlags: 0
