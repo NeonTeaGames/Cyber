@@ -31,17 +31,22 @@ namespace Cyber.Util {
         }
 
         private Texture2D RenderText(TextTextureProperties text) {
-            float Scale = 1.0f / text.Width;
+            float Scale = 2.0f / text.Width;
             Text.text = text.Text.Replace("\\n", "\n");
             Text.fontSize = text.FontSize;
-            Text.characterSize = text.FontSize * Scale * 0.5f;
+            Text.characterSize = text.FontSize * Scale * 0.25f;
 
             RenderTexture TextTexture = RenderTexture.GetTemporary(text.Width, text.Height);
             RenderTexture OldRT = Camera.targetTexture;
+
+            float OffsetX = -text.Width / 2f;
+            float OffsetY = -text.Height / 2f;
+            Camera.orthographicSize = 1.0f * text.Height / text.Width;
             Camera.targetTexture = TextTexture;
             Camera.backgroundColor = text.Background;
-            Camera.transform.localPosition = new Vector3(-text.OffsetX * Scale, 
-                text.OffsetY * Scale);
+            Camera.transform.localPosition = new Vector3(
+                -(text.OffsetX + OffsetX) * Scale, 
+                (text.OffsetY + OffsetY) * Scale);
             Camera.Render();
             Camera.targetTexture = OldRT;
 
