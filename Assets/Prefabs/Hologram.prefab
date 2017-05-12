@@ -166,5 +166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b128d3bedf18c46f6b23cf529a954f59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  HologramMesh: {fileID: 23583528089297200}
   Visible: 0
   Text: {fileID: 114171175549544602}
+  HologramScanlineScrollingSpeed: 1
