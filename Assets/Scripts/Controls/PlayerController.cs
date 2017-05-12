@@ -5,6 +5,7 @@ using Cyber.Networking.Clientside;
 using Cyber.Networking;
 using Cyber.Networking.Messages;
 using Cyber.Entities;
+using Cyber.Util;
 
 namespace Cyber.Controls {
     
@@ -45,13 +46,15 @@ namespace Cyber.Controls {
                     Character.Stop();
                 }
 
-                // Rotation
-                Rotation.y += Input.GetAxis("Mouse X") * CursorHandler.MouseSensitivityX;
-                Rotation.x = Mathf.Clamp(Rotation.x - Input.GetAxis("Mouse Y") * CursorHandler.MouseSensitivityY, -89, 89);
-                Character.SetRotation(Rotation);
+                // Rotation (only when cursor is locked
+                if (CursorHandler.Locked()) {
+                    Rotation.y += Input.GetAxis("Mouse X") * CursorHandler.MouseSensitivityX;
+                    Rotation.x = Mathf.Clamp(Rotation.x - Input.GetAxis("Mouse Y") * CursorHandler.MouseSensitivityY, -89, 89);
+                    Character.SetRotation(Rotation);
+                }
             
                 // Interactions
-                GameObject LookedAtObject = GetLookedAtGameObject();
+                GameObject LookedAtObject = CameraUtil.GetLookedAtGameObject(Camera, Character.InteractionDistance);
                 if (LookedAtObject != null) {
                     Interactable LookingAt = LookedAtObject.GetComponent<Interactable>();
                     if (LookingAt != null && (LookingAt.transform.position - Character.GetPosition()).magnitude < Character.InteractionDistance) {
@@ -83,16 +86,6 @@ namespace Cyber.Controls {
             interactable.Interact(Character, type);
             if (interactable.GetInteractableSyncdata().PublicInteractions) {
                 Client.Send(PktType.Interact, new InteractionPkt(interactable.ID, type));
-            }
-        }
-
-        private GameObject GetLookedAtGameObject() {
-            RaycastHit Hit;
-            Physics.Raycast(Camera.transform.position, Camera.transform.forward, out Hit, Character.InteractionDistance);
-            if (Hit.collider != null) {
-                return Hit.collider.gameObject;
-            } else {
-                return null;
             }
         }
     }

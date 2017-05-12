@@ -23,15 +23,30 @@ namespace Cyber.Controls {
         public float MouseSensitivityY = 2.5f;
 
         private bool CursorLocked = true;
+        private bool RequestedLockState = true;
+        private bool Requested = false;
+
+        public void RequestLockState(bool locked) {
+            RequestedLockState = locked;
+            Requested = true;
+        }
+
+        public bool Locked() {
+            return Term.IsVisible() || RequestedLockState;
+        }
 
         private void Start() {
             UpdateCursor();
         }
 
         private void Update() {
-            if (CursorLocked == Term.IsVisible()) {
-                CursorLocked = !CursorLocked;
+            if (Term.IsVisible()) {
+                CursorLocked = false;
                 UpdateCursor();
+            } else if (Requested) {
+                CursorLocked = RequestedLockState;
+                UpdateCursor();
+                Requested = false;
             }
         }
 

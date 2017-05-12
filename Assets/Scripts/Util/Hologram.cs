@@ -35,7 +35,7 @@ namespace Cyber.Util {
         private void UpdateScale() {
             float Scale = GetTargetScale();
             CurrentScale = Mathf.Lerp(CurrentScale, Scale, 8f * Time.deltaTime);
-            if (Mathf.Abs(Scale - CurrentScale) < 0.05) {
+            if (Mathf.Abs(Scale - CurrentScale) < 0.001) {
                 CurrentScale = Scale;
             }
             transform.localScale = 
