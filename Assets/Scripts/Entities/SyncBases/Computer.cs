@@ -54,8 +54,9 @@ namespace Cyber.Entities.SyncBases {
         /// Runs the <see cref="Program"/> with some input, determined by the
         /// Trigger.
         /// </summary>
-        /// <param name="Trigger">Determines the keycode given to the 
+        /// <param name="trigger">Determines the keycode given to the 
         /// <see cref="Program"/>.</param>
+        /// <param name="type">The interaction type.</param>
         public override void Interact(SyncBase trigger, InteractionType type) {
             if (type == InteractionType.Activate) {
                 Hologram.Visible = true;

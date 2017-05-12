@@ -50,6 +50,8 @@ namespace Cyber.Util {
         /// <see cref="TextTextureRenderer"/> for usage.
         /// </summary>
         /// <param name="text">Text.</param>
+        /// <param name="offsetX">X offset.</param>
+        /// <param name="offsetY">Y offset.</param>
         /// <param name="background">Background.</param>
         /// <param name="fontSize">Font size.</param>
         /// <param name="width">Width.</param>
