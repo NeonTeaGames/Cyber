@@ -41,6 +41,12 @@ namespace Cyber.Util {
 
             float OffsetX = -text.Width / 2f;
             float OffsetY = -text.Height / 2f;
+            if (text.Centered) {
+                OffsetX = 0;
+                Text.anchor = TextAnchor.UpperCenter;
+            } else {
+                Text.anchor = TextAnchor.UpperLeft;
+            }
             Camera.orthographicSize = 1.0f * text.Height / text.Width;
             Camera.targetTexture = TextTexture;
             Camera.backgroundColor = text.Background;

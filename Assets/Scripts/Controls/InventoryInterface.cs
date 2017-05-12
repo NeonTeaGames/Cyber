@@ -21,6 +21,31 @@ namespace Cyber.Controls {
         public Hologram Hologram;
 
         /// <summary>
+        /// The icon for the inventory.
+        /// </summary>
+        public MeshRenderer IconInventory;
+
+        /// <summary>
+        /// The icon for the status.
+        /// </summary>
+        public MeshRenderer IconStatus;
+
+        /// <summary>
+        /// The icon for the social.
+        /// </summary>
+        public MeshRenderer IconSocial;
+
+        /// <summary>
+        /// The icon for the map.
+        /// </summary>
+        public MeshRenderer IconMap;
+
+        /// <summary>
+        /// The text that describes the selected icon.
+        /// </summary>
+        public TextTextureApplier IconExplainerText;
+
+        /// <summary>
         /// The text that contains the item list.
         /// </summary>
         public TextTextureApplier ItemListText;
@@ -28,7 +53,7 @@ namespace Cyber.Controls {
         /// <summary>
         /// How many items can be shown on the screen at the same time.
         /// </summary>
-        public int ItemsPerScreen;
+        public float ItemsPerScreen;
 
         private CursorHandler CursorHandler;
         private bool InventoryOpen = false;
@@ -36,9 +61,19 @@ namespace Cyber.Controls {
         private int ScrollingIndex = 0;
         private int SelectedIndex = -1;
 
+        private Color IconInventoryColor;
+        private Color IconStatusColor;
+        private Color IconSocialColor;
+        private Color IconMapColor;
+
         private void Start() {
             CursorHandler = GameObject.Find("/Systems/CursorHandler").GetComponent<CursorHandler>();
             RebuildItemList(-1);
+
+            IconInventoryColor = IconInventory.material.GetColor("_EmissionColor");
+            IconStatusColor = IconStatus.material.GetColor("_EmissionColor");
+            IconSocialColor = IconSocial.material.GetColor("_EmissionColor");
+            IconMapColor = IconMap.material.GetColor("_EmissionColor");
         }
 
         private void Update() {
@@ -51,6 +86,7 @@ namespace Cyber.Controls {
             RaycastHit LookedAt = CameraUtil.GetLookedAtHit(Camera, 1f, true);
             if (LookedAt.collider != null) {
                 TextTextureApplier Text = LookedAt.collider.GetComponent<TextTextureApplier>();
+                MeshRenderer Mesh = LookedAt.collider.GetComponent<MeshRenderer>();
                 if (Text != null && Text == ItemListText) {
                     // Interacting with the item list
                     // Calculate the index
@@ -70,6 +106,35 @@ namespace Cyber.Controls {
 
                     // Rebuild the list
                     RebuildItemList(CurrentIndex);
+                } else if (Mesh != null) {
+                    float InvBrightness = 1f;
+                    float StsBrightness = 1f;
+                    float SclBrightness = 1f;
+                    float MapBrightness = 1f;
+                    string SelectedIcon = "";
+
+                    if (Mesh == IconInventory) {
+                        InvBrightness = 1.2f;
+                        SelectedIcon = "Inventory";
+                    } else if (Mesh == IconStatus) {
+                        StsBrightness = 1.2f;
+                        SelectedIcon = "Status";
+                    } else if (Mesh == IconSocial) {
+                        SclBrightness = 1.2f;
+                        SelectedIcon = "Social";
+                    } else if (Mesh == IconMap) {
+                        MapBrightness = 1.2f;
+                        SelectedIcon = "Map";
+                    }
+
+                    TextTextureProperties Props = IconExplainerText.TextProperties;
+                    Props.Text = SelectedIcon;
+                    IconExplainerText.SetTextProperties(Props);
+
+                    IconInventory.material.SetColor("_EmissionColor", IconInventoryColor * InvBrightness);
+                    IconStatus.material.SetColor("_EmissionColor", IconStatusColor * StsBrightness);
+                    IconSocial.material.SetColor("_EmissionColor", IconSocialColor * SclBrightness);
+                    IconMap.material.SetColor("_EmissionColor", IconMapColor * MapBrightness);
                 }
             } else {
                 // Outside of the inventory, clicking will unselect
