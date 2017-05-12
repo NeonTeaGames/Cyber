@@ -24,13 +24,21 @@ namespace Cyber.Controls {
 
         private bool CursorLocked = true;
         private bool RequestedLockState = true;
-        private bool Requested = false;
 
+        /// <summary>
+        /// Request a new lock state. The cursor will be locked in case there
+        /// isn't another reason to have it in a different state (like the
+        /// <see cref="DebugConsole"/> being up). 
+        /// </summary>
+        /// <param name="locked">If set to <c>true</c>, cursor might bse 
+        /// locked.</param>
         public void RequestLockState(bool locked) {
             RequestedLockState = locked;
-            Requested = true;
         }
 
+        /// <summary>
+        /// Is the cursor currently locked?
+        /// </summary>
         public bool Locked() {
             return Term.IsVisible() || RequestedLockState;
         }
@@ -43,10 +51,9 @@ namespace Cyber.Controls {
             if (Term.IsVisible()) {
                 CursorLocked = false;
                 UpdateCursor();
-            } else if (Requested) {
+            } else {
                 CursorLocked = RequestedLockState;
                 UpdateCursor();
-                Requested = false;
             }
         }
 
