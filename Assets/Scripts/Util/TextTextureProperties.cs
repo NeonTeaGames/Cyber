@@ -16,7 +16,17 @@ namespace Cyber.Util {
         public string Text;
 
         /// <summary>
-        /// The background color.
+        /// The offset on the x-axis in pixels.
+        /// </summary>
+        public int OffsetX;
+
+        /// <summary>
+        /// The offset on the y-axis in pixels.
+        /// </summary>
+        public int OffsetY;
+
+        /// <summary>
+        /// The offset on the y-axis in pixels.
         /// </summary>
         public Color Background;
 
@@ -44,8 +54,12 @@ namespace Cyber.Util {
         /// <param name="fontSize">Font size.</param>
         /// <param name="width">Width.</param>
         /// <param name="height">Height.</param>
-        public TextTextureProperties(string text, Color background = new Color(), int fontSize = 32, int width = 256, int height = 256) {
+        public TextTextureProperties(string text, int offsetX = 0, 
+                int offsetY = 0, Color background = new Color(), 
+                int fontSize = 32, int width = 256, int height = 256) {
             Text = text;
+            OffsetX = offsetX;
+            OffsetY = offsetY;
             Background = background;
             FontSize = fontSize;
             Width = width;

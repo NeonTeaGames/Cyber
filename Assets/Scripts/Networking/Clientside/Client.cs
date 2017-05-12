@@ -98,7 +98,7 @@ namespace Cyber.Networking.Clientside {
         /// </summary>
         /// <returns>Weather the client is running or not</returns>
         public static bool IsRunning() {
-            return Singleton.Running;
+            return !(Singleton == null || !Singleton.Running);
         }
 
         /// <summary>

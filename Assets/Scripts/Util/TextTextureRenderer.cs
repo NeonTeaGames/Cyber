@@ -31,14 +31,17 @@ namespace Cyber.Util {
         }
 
         private Texture2D RenderText(TextTextureProperties text) {
+            float Scale = 1.0f / text.Width;
             Text.text = text.Text.Replace("\\n", "\n");
             Text.fontSize = text.FontSize;
-            Text.characterSize = 0.5f * text.FontSize / text.Width;
+            Text.characterSize = text.FontSize * Scale * 0.5f;
 
             RenderTexture TextTexture = RenderTexture.GetTemporary(text.Width, text.Height);
             RenderTexture OldRT = Camera.targetTexture;
             Camera.targetTexture = TextTexture;
             Camera.backgroundColor = text.Background;
+            Camera.transform.localPosition = new Vector3(-text.OffsetX * Scale, 
+                text.OffsetY * Scale);
             Camera.Render();
             Camera.targetTexture = OldRT;
 
@@ -71,7 +74,8 @@ namespace Cyber.Util {
         }
 
         private static string CreateHash(TextTextureProperties text) {
-            return text.Text + "," + text.Width + "," + text.Height + "," +
+            return text.Text + "," + text.OffsetX + "," + text.OffsetY + "," + 
+                text.Width + "," + text.Height + "," +
                 text.FontSize + "," + text.Background.r + "," +
                 text.Background.g + "," + text.Background.b;
         }
