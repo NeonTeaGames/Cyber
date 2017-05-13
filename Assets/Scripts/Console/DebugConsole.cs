@@ -199,12 +199,8 @@ namespace Cyber.Console {
 
             // Set an accurate row length (if the panel is set)
             if (Panel != null && Panel.GetComponent<RectTransform>() != null) {
-                CharacterInfo CharInfo;
-                TextField.font.RequestCharactersInTexture("W", TextField.fontSize, 
-                    TextField.fontStyle);
-                TextField.font.GetCharacterInfo('W', out CharInfo, 
+                float CharacterWidth = FontUtil.GetCharacterWidth(TextField.font, 
                     TextField.fontSize, TextField.fontStyle);
-                float CharacterWidth = CharInfo.glyphWidth - 1;
                 float PanelWidth = Panel.GetComponent<RectTransform>().rect.width;
                 RowLength = (int) (PanelWidth / CharacterWidth);
             }

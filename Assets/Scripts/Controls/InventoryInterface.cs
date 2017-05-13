@@ -29,6 +29,16 @@ namespace Cyber.Controls {
         public Hologram Hologram;
 
         /// <summary>
+        /// The text texture that shows the selected item's name.
+        /// </summary>
+        public TextTextureApplier ItemNameText;
+
+        /// <summary>
+        /// The text texture that shows the selected item's description.
+        /// </summary>
+        public TextTextureApplier ItemDescriptionText;
+
+        /// <summary>
         /// The item preview mesh.
         /// </summary>
         public MeshFilter ItemPreviewMesh;
@@ -197,7 +207,21 @@ namespace Cyber.Controls {
                         Spinning = true;
                     }
                     if (ItemGridSelectedIndex == i) {
-                        SetPreviewMesh(ItemGridCellMeshes[i].mesh);
+                        // Set preview information
+                        SetPreviewMesh(Mesh);
+                        TextTextureProperties NameProps = ItemNameText.TextProperties;
+                        TextTextureProperties DescriptionProps = ItemDescriptionText.TextProperties;
+                        if (Item != null) {
+                            NameProps.Text = Item.Name;
+                            DescriptionProps.Text = Item.Description;
+                        } else {
+                            NameProps.Text = "NULL NAME";
+                            DescriptionProps.Text = "NULL DESC";
+                        }
+                        ItemNameText.SetTextProperties(NameProps);
+                        ItemDescriptionText.SetTextProperties(DescriptionProps);
+
+                        // Move selector
                         if ((ItemGridSelector.position - ItemGridCells[i].position).magnitude < 0.01f) {
                             ItemGridSelector.position = ItemGridCells[i].position;
                         } else {
