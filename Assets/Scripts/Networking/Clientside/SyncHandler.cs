@@ -1,6 +1,9 @@
 ﻿
+using Cyber.Console;
 using Cyber.Entities;
+using Cyber.Entities.SyncBases;
 using Cyber.Networking.Messages;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 
 namespace Cyber.Networking.Clientside {
@@ -32,6 +35,22 @@ namespace Cyber.Networking.Clientside {
             if (LatestSyncID < SyncPacket.SyncPacketID) {
                 LatestSyncID = SyncPacket.SyncPacketID;
                 SyncPacket.ApplySync(message.reader);
+
+                int[] SyncBases = SyncPacket.ChecksummedSyncBases;
+                int[] Checksums = SyncPacket.Checksums;
+                if (SyncBases.Length > 0) {
+                    Term.Println("Found checksums!");
+                    List<int> FailedSyncBases = new List<int>();
+                    for (int i = 0; i < SyncBases.Length; i++) {
+                        SyncBase SyncBase = SyncDB.Get(SyncBases[i]);
+                        if (SyncBase.GenerateChecksum() != Checksums[i]) {
+                            Term.Println("Diffrentiating checksum!");
+                            FailedSyncBases.Add(SyncBase.ID);
+                        }
+                    }
+
+                    Client.Send(PktType.FailedChecksums, new IntListPkt(FailedSyncBases.ToArray()));
+                }
             }
             // Otherwise disregard the sync.
 

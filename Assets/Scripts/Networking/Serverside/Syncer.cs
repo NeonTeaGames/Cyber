@@ -31,6 +31,9 @@ namespace Cyber.Networking.Serverside {
         /// </summary>
         /// <param name="syncBaseID">The ID of the SyncBase. See <see cref="SyncBase.ID"/></param>
         public void DirtSyncBase(int syncBaseID) {
+            if (DirtySyncBases.Contains(syncBaseID)) {
+                return;
+            }
             DirtySyncBases.Add(syncBaseID);
         }
 
@@ -51,6 +54,8 @@ namespace Cyber.Networking.Serverside {
             if (TimeSinceLastTick >= TickInterval) {
 
                 var Categorized = Database.GetCategorizedDatabase();
+                List<int> checksummedIds = new List<int>();
+                List<int> checksums = new List<int>();
 
                 foreach (Type type in Categorized.Keys) {
                     SyncHandletype Handletype = Database.GetSyncHandletypes()[type];
@@ -59,6 +64,13 @@ namespace Cyber.Networking.Serverside {
                             bool Contains = DirtySyncBases.Contains(SyncBaseID);
                             if (Contains == Handletype.RequireHash || Contains) {
                                 QueueSyncBase(SyncBaseID);
+                                if (Contains) {
+                                    DirtySyncBases.Remove(SyncBaseID);
+                                }
+                            }
+                            if (Handletype.RequireHash) {
+                                checksummedIds.Add(SyncBaseID);
+                                checksums.Add(Database.Get(SyncBaseID).GenerateChecksum());
                             }
                         }
                     }
@@ -66,11 +78,10 @@ namespace Cyber.Networking.Serverside {
 
                 if (QueuedSyncs.Count > 0) {
                     int[] SyncIDs = QueuedSyncs.ToArray();
-                    SyncPkt SyncPacket = new SyncPkt(Database, SyncIDs, SyncPacketID++);
+                    SyncPkt SyncPacket = new SyncPkt(Database, SyncIDs, checksummedIds.ToArray(), checksums.ToArray(), SyncPacketID++);
                     Server.SendToAllByChannel(PktType.Sync, SyncPacket, NetworkChannelID.Unreliable);
-
+                    
                     QueuedSyncs.Clear();
-                    DirtySyncBases.Clear();
                 }
 
 
