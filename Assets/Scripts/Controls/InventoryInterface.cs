@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Cyber.Util;
+using Cyber.Console;
 
 namespace Cyber.Controls {
 
@@ -19,6 +20,16 @@ namespace Cyber.Controls {
         /// The hologram that acts as the root for the inventory.
         /// </summary>
         public Hologram Hologram;
+
+        /// <summary>
+        /// The item preview mesh.
+        /// </summary>
+        public MeshFilter ItemPreviewMesh;
+
+        /// <summary>
+        /// The item preview spinner.
+        /// </summary>
+        public Spinner ItemPreviewSpinner;
 
         /// <summary>
         /// The icon for the inventory.
@@ -46,20 +57,28 @@ namespace Cyber.Controls {
         public TextTextureApplier IconExplainerText;
 
         /// <summary>
-        /// The text that contains the item list.
+        /// The selector mesh. It'll move to the position of the selected item
+        /// in the grid.
         /// </summary>
-        public TextTextureApplier ItemListText;
+        public Transform ItemGridSelector;
 
         /// <summary>
-        /// How many items can be shown on the screen at the same time.
+        /// The parent of all the gameobjects that create the grid.
         /// </summary>
-        public float ItemsPerScreen;
+        public Transform ItemGridParent;
+
+        /// <summary>
+        /// The item grid dimensions.
+        /// </summary>
+        public Vector2 ItemGridDimensions;
 
         private CursorHandler CursorHandler;
+        private MeshDB MeshDB;
         private bool InventoryOpen = false;
-        private int TestingInventorySize = 20;
-        private int ScrollingIndex = 0;
-        private int SelectedIndex = -1;
+
+        private List<Transform> ItemGridCells;
+        private List<MeshFilter> ItemGridCellMeshes;
+        private int ItemGridSelectedIndex;
 
         private Color IconInventoryColor;
         private Color IconStatusColor;
@@ -68,7 +87,16 @@ namespace Cyber.Controls {
 
         private void Start() {
             CursorHandler = GameObject.Find("/Systems/CursorHandler").GetComponent<CursorHandler>();
-            RebuildItemList(-1);
+            MeshDB = GameObject.Find("/Systems/MeshDB").GetComponent<MeshDB>();
+
+            int ItemGridSize = (int) ItemGridDimensions.x * (int) ItemGridDimensions.y;
+            ItemGridCells = new List<Transform>(ItemGridSize);
+            ItemGridCellMeshes = new List<MeshFilter>(ItemGridSize);
+            for (int i = 0; i < ItemGridSize; i++) {
+                Transform Cell = ItemGridParent.GetChild(i).transform;
+                ItemGridCells.Add(Cell);
+                ItemGridCellMeshes.Add(Cell.GetComponentInChildren<MeshFilter>());
+            }
 
             IconInventoryColor = IconInventory.material.GetColor("_EmissionColor");
             IconStatusColor = IconStatus.material.GetColor("_EmissionColor");
@@ -77,35 +105,26 @@ namespace Cyber.Controls {
         }
 
         private void Update() {
+            if (Term.IsVisible()) {
+                return;
+            }
+
             if (Input.GetButtonDown("Inventory")) {
                 InventoryOpen = !InventoryOpen;
                 Hologram.Visible = InventoryOpen;
                 CursorHandler.RequestLockState(!InventoryOpen);
             }
 
+            int CurrentIndex = -1;
             RaycastHit LookedAt = CameraUtil.GetLookedAtHit(Camera, 1f, true);
             if (LookedAt.collider != null) {
-                TextTextureApplier Text = LookedAt.collider.GetComponent<TextTextureApplier>();
                 MeshRenderer Mesh = LookedAt.collider.GetComponent<MeshRenderer>();
-                if (Text != null && Text == ItemListText) {
+                if (ItemGridCells.Contains(LookedAt.collider.transform)) {
                     // Interacting with the item list
-                    // Calculate the index
-                    float ScaledY = (Text.transform.InverseTransformPoint(LookedAt.point).z * 0.1f) + 0.5f;
-                    int CurrentIndex = ScrollingIndex + (int)(ScaledY * ItemsPerScreen);
-
-                    // Update inputs
-                    if (Input.GetAxis("Mouse ScrollWheel") > 0 && ScrollingIndex > 0) {
-                        ScrollingIndex--;
-                    }
-                    if (Input.GetAxis("Mouse ScrollWheel") < 0 && ScrollingIndex < TestingInventorySize - 1) {
-                        ScrollingIndex++;
-                    }
+                    CurrentIndex = int.Parse(LookedAt.collider.name.Split(' ')[1]);
                     if (Input.GetButtonDown("Activate")) {
-                        SelectedIndex = CurrentIndex;
+                        ItemGridSelectedIndex = CurrentIndex;
                     }
-
-                    // Rebuild the list
-                    RebuildItemList(CurrentIndex);
                 } else if (Mesh != null) {
                     float InvBrightness = 1f;
                     float StsBrightness = 1f;
@@ -115,7 +134,7 @@ namespace Cyber.Controls {
 
                     if (Mesh == IconInventory) {
                         InvBrightness = 1.2f;
-                        SelectedIcon = "Inventory";
+                        SelectedIcon = "Storage";
                     } else if (Mesh == IconStatus) {
                         StsBrightness = 1.2f;
                         SelectedIcon = "Status";
@@ -131,37 +150,91 @@ namespace Cyber.Controls {
                     Props.Text = SelectedIcon;
                     IconExplainerText.SetTextProperties(Props);
 
-                    IconInventory.material.SetColor("_EmissionColor", IconInventoryColor * InvBrightness);
-                    IconStatus.material.SetColor("_EmissionColor", IconStatusColor * StsBrightness);
-                    IconSocial.material.SetColor("_EmissionColor", IconSocialColor * SclBrightness);
-                    IconMap.material.SetColor("_EmissionColor", IconMapColor * MapBrightness);
+
+                    IconInventory.material.SetColor("_EmissionColor", new Color(IconInventoryColor.r * InvBrightness, 
+                        IconInventoryColor.g * InvBrightness, IconInventoryColor.b * InvBrightness));
+                    IconStatus.material.SetColor("_EmissionColor", new Color(IconStatusColor.r * StsBrightness, 
+                        IconStatusColor.g * StsBrightness, IconStatusColor.b * StsBrightness));
+                    IconSocial.material.SetColor("_EmissionColor", new Color(IconSocialColor.r * SclBrightness, 
+                        IconSocialColor.g * SclBrightness, IconSocialColor.b * SclBrightness));
+                    IconMap.material.SetColor("_EmissionColor", new Color(IconMapColor.r * MapBrightness, 
+                        IconMapColor.g * MapBrightness, IconMapColor.b * MapBrightness));
                 }
             } else {
                 // Outside of the inventory, clicking will unselect
                 if (Input.GetButtonDown("Activate")) {
-                    SelectedIndex = -1;
-                    RebuildItemList(-1);
+                    ItemGridSelectedIndex = -1;
                 }
+            }
+            RebuildItemGrid(CurrentIndex);
+        }
+
+        private void RebuildItemGrid(int focused) {
+            if (ItemGridSelectedIndex < 0) {
+                SetPreviewMesh(null);
+            }
+            for (int i = 0; i < ItemGridDimensions.x * ItemGridDimensions.y; i++) {
+                ItemGridCellMeshes[i].mesh = MeshDB.Meshes[i % MeshDB.Meshes.Length];
+                float Scale = 0.08f;
+                bool Spinning = false;
+                if (focused == i || ItemGridSelectedIndex == i) {
+                    Scale = 0.1f;
+                    Spinning = true;
+                }
+                if (ItemGridSelectedIndex == i) {
+                    SetPreviewMesh(ItemGridCellMeshes[i].mesh);
+                    if ((ItemGridSelector.position - ItemGridCells[i].position).magnitude < 0.01f) {
+                        ItemGridSelector.position = ItemGridCells[i].position;
+                    } else {
+                        ItemGridSelector.position = 
+                            Vector3.Lerp(ItemGridSelector.position, 
+                                ItemGridCells[i].position, 20f * Time.deltaTime);
+                    }
+                    ItemGridSelector.LookAt(Camera.transform);
+                    Vector3 NewRot = ItemGridSelector.localEulerAngles;
+                    NewRot.z = 0;
+                    ItemGridSelector.localEulerAngles = NewRot;
+                }
+                if (!Spinning) {
+                    ItemGridCellMeshes[i].transform.LookAt(Camera.transform);
+                    Vector3 NewRot = ItemGridCellMeshes[i].transform.localEulerAngles;
+                    NewRot.z = 0;
+                    ItemGridCellMeshes[i].transform.localEulerAngles = NewRot;
+                }
+                ItemGridCells[i].GetComponent<Spinner>().Spinning = Spinning;
+                FixMeshScaling(ItemGridCellMeshes[i], Scale);
             }
         }
 
-        private void RebuildItemList(int focused) {
-            string Inv = "";
-            for (int i = ScrollingIndex; i < TestingInventorySize; i++) {
-                if (i == focused) {
-                    Inv += "<b>";
-                }
-                if (i == SelectedIndex) {
-                    Inv += "·";
-                }
-                Inv += "Item #" + i + "\n";
-                if (i == focused) {
-                    Inv += "</b>";
-                }
+        private void SetPreviewMesh(Mesh mesh) {
+            ItemPreviewSpinner.Spinning = mesh != null;
+            ItemPreviewMesh.mesh = mesh;
+
+            if (mesh != null) {
+                FixMeshScaling(ItemPreviewMesh, 0.175f);
             }
-            TextTextureProperties NewProps = ItemListText.TextProperties;
-            NewProps.Text = Inv;
-            ItemListText.SetTextProperties(NewProps);
+        }
+
+        private void FixMeshScaling(MeshFilter toFix, float scale) {
+            float HighestExtent = 0f;
+            float Height = toFix.mesh.bounds.extents.y * 2f;
+            float Width = Mathf.Sqrt(Mathf.Pow(toFix.mesh.bounds.extents.x * 2f, 2) +
+                Mathf.Pow(toFix.mesh.bounds.extents.y * 2f, 2));
+            float Depth = Mathf.Sqrt(Mathf.Pow(toFix.mesh.bounds.extents.z * 2f, 2) +
+                Mathf.Pow(toFix.mesh.bounds.extents.y * 2f, 2));
+
+            if (Height > HighestExtent) {
+                HighestExtent = Height;
+            }
+            if (Width > HighestExtent) {
+                HighestExtent = Width;
+            }
+            if (Depth > HighestExtent) {
+                HighestExtent = Depth;
+            }
+
+            float Scale = scale * 1f / HighestExtent;
+            toFix.transform.localScale = new Vector3(Scale, Scale, Scale);
         }
     }
 }
