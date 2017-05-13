@@ -31,14 +31,38 @@ namespace Cyber.Util {
         }
 
         private Texture2D RenderText(TextTextureProperties text) {
+            // Set scales
             float Scale = 2.0f / text.Width;
-            Text.text = text.Text.Replace("\\n", "\n");
             Text.fontSize = text.FontSize;
             Text.characterSize = text.FontSize * Scale * 0.25f;
 
+            // Fix newlines
+            Text.text = text.Text.Replace("\\n", "\n");
+            float CharacterWidth = FontUtil.GetCharacterWidth(Text.font, 
+                Text.fontSize, Text.fontStyle);
+            string FixedText = "";
+            int CutAmount = 0;
+            for (int i = 0; i < Text.text.Length; i++) {
+                int RowLength = i - CutAmount;
+                string Line = Text.text.Substring(CutAmount, RowLength).Trim() + "\n";
+                int NextWordLength = 0;
+                if (Text.text[i] == ' ' && i + 1 < Text.text.Length) {
+                    NextWordLength = Text.text.Substring(i + 1).Split(' ')[0].Length;
+                }
+                if ((Line.Length + NextWordLength) * CharacterWidth > text.Width - text.OffsetX ||
+                        Text.text[i] == '\n') {
+                    FixedText += Line;
+                    CutAmount = i;
+                }
+            }
+            FixedText += Text.text.Substring(CutAmount).Trim();
+            Text.text = FixedText;
+
+            // Setup render textures
             RenderTexture TextTexture = RenderTexture.GetTemporary(text.Width, text.Height);
             RenderTexture OldRT = Camera.targetTexture;
 
+            // Calculate positions
             float OffsetX = -text.Width / 2f;
             float OffsetY = -text.Height / 2f;
             if (text.Centered) {
@@ -48,20 +72,26 @@ namespace Cyber.Util {
                 Text.anchor = TextAnchor.UpperLeft;
             }
             Camera.orthographicSize = 1.0f * text.Height / text.Width;
-            Camera.targetTexture = TextTexture;
-            Camera.backgroundColor = text.Background;
             Camera.transform.localPosition = new Vector3(
                 -(text.OffsetX + OffsetX) * Scale, 
                 (text.OffsetY + OffsetY) * Scale);
+
+            // Setup camera
+            Camera.targetTexture = TextTexture;
+            Camera.backgroundColor = text.Background;
+
+            // *click*
             Camera.Render();
             Camera.targetTexture = OldRT;
 
+            // Copy the result to a Texture2D
             OldRT = RenderTexture.active;
             Texture2D Result = new Texture2D(text.Width, text.Height);
             RenderTexture.active = TextTexture;
             Result.ReadPixels(new Rect(0, 0, Result.width, Result.height), 0, 0);
             Result.Apply();
 
+            // Clean up
             RenderTexture.active = OldRT;
             RenderTexture.ReleaseTemporary(TextTexture);
 
