@@ -39,12 +39,10 @@ namespace Cyber.Networking.Clientside {
                 int[] SyncBases = SyncPacket.ChecksummedSyncBases;
                 int[] Checksums = SyncPacket.Checksums;
                 if (SyncBases.Length > 0) {
-                    Term.Println("Found checksums!");
                     List<int> FailedSyncBases = new List<int>();
                     for (int i = 0; i < SyncBases.Length; i++) {
                         SyncBase SyncBase = SyncDB.Get(SyncBases[i]);
                         if (SyncBase.GenerateChecksum() != Checksums[i]) {
-                            Term.Println("Diffrentiating checksum!");
                             FailedSyncBases.Add(SyncBase.ID);
                         }
                     }
