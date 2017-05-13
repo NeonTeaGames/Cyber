@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 namespace Cyber.Items {
 
     /// <summary>
@@ -55,7 +57,7 @@ namespace Cyber.Items {
         /// </summary>
         /// <returns></returns>
         public int GetHeight() {
-            return ItemGrid.GetLength(1);
+            return ItemGrid.GetLength(0);
         }
 
         /// <summary>
