@@ -92,6 +92,7 @@ namespace Cyber.Controls {
         private CursorHandler CursorHandler;
         private MeshDB MeshDB;
         private bool InventoryOpen = false;
+        private float PreviewVisibility = 0f;
 
         private List<Transform> ItemGridCells;
         private List<MeshFilter> ItemGridCellMeshes;
@@ -143,7 +144,7 @@ namespace Cyber.Controls {
                         ItemGridSelectedIndex = CurrentIndex;
                     }
                 } else if (Mesh != null) {
-                    float InvBrightness = 1f;
+                    float InvBrightness = 1.1f;
                     float StsBrightness = 1f;
                     float SclBrightness = 1f;
                     float MapBrightness = 1f;
@@ -187,11 +188,10 @@ namespace Cyber.Controls {
         }
 
         private void RebuildItemGrid(int focused) {
-            if (ItemGridSelectedIndex < 0) {
-                SetPreviewMesh(null);
-            }
+            bool ItemFound = false;
             for (int y = 0; y < ItemGridDimensions.y; y++) {
                 for (int x = 0; x < ItemGridDimensions.x; x++) {
+                    // Find the item and mesh
                     int i = x + y * (int) ItemGridDimensions.x;
                     Item Item = Inventory.Drive.Interface.GetItemAt(x, y);
                     Mesh Mesh = null;
@@ -200,12 +200,16 @@ namespace Cyber.Controls {
                     }
                     ItemGridCellMeshes[i].mesh = Mesh;
 
+                    // Set the base scale and spin status
                     float Scale = 0.08f;
                     bool Spinning = false;
+
                     if (focused == i || ItemGridSelectedIndex == i) {
+                        // Item is selected or hovered, animate
                         Scale = 0.1f;
                         Spinning = true;
                     }
+
                     if (ItemGridSelectedIndex == i) {
                         // Set preview information
                         SetPreviewMesh(Mesh);
@@ -214,9 +218,10 @@ namespace Cyber.Controls {
                         if (Item != null) {
                             NameProps.Text = Item.Name;
                             DescriptionProps.Text = Item.Description;
+                            ItemFound = true;
                         } else {
-                            NameProps.Text = "NULL NAME";
-                            DescriptionProps.Text = "NULL DESC";
+                            NameProps.Text = "";
+                            DescriptionProps.Text = "";
                         }
                         ItemNameText.SetTextProperties(NameProps);
                         ItemDescriptionText.SetTextProperties(DescriptionProps);
@@ -229,30 +234,50 @@ namespace Cyber.Controls {
                                 Vector3.Lerp(ItemGridSelector.position, 
                                     ItemGridCells[i].position, 20f * Time.deltaTime);
                         }
-                        ItemGridSelector.LookAt(Camera.transform);
+                        //ItemGridSelector.LookAt(Camera.transform);
                         Vector3 NewRot = ItemGridSelector.localEulerAngles;
                         NewRot.z = 0;
                         ItemGridSelector.localEulerAngles = NewRot;
                     }
+
                     if (!Spinning) {
+                        // Not selected, reset rotation
                         ItemGridCellMeshes[i].transform.LookAt(Camera.transform);
                         Vector3 NewRot = ItemGridCellMeshes[i].transform.localEulerAngles;
                         NewRot.z = 0;
                         ItemGridCellMeshes[i].transform.localEulerAngles = NewRot;
                     }
+
+                    // Update spinning status and scaling
                     ItemGridCells[i].GetComponent<Spinner>().Spinning = Spinning;
                     FixMeshScaling(ItemGridCellMeshes[i], Scale);
                 }
+            }
+
+            // Hide the selector if nothing is selected
+            ItemGridSelector.gameObject.SetActive(ItemGridSelectedIndex >= 0);
+
+            // Clean up the preview screen if there was no item
+            if (!ItemFound) {
+                SetPreviewMesh(null);
+                TextTextureProperties NameProps = ItemNameText.TextProperties;
+                TextTextureProperties DescriptionProps = ItemDescriptionText.TextProperties;
+                NameProps.Text = "";
+                DescriptionProps.Text = "";
+                ItemNameText.SetTextProperties(NameProps);
+                ItemDescriptionText.SetTextProperties(DescriptionProps);
+                PreviewVisibility = Mathf.Lerp(PreviewVisibility, 0f, 10f * Time.deltaTime);
+            } else {
+                PreviewVisibility = Mathf.Lerp(PreviewVisibility, 1f, 10f * Time.deltaTime);
             }
         }
 
         private void SetPreviewMesh(Mesh mesh) {
             ItemPreviewSpinner.Spinning = mesh != null;
-            ItemPreviewMesh.mesh = mesh;
-
             if (mesh != null) {
-                FixMeshScaling(ItemPreviewMesh, 0.175f);
+                ItemPreviewMesh.mesh = mesh;
             }
+            FixMeshScaling(ItemPreviewMesh, 0.175f * PreviewVisibility);
         }
 
         private void FixMeshScaling(MeshFilter toFix, float scale) {
