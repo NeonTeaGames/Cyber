@@ -413,6 +413,7 @@ GameObject:
   - component: {fileID: 143869468979164672}
   - component: {fileID: 114575501420754388}
   - component: {fileID: 114385213279389382}
+  - component: {fileID: 114702404122310282}
   m_Layer: 0
   m_Name: PC
   m_TagString: Untagged
@@ -4864,6 +4865,18 @@ MonoBehaviour:
   Visible: 0
   Text: {fileID: 0}
   HologramScanlineScrollingSpeed: 1
+--- !u!114 &114702404122310282
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1297568499365208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28f60457b196bf144a8b332b7327db1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 0
 --- !u!114 &114741357428691828
 MonoBehaviour:
   m_ObjectHideFlags: 1
