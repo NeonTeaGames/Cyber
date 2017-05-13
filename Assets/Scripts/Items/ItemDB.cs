@@ -20,6 +20,7 @@ namespace Cyber.Items {
         /// </summary>
         public ItemDB() {
             AddItem(new Item(Counter++, 0, "Very Long Item Name", 1.5f, "This item is a rare piece of the \"way too long of a name\" technology, invented by space goblins in ancient times."));
+            AddItem(new Item(Counter++, 1, "Outworldly spherical tube", .5f, "It's so spherical and smooth that it seems like it's not even from this world!"));
         }
 
         /// <summary>

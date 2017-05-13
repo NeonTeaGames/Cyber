@@ -1,6 +1,7 @@
 ﻿
 using Cyber.Items;
 using Cyber.Networking;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Entities.SyncBases {
@@ -21,6 +22,7 @@ namespace Cyber.Entities.SyncBases {
         public Inventory() {
             Drive = new Drive(10f);
             Drive.AddItem(ItemDB.Singleton.Get(0));
+            Drive.AddItem(ItemDB.Singleton.Get(1));
         }
 
         /// <summary>

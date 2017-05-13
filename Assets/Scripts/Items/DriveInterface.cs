@@ -11,14 +11,14 @@ namespace Cyber.Items {
         /// <summary>
         /// Width of the interface.
         /// </summary>
-        public const int Width = 8;
+        public const int Width = 7;
 
         /// <summary>
         /// Minimun height of the interface.
         /// </summary>
         public const int MinHeight = 4;
 
-        private int[,] ItemGrid = new int[4, Width];
+        private int[,] ItemGrid;
 
         private Drive Drive;
 
@@ -28,6 +28,7 @@ namespace Cyber.Items {
         /// <param name="drive"></param>
         public DriveInterface(Drive drive) {
             Drive = drive;
+            ItemGrid = CreateEmptyGrid(Width, 4);
         }
         
         /// <summary>
@@ -37,7 +38,7 @@ namespace Cyber.Items {
         /// <param name="y">The y-coordinate</param>
         /// <returns>The item or null</returns>
         public Item GetItemAt(int x, int y) {
-            if (ItemGrid[y, x] == 0) {
+            if (ItemGrid[y, x] == -1) {
                 return null;
             } else {
                 return Drive.GetItem(ItemGrid[y, x]);
@@ -73,7 +74,7 @@ namespace Cyber.Items {
                 }
             }
 
-            int[,] Temp = new int[RequiredHeight + 1, Width];
+            int[,] Temp = CreateEmptyGrid(Width, RequiredHeight + 1);
             for (int y = 0; y < RequiredHeight - 1; y++) {
                 for (int x = 0; x < Width; x++) {
                     if (GetItemAt(x, y) != null) {
@@ -95,9 +96,20 @@ namespace Cyber.Items {
                 for (int x = 0; x < Width; x++) {
                     if (GetItemAt(x, y) == null) {
                         ItemGrid[y, x] = idx;
+                        return;
                     }
                 }
             }
+        }
+
+        private int[,] CreateEmptyGrid(int width, int height) {
+            int[,] Grid = new int[height, width];
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    Grid[y, x] = -1;
+                }
+            }
+            return Grid;
         }
     }
 }
