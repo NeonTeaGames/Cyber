@@ -60,5 +60,10 @@ namespace Cyber.Networking {
         /// </summary>
         public const short Disconnect = 209;
 
+        /// <summary>
+        /// Packet containing SyncBase id's of the SyncBases which failed the checksum test.
+        /// </summary>
+        public const short FailedChecksums = 210;
+
     }
 }

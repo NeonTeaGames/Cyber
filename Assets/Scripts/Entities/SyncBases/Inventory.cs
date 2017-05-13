@@ -1,6 +1,8 @@
 ﻿
+using Cyber.Console;
 using Cyber.Items;
 using Cyber.Networking;
+using Cyber.Networking.Serverside;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -21,8 +23,23 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         public Inventory() {
             Drive = new Drive(10f);
-            Drive.AddItem(ItemDB.Singleton.Get(0));
-            Drive.AddItem(ItemDB.Singleton.Get(1));
+            if (Server.IsRunning()) {
+                Drive.AddItem(ItemDB.Singleton.Get(0));
+                Drive.AddItem(ItemDB.Singleton.Get(1));
+            }
+        }
+
+        /// <summary>
+        /// Generates a checksum for the inventory
+        /// </summary>
+        /// <returns>A checksum of the IDs of the items</returns>
+        public override int GenerateChecksum() {
+            var Items = Drive.GetItems().ToArray();
+            int Checksum = 0;
+            for (int i = 0; i < Items.Length; i++) {
+                Checksum ^= Items[i].ID;
+            }
+            return Checksum;
         }
 
         /// <summary>
@@ -38,6 +55,8 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
+            Debug.Log("Deserializing inventory!");
+
             byte[][] ByteArray = new byte[4][];
             ByteArray[0] = reader.ReadBytesAndSize();
             ByteArray[1] = reader.ReadBytesAndSize();

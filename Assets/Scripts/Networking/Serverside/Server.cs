@@ -148,6 +148,7 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.RegisterHandler(PktType.Interact, HandlePacket);
             NetworkServer.RegisterHandler(PktType.ClientSync, HandlePacket);
             NetworkServer.RegisterHandler(PktType.Disconnect, HandlePacket);
+            NetworkServer.RegisterHandler(PktType.FailedChecksums, HandlePacket);
 
             NetworkServer.RegisterHandler(MsgType.Connect, OnConnected);
             NetworkServer.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -231,6 +232,13 @@ namespace Cyber.Networking.Serverside {
                 break;
             case PktType.Disconnect:
                 msg.conn.Disconnect();
+                break;
+            case PktType.FailedChecksums:
+                IntListPkt FailedSyncs = new IntListPkt();
+                FailedSyncs.Deserialize(msg.reader);
+                foreach (int SyncBaseId in FailedSyncs.IdList) {
+                    Syncer.DirtSyncBase(SyncBaseId);
+                }
                 break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);
