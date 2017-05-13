@@ -15,6 +15,7 @@ namespace Cyber.Entities {
         
         private static readonly Type[] SyncableClasses = new Type[] {
             typeof(Character),
+            typeof(Inventory),
             typeof(Button),
             typeof(Door),
             typeof(Computer)

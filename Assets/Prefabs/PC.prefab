@@ -59,6 +59,7 @@ GameObject:
   - component: {fileID: 143869468979164672}
   - component: {fileID: 114575501420754388}
   - component: {fileID: 114385213279389382}
+  - component: {fileID: 114620180746352054}
   m_Layer: 0
   m_Name: PC
   m_TagString: Untagged
@@ -1129,6 +1130,18 @@ MonoBehaviour:
   InteractionDistance: 2
   CharacterController: {fileID: 143869468979164672}
   Head: {fileID: 4883048021777868}
+--- !u!114 &114620180746352054
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1297568499365208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28f60457b196bf144a8b332b7327db1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: 0
 --- !u!114 &114633016952828368
 MonoBehaviour:
   m_ObjectHideFlags: 1
