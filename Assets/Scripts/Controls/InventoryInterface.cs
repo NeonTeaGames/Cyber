@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cyber.Util;
 using Cyber.Console;
+using Cyber.Entities.SyncBases;
+using Cyber.Items;
 
 namespace Cyber.Controls {
 
@@ -10,6 +12,11 @@ namespace Cyber.Controls {
     /// Handles displaying and interacting with the inventory.
     /// </summary>
     public class InventoryInterface : MonoBehaviour {
+
+        /// <summary>
+        /// The inventory of the player, will be displayed here.
+        /// </summary>
+        public Inventory Inventory;
 
         /// <summary>
         /// The camera that is displaying this inventory interface.
@@ -173,36 +180,45 @@ namespace Cyber.Controls {
             if (ItemGridSelectedIndex < 0) {
                 SetPreviewMesh(null);
             }
-            for (int i = 0; i < ItemGridDimensions.x * ItemGridDimensions.y; i++) {
-                ItemGridCellMeshes[i].mesh = MeshDB.Meshes[i % MeshDB.Meshes.Length];
-                float Scale = 0.08f;
-                bool Spinning = false;
-                if (focused == i || ItemGridSelectedIndex == i) {
-                    Scale = 0.1f;
-                    Spinning = true;
-                }
-                if (ItemGridSelectedIndex == i) {
-                    SetPreviewMesh(ItemGridCellMeshes[i].mesh);
-                    if ((ItemGridSelector.position - ItemGridCells[i].position).magnitude < 0.01f) {
-                        ItemGridSelector.position = ItemGridCells[i].position;
-                    } else {
-                        ItemGridSelector.position = 
-                            Vector3.Lerp(ItemGridSelector.position, 
-                                ItemGridCells[i].position, 20f * Time.deltaTime);
+            for (int y = 0; y < ItemGridDimensions.y; y++) {
+                for (int x = 0; x < ItemGridDimensions.x; x++) {
+                    int i = x + y * (int) ItemGridDimensions.x;
+                    Item Item = Inventory.Drive.Interface.GetItemAt(x, y);
+                    Mesh Mesh = null;
+                    if (Item != null) {
+                        Mesh = MeshDB.Meshes[Item.ModelID];
                     }
-                    ItemGridSelector.LookAt(Camera.transform);
-                    Vector3 NewRot = ItemGridSelector.localEulerAngles;
-                    NewRot.z = 0;
-                    ItemGridSelector.localEulerAngles = NewRot;
+                    ItemGridCellMeshes[i].mesh = Mesh;
+
+                    float Scale = 0.08f;
+                    bool Spinning = false;
+                    if (focused == i || ItemGridSelectedIndex == i) {
+                        Scale = 0.1f;
+                        Spinning = true;
+                    }
+                    if (ItemGridSelectedIndex == i) {
+                        SetPreviewMesh(ItemGridCellMeshes[i].mesh);
+                        if ((ItemGridSelector.position - ItemGridCells[i].position).magnitude < 0.01f) {
+                            ItemGridSelector.position = ItemGridCells[i].position;
+                        } else {
+                            ItemGridSelector.position = 
+                                Vector3.Lerp(ItemGridSelector.position, 
+                                    ItemGridCells[i].position, 20f * Time.deltaTime);
+                        }
+                        ItemGridSelector.LookAt(Camera.transform);
+                        Vector3 NewRot = ItemGridSelector.localEulerAngles;
+                        NewRot.z = 0;
+                        ItemGridSelector.localEulerAngles = NewRot;
+                    }
+                    if (!Spinning) {
+                        ItemGridCellMeshes[i].transform.LookAt(Camera.transform);
+                        Vector3 NewRot = ItemGridCellMeshes[i].transform.localEulerAngles;
+                        NewRot.z = 0;
+                        ItemGridCellMeshes[i].transform.localEulerAngles = NewRot;
+                    }
+                    ItemGridCells[i].GetComponent<Spinner>().Spinning = Spinning;
+                    FixMeshScaling(ItemGridCellMeshes[i], Scale);
                 }
-                if (!Spinning) {
-                    ItemGridCellMeshes[i].transform.LookAt(Camera.transform);
-                    Vector3 NewRot = ItemGridCellMeshes[i].transform.localEulerAngles;
-                    NewRot.z = 0;
-                    ItemGridCellMeshes[i].transform.localEulerAngles = NewRot;
-                }
-                ItemGridCells[i].GetComponent<Spinner>().Spinning = Spinning;
-                FixMeshScaling(ItemGridCellMeshes[i], Scale);
             }
         }
 
@@ -216,7 +232,11 @@ namespace Cyber.Controls {
         }
 
         private void FixMeshScaling(MeshFilter toFix, float scale) {
-            float HighestExtent = 0f;
+            if (toFix.mesh == null) {
+                return;
+            }
+
+            float HighestExtent = 0.1f;
             float Height = toFix.mesh.bounds.extents.y * 2f;
             float Width = Mathf.Sqrt(Mathf.Pow(toFix.mesh.bounds.extents.x * 2f, 2) +
                 Mathf.Pow(toFix.mesh.bounds.extents.y * 2f, 2));

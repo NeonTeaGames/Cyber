@@ -76,7 +76,7 @@ namespace Cyber.Items {
         /// <param name="idx">The index of the desired item</param>
         /// <returns>The item or null if nothing was found.</returns>
         public Item GetItem(int idx) {
-            if (idx < 0 || idx > Items.Count) {
+            if (idx < 0 || idx >= Items.Count) {
                 return null;
             }
             return Items[idx];

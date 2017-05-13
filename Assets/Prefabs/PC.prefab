@@ -1671,14 +1671,14 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1101618282831644}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.02, y: 0.6244, z: 0.5199004}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -0.02, y: 0.6244, z: 0}
   m_LocalScale: {x: 0.14000012, y: 0.14, z: 0.14000012}
   m_Children:
   - {fileID: 4871279644634608}
   m_Father: {fileID: 4236387573765288}
   m_RootOrder: 10
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!4 &4345907313541278
 Transform:
   m_ObjectHideFlags: 1
@@ -2262,13 +2262,13 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1733941371029502}
-  m_LocalRotation: {x: -0.5, y: 0.5, z: 0.5, w: 0.5}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0.02, y: 0, z: 0}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children: []
   m_Father: {fileID: 4334285771407092}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: -90.00001, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: -90.00001, y: 0, z: 0}
 --- !u!4 &4883048021777868
 Transform:
   m_ObjectHideFlags: 1
@@ -4646,6 +4646,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb0d2e67bf4cd4c6b97d2572ce00fc41, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Inventory: {fileID: 114702404122310282}
   Camera: {fileID: 20678872378488080}
   Hologram: {fileID: 114633016952828368}
   ItemPreviewMesh: {fileID: 33585471952367662}
