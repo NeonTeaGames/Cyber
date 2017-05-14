@@ -25,13 +25,8 @@ namespace Cyber.Controls {
         /// </summary>
         public Camera Camera;
 
-        private CursorHandler CursorHandler;
         private Vector3 Rotation;
         private GameObject LastLookedAt;
-
-        private void Start() {
-            CursorHandler = GameObject.Find("/Systems/CursorHandler").GetComponent<CursorHandler>();
-        }
 
         private void Update() {
             if (!Term.IsVisible()) {
@@ -48,8 +43,8 @@ namespace Cyber.Controls {
 
                 // Rotation (only when cursor is locked
                 if (CursorHandler.Locked()) {
-                    Rotation.y += Input.GetAxis("Mouse X") * CursorHandler.MouseSensitivityX;
-                    Rotation.x = Mathf.Clamp(Rotation.x - Input.GetAxis("Mouse Y") * CursorHandler.MouseSensitivityY, -89, 89);
+                    Rotation.y += Input.GetAxis("Mouse X") * CursorHandler.GetMouseSensitivityX();
+                    Rotation.x = Mathf.Clamp(Rotation.x - Input.GetAxis("Mouse Y") * CursorHandler.GetMouseSensitivityY(), -89, 89);
                     Character.SetRotation(Rotation);
                 }
             

@@ -9,6 +9,7 @@ namespace Cyber.Controls {
     /// Handles grabbing the cursor when needed and provides info about the mouse.
     /// </summary>
     public class CursorHandler : MonoBehaviour {
+        private static CursorHandler Singleton;
     
         /// <summary>
         /// The mouse sensitivity on the screen's x-axis.
@@ -26,21 +27,44 @@ namespace Cyber.Controls {
         private bool RequestedLockState = true;
 
         /// <summary>
+        /// Sets the Singleton.
+        /// </summary>
+        public CursorHandler() {
+            Singleton = this;
+        }
+
+        /// <summary>
+        /// Gets the mouse sentivity on the x-axis.
+        /// </summary>
+        /// <returns>The mouse sentivity on the x-axis.</returns>
+        public static float GetMouseSensitivityX() {
+            return Singleton.MouseSensitivityX;
+        }
+
+        /// <summary>
+        /// Gets the mouse sentivity on the y-axis.
+        /// </summary>
+        /// <returns>The mouse sentivity on the y-axis.</returns>
+        public static float GetMouseSensitivityY() {
+            return Singleton.MouseSensitivityY;
+        }
+
+        /// <summary>
         /// Request a new lock state. The cursor will be locked in case there
         /// isn't another reason to have it in a different state (like the
         /// <see cref="DebugConsole"/> being up). 
         /// </summary>
         /// <param name="locked">If set to <c>true</c>, cursor might bse 
         /// locked.</param>
-        public void RequestLockState(bool locked) {
-            RequestedLockState = locked;
+        public static void RequestLockState(bool locked) {
+            Singleton.RequestedLockState = locked;
         }
 
         /// <summary>
         /// Is the cursor currently locked?
         /// </summary>
-        public bool Locked() {
-            return Term.IsVisible() || RequestedLockState;
+        public static bool Locked() {
+            return Term.IsVisible() || Singleton.RequestedLockState;
         }
 
         private void Start() {
