@@ -23,6 +23,11 @@ namespace Cyber.Util {
             Singleton = this;
         }
 
+        /// <summary>
+        /// Get the mesh at the defined index.
+        /// </summary>
+        /// <returns>The mesh.</returns>
+        /// <param name="index">Index.</param>
         public static Mesh GetMesh(int index) {
             return Singleton.Meshes[index];
         }
