@@ -80,7 +80,15 @@ namespace Cyber.Entities.SyncBases {
                 Drive.AddItem(ItemDB.Singleton.Get(id));
             }
 
+            bool ReceivedSlots = reader.ReadBoolean();
+            if (!ReceivedSlots) {
+                Equipped.ClearAllEquipped();
+                return;
+            }
+
             byte[] Slots = reader.ReadBytesAndSize();
+
+            Debug.Log(Slots);
 
             byte[][] EquippedIdsBytes = new byte[4][];
             EquippedIdsBytes[0] = reader.ReadBytesAndSize();
@@ -106,12 +114,20 @@ namespace Cyber.Entities.SyncBases {
                 IDs[i] = Items[i].ID;
             }
             byte[][] ByteArray = NetworkHelper.SerializeIntArray(IDs);
+
             writer.WriteBytesFull(ByteArray[0]);
             writer.WriteBytesFull(ByteArray[1]);
             writer.WriteBytesFull(ByteArray[2]);
             writer.WriteBytesFull(ByteArray[3]);
 
             var slotList = new List<EquipSlot>(Equipped.GetEquippedDict().Keys).ConvertAll(x => (byte) x);
+
+            if (slotList.Count > 0) {
+                writer.Write(true);
+            } else {
+                writer.Write(false);
+            }
+
             slotList.Sort((a, b) => {
                 return b - a;
             });
