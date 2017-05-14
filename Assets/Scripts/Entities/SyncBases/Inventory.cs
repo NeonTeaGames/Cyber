@@ -37,18 +37,19 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
-        /// Generates a checksum for the inventory
+        /// Generates a checksum for the inventory.
         /// </summary>
         /// <returns>A checksum of the IDs of the items</returns>
         public override int GenerateChecksum() {
             var Items = Drive.GetItems().ToArray();
             int Checksum = 0;
             for (int i = 0; i < Items.Length; i++) {
-                Checksum ^= Items[i].ID;
+                // Times with primes and sprinkle some i to spice up the stew
+                Checksum += (Items[i].ID + 1) * 509 * (i + 1) * 53;
             }
             var EquippedItems = Equipped.GetEquippedList().ToArray();
             for (int i = 0; i < EquippedItems.Length; i++) {
-                Checksum ^= EquippedItems[i].ID;
+                Checksum += (EquippedItems[i].ID + 1) * 859 * (i + 1) * 97;
             }
             return Checksum;
         }
