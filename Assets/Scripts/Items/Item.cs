@@ -32,18 +32,25 @@ namespace Cyber.Items {
         public float Weight;
 
         /// <summary>
+        /// The slot in which the item can be equipped to.
+        /// </summary>
+        public EquipSlot Slot;
+
+        /// <summary>
         /// Creates an item. This should technically be only called by ItemDB, but it's public because of "reasons".
         /// </summary>
-        /// <param name="id">ID of the item</param>
+        /// <param name="id">ID of the item.</param>
         /// <param name="modelId">ModelID of the item, see ModelDB.</param>
-        /// <param name="name">The name if the item</param>
-        /// <param name="weight">The Weight of the item</param>
+        /// <param name="name">The name if the item.</param>
+        /// <param name="weight">The Weight of the item.</param>
+        /// <param name="slot">The equip slot of the item.</param>
         /// <param name="description">The description of the item.</param>
-        public Item(int id, int modelId, string name, float weight, string description) {
+        public Item(int id, int modelId, string name, float weight, EquipSlot slot, string description) {
             ID = id;
             ModelID = modelId;
             Name = name;
             Weight = weight;
+            Slot = slot;
             Description = description;
         }
         
@@ -52,8 +59,7 @@ namespace Cyber.Items {
         /// </summary>
         /// <returns></returns>
         public Item Clone() {
-            return new Item(ID, ModelID, Name, Weight, Description);
+            return new Item(ID, ModelID, Name, Weight, Slot, Description);
         }
-
     }
 }

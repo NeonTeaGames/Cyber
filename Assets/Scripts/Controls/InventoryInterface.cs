@@ -95,6 +95,7 @@ namespace Cyber.Controls {
         private List<Transform> ItemGridCells;
         private List<MeshFilter> ItemGridCellMeshes;
         private int ItemGridSelectedIndex;
+        private Item SelectedItem = null;
 
         private Color IconInventoryColor;
         private Color IconStatusColor;
@@ -136,6 +137,15 @@ namespace Cyber.Controls {
                     // Interacting with the item list
                     CurrentIndex = int.Parse(LookedAt.collider.name.Split(' ')[1]);
                     if (Input.GetButtonDown("Activate")) {
+                        if (ItemGridSelectedIndex == CurrentIndex && SelectedItem != null) {
+                            // Selected index was already this => equip (double-clicked)
+                            Item Equipped = Inventory.Equipped.GetItem(SelectedItem.Slot);
+                            if (Equipped != null && Equipped.ID == SelectedItem.ID) {
+                                Inventory.Equipped.ClearSlot(SelectedItem.Slot);
+                            } else {
+                                Inventory.Equipped.SetSlot(SelectedItem.Slot, SelectedItem);
+                            }
+                        }
                         ItemGridSelectedIndex = CurrentIndex;
                     }
                 } else if (Mesh != null) {
@@ -206,6 +216,9 @@ namespace Cyber.Controls {
                     }
 
                     if (ItemGridSelectedIndex == i) {
+                        // Update the selected item
+                        SelectedItem = Item;
+
                         // Set preview information
                         SetPreviewMesh(Mesh);
                         TextTextureProperties NameProps = ItemNameText.TextProperties;
@@ -229,7 +242,6 @@ namespace Cyber.Controls {
                                 Vector3.Lerp(ItemGridSelector.position, 
                                     ItemGridCells[i].position, 20f * Time.deltaTime);
                         }
-                        //ItemGridSelector.LookAt(Camera.transform);
                         Vector3 NewRot = ItemGridSelector.localEulerAngles;
                         NewRot.z = 0;
                         ItemGridSelector.localEulerAngles = NewRot;
