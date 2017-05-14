@@ -88,8 +88,6 @@ namespace Cyber.Entities.SyncBases {
 
             byte[] Slots = reader.ReadBytesAndSize();
 
-            Debug.Log(Slots);
-
             byte[][] EquippedIdsBytes = new byte[4][];
             EquippedIdsBytes[0] = reader.ReadBytesAndSize();
             EquippedIdsBytes[1] = reader.ReadBytesAndSize();
