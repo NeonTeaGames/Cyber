@@ -89,8 +89,6 @@ namespace Cyber.Controls {
         /// </summary>
         public Vector2 ItemGridDimensions;
 
-        private CursorHandler CursorHandler;
-        private MeshDB MeshDB;
         private bool InventoryOpen = false;
         private float PreviewVisibility = 0f;
 
@@ -104,9 +102,6 @@ namespace Cyber.Controls {
         private Color IconMapColor;
 
         private void Start() {
-            CursorHandler = GameObject.Find("/Systems/CursorHandler").GetComponent<CursorHandler>();
-            MeshDB = GameObject.Find("/Systems/MeshDB").GetComponent<MeshDB>();
-
             int ItemGridSize = (int) ItemGridDimensions.x * (int) ItemGridDimensions.y;
             ItemGridCells = new List<Transform>(ItemGridSize);
             ItemGridCellMeshes = new List<MeshFilter>(ItemGridSize);
@@ -196,7 +191,7 @@ namespace Cyber.Controls {
                     Item Item = Inventory.Drive.Interface.GetItemAt(x, y);
                     Mesh Mesh = null;
                     if (Item != null) {
-                        Mesh = MeshDB.Meshes[Item.ModelID];
+                        Mesh = MeshDB.GetMesh(Item.ModelID);
                     }
                     ItemGridCellMeshes[i].mesh = Mesh;
 

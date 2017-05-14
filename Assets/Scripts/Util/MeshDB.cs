@@ -9,10 +9,22 @@ namespace Cyber.Util {
     /// used if meshes are needed at runtime.
     /// </summary>
     public class MeshDB : MonoBehaviour {
+        private static MeshDB Singleton;
 
         /// <summary>
         /// The meshes that can be used at runtime.
         /// </summary>
         public Mesh[] Meshes;
+
+        /// <summary>
+        /// Sets the Singleton.
+        /// </summary>
+        public MeshDB() {
+            Singleton = this;
+        }
+
+        public static Mesh GetMesh(int index) {
+            return Singleton.Meshes[index];
+        }
     }
 }
