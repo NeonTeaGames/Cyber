@@ -21,9 +21,9 @@ namespace Cyber.Networking.Serverside {
         private Spawner Spawner;
 
         /// <summary>
-        /// The Syncer which syncs. <see cref="Syncer"/>
+        /// The Syncer which syncs. <see cref="ServerSyncer"/>
         /// </summary>
-        public Syncer Syncer;
+        public ServerSyncer Syncer;
 
         private ServerSyncHandler ServerSyncHandler;
 
@@ -167,7 +167,7 @@ namespace Cyber.Networking.Serverside {
                 Shutdown();
             });
 
-            Syncer = gameObject.AddComponent<Syncer>();
+            Syncer = gameObject.AddComponent<ServerSyncer>();
 
             ServerSyncHandler = new ServerSyncHandler(Players);
 
