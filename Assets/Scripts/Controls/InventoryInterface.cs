@@ -98,7 +98,6 @@ namespace Cyber.Controls {
         private List<Transform> ItemGridCells;
         private List<MeshFilter> ItemGridCellMeshes;
         private int ItemGridSelectedIndex;
-        private Item SelectedItem = null;
 
         private Color IconInventoryColor;
         private Color IconStatusColor;
@@ -139,9 +138,14 @@ namespace Cyber.Controls {
                 if (ItemGridCells.Contains(LookedAt.collider.transform)) {
                     // Interacting with the item list
                     CurrentIndex = int.Parse(LookedAt.collider.name.Split(' ')[1]);
-                    if (Input.GetButtonDown("Activate")) {
-                        if (ItemGridSelectedIndex == CurrentIndex && SelectedItem != null) {
-                            // Selected index was already this => equip (double-clicked)
+                    if (Input.GetButtonDown("Activate") || Input.GetButtonDown("Equip")) {
+                        ItemGridSelectedIndex = CurrentIndex;
+                    }
+                    if (Input.GetButtonDown("Equip")) {
+                        // Selected index was already this => equip (double-clicked)
+                        Item SelectedItem = Inventory.Drive.Interface.GetItemAt(ItemGridSelectedIndex % (int) ItemGridDimensions.x,
+                            ItemGridSelectedIndex / (int) ItemGridDimensions.y);
+                        if (SelectedItem != null) {
                             Item Equipped = Inventory.Equipped.GetItem(SelectedItem.Slot);
                             if (Equipped != null && Equipped.ID == SelectedItem.ID) {
                                 Inventory.Equipped.ClearSlot(SelectedItem.Slot);
@@ -151,7 +155,6 @@ namespace Cyber.Controls {
                                 Client.Send(PktType.InventoryAction, new InventoryActionPkt(InventoryAction.Equip, SelectedItem.ID));
                             }
                         }
-                        ItemGridSelectedIndex = CurrentIndex;
                     }
                 } else if (Mesh != null) {
                     float InvBrightness = 1.1f;
@@ -221,9 +224,6 @@ namespace Cyber.Controls {
                     }
 
                     if (ItemGridSelectedIndex == i) {
-                        // Update the selected item
-                        SelectedItem = Item;
-
                         // Set preview information
                         SetPreviewMesh(Mesh);
                         TextTextureProperties NameProps = ItemNameText.TextProperties;

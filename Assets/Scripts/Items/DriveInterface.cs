@@ -38,7 +38,8 @@ namespace Cyber.Items {
         /// <param name="y">The y-coordinate</param>
         /// <returns>The item or null</returns>
         public Item GetItemAt(int x, int y) {
-            if (ItemGrid[y, x] == -1) {
+            if (y < 0 || x < 0 || y >= GetHeight() || x >= GetWidth() || 
+                    ItemGrid[y, x] == -1) {
                 return null;
             } else {
                 return Drive.GetItem(ItemGrid[y, x]);
