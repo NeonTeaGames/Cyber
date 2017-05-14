@@ -1,6 +1,7 @@
 ﻿using Cyber.Console;
 using Cyber.Entities;
 using Cyber.Entities.SyncBases;
+using Cyber.Items;
 using Cyber.Networking.Messages;
 using System.Collections.Generic;
 using UnityEngine;
@@ -149,6 +150,7 @@ namespace Cyber.Networking.Serverside {
             NetworkServer.RegisterHandler(PktType.ClientSync, HandlePacket);
             NetworkServer.RegisterHandler(PktType.Disconnect, HandlePacket);
             NetworkServer.RegisterHandler(PktType.FailedChecksums, HandlePacket);
+            NetworkServer.RegisterHandler(PktType.InventoryAction, HandlePacket);
 
             NetworkServer.RegisterHandler(MsgType.Connect, OnConnected);
             NetworkServer.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -239,6 +241,26 @@ namespace Cyber.Networking.Serverside {
                 foreach (int SyncBaseId in FailedSyncs.IdList) {
                     Syncer.DirtSyncBase(SyncBaseId);
                 }
+                break;
+            case PktType.InventoryAction:
+                InventoryActionPkt InventoryActionPkt = new InventoryActionPkt();
+                InventoryActionPkt.Deserialize(msg.reader);
+
+                Inventory CurrInventory = Players[msg.conn.connectionId].Character.GetComponent<Inventory>();
+                InventoryActionPkt.SyncBaseID = CurrInventory.ID;
+
+                switch (InventoryActionPkt.Action) {
+                case InventoryAction.Equip:
+                    Item Item = ItemDB.Singleton.Get(InventoryActionPkt.RelatedInt);
+                    CurrInventory.Equipped.SetSlot(Item.Slot, Item);
+                    break;
+                case InventoryAction.Unequip:
+                    EquipSlot Slot = (EquipSlot) InventoryActionPkt.RelatedInt;
+                    CurrInventory.Equipped.ClearSlot(Slot);
+                    break;
+                }
+
+                SendToAll(PktType.InventoryAction, InventoryActionPkt);
                 break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);

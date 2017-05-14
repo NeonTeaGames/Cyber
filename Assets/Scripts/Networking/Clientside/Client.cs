@@ -1,6 +1,7 @@
 ﻿using Cyber.Console;
 using Cyber.Entities;
 using Cyber.Entities.SyncBases;
+using Cyber.Items;
 using Cyber.Networking.Messages;
 using System.Collections.Generic;
 using UnityEngine;
@@ -161,6 +162,7 @@ namespace Cyber.Networking.Clientside {
             NetClient.RegisterHandler(PktType.Interact, HandlePacket);
             NetClient.RegisterHandler(PktType.StaticObjectIds, HandlePacket);
             NetClient.RegisterHandler(PktType.Disconnect, HandlePacket);
+            NetClient.RegisterHandler(PktType.InventoryAction, HandlePacket);
 
             NetClient.RegisterHandler(MsgType.Connect, OnConnected);
             NetClient.RegisterHandler(MsgType.Disconnect, OnDisconnected);
@@ -264,6 +266,29 @@ namespace Cyber.Networking.Clientside {
                 Term.Println(Disconnect.ConnectionID + " disconnected!");
                 Spawner.Remove(Players[Disconnect.ConnectionID].Character.gameObject);
                 Players.Remove(Disconnect.ConnectionID);
+                break;
+            case (PktType.InventoryAction):
+                InventoryActionPkt InventoryActionPkt = new InventoryActionPkt();
+                InventoryActionPkt.Deserialize(msg.reader);
+
+                SyncBase CurrSyncBase = Spawner.SyncDB.Get(InventoryActionPkt.SyncBaseID);
+                Inventory Inventory;
+                if (CurrSyncBase is Inventory) {
+                    Inventory = (Inventory) CurrSyncBase;
+                } else {
+                    break;
+                }
+
+                switch (InventoryActionPkt.Action) {
+                case InventoryAction.Equip:
+                    Item Item = ItemDB.Singleton.Get(InventoryActionPkt.RelatedInt);
+                    Inventory.Equipped.SetSlot(Item.Slot, Item);
+                    break;
+                case InventoryAction.Unequip:
+                    EquipSlot Slot = (EquipSlot) InventoryActionPkt.RelatedInt;
+                    Inventory.Equipped.ClearSlot(Slot);
+                    break;
+                }
                 break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);

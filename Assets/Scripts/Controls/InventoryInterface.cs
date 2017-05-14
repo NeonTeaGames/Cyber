@@ -5,6 +5,9 @@ using Cyber.Util;
 using Cyber.Console;
 using Cyber.Entities.SyncBases;
 using Cyber.Items;
+using Cyber.Networking.Clientside;
+using Cyber.Networking;
+using Cyber.Networking.Messages;
 
 namespace Cyber.Controls {
 
@@ -142,8 +145,10 @@ namespace Cyber.Controls {
                             Item Equipped = Inventory.Equipped.GetItem(SelectedItem.Slot);
                             if (Equipped != null && Equipped.ID == SelectedItem.ID) {
                                 Inventory.Equipped.ClearSlot(SelectedItem.Slot);
+                                Client.Send(PktType.InventoryAction, new InventoryActionPkt(InventoryAction.Unequip, (int) SelectedItem.Slot));
                             } else {
                                 Inventory.Equipped.SetSlot(SelectedItem.Slot, SelectedItem);
+                                Client.Send(PktType.InventoryAction, new InventoryActionPkt(InventoryAction.Equip, SelectedItem.ID));
                             }
                         }
                         ItemGridSelectedIndex = CurrentIndex;

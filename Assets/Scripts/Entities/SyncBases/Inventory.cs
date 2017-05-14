@@ -66,7 +66,6 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
-            Debug.Log("Deserializing inventory!");
 
             byte[][] ByteArray = new byte[4][];
             ByteArray[0] = reader.ReadBytesAndSize();

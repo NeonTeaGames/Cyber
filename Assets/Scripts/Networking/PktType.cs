@@ -65,5 +65,10 @@ namespace Cyber.Networking {
         /// </summary>
         public const short FailedChecksums = 210;
 
+        /// <summary>
+        /// Packet containing an inventory action and an int relating somehow to this action.
+        /// </summary>
+        public const short InventoryAction = 211;
+
     }
 }
