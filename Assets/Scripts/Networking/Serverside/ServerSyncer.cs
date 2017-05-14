@@ -3,7 +3,6 @@ using Cyber.Entities;
 using Cyber.Networking.Messages;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Cyber.Networking.Serverside {
 
@@ -17,6 +16,9 @@ namespace Cyber.Networking.Serverside {
         private List<int> QueuedSyncs = new List<int>();
         private List<int> DirtySyncBases = new List<int>();
 
+        /// <summary>
+        /// Creates a Server syncer, constructor only defined because of inheritance of <see cref="Syncer"/>.
+        /// </summary>
         public ServerSyncer() : base(1f / 10) {}
 
         /// <summary>
@@ -31,9 +33,9 @@ namespace Cyber.Networking.Serverside {
         }
 
         /// <summary>
-        /// 
+        /// Performs a server sync tick.
         /// </summary>
-        /// <param name="Tick"></param>
+        /// <param name="Tick">The number of the tick, which can be used to determine a few things, like when to sync certain things.</param>
         public override void PerformTick(int Tick) {
             var Categorized = Database.GetCategorizedDatabase();
             List<int> checksummedIds = new List<int>();

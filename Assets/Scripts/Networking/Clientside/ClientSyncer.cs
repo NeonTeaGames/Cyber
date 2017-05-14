@@ -8,8 +8,15 @@ namespace Cyber.Networking.Clientside {
     /// </summary>
     public class ClientSyncer : Syncer {
 
+        /// <summary>
+        /// Creates a Client syncer, constructor only defined because of inheritance of <see cref="Syncer"/>.
+        /// </summary>
         public ClientSyncer() : base(1f / 10) {}
 
+        /// <summary>
+        /// Performs a client sync tick.
+        /// </summary>
+        /// <param name="Tick">The number of the tick, which can be used to determine a few things, like when to sync certain things.</param>
         public override void PerformTick(int Tick) {
 
             ClientSyncPkt SyncPkt = new ClientSyncPkt();
