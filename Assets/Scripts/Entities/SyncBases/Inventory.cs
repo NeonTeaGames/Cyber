@@ -33,6 +33,7 @@ namespace Cyber.Entities.SyncBases {
             if (Server.IsRunning()) {
                 Drive.AddItem(ItemDB.Singleton.Get(0));
                 Drive.AddItem(ItemDB.Singleton.Get(1));
+                Drive.AddItem(ItemDB.Singleton.Get(2));
             }
         }
 

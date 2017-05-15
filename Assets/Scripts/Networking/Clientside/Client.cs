@@ -288,6 +288,17 @@ namespace Cyber.Networking.Clientside {
                     EquipSlot Slot = (EquipSlot) InventoryActionPkt.RelatedInt;
                     Inventory.Equipped.ClearSlot(Slot);
                     break;
+                case InventoryAction.Use:
+                    EquipSlot UseSlot = (EquipSlot) InventoryActionPkt.RelatedInt;
+                    Item UseItem = Inventory.Equipped.GetItem(UseSlot);
+                    Character Character = CurrSyncBase.GetComponent<Character>();
+                    if (UseItem != null && UseItem.Action != null && Character != null &&
+                            Player.Character != Character) {
+                        // Item exists, it has an action, and the character 
+                        // isn't controlled by the client (no double-actions).
+                        UseItem.Action(Character);
+                    }
+                    break;
                 }
                 break;
             default:

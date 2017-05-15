@@ -6,6 +6,7 @@ using Cyber.Networking;
 using Cyber.Networking.Messages;
 using Cyber.Entities;
 using Cyber.Util;
+using Cyber.Items;
 
 namespace Cyber.Controls {
     
@@ -49,15 +50,18 @@ namespace Cyber.Controls {
                 }
             
                 // Interactions
+                bool Interacted = false;
                 GameObject LookedAtObject = CameraUtil.GetLookedAtGameObject(Camera, Character.InteractionDistance);
                 if (LookedAtObject != null) {
                     Interactable LookingAt = LookedAtObject.GetComponent<Interactable>();
                     if (LookingAt != null && (LookingAt.transform.position - Character.GetPosition()).magnitude < Character.InteractionDistance) {
                         if (Input.GetButtonDown("Activate")) {
                             InteractWith(LookingAt, InteractionType.Activate);
+                            Interacted = true;
                         }
                         if (Input.GetButtonUp("Activate")) {
                             InteractWith(LookingAt, InteractionType.Deactivate);
+                            Interacted = true;
                         }
                         if (LookedAtObject != LastLookedAt) {
                             InteractWith(LookingAt, InteractionType.Enter);
@@ -70,6 +74,20 @@ namespace Cyber.Controls {
                 } else if (LastLookedAt != null) {
                     InteractWith(LastLookedAt.GetComponent<Interactable>(), InteractionType.Exit);
                     LastLookedAt = null;
+                }
+
+                // Equipment actions
+                if (!Interacted) {
+                    // Don't use equipment if you're interacting with something
+                    // (ie. don't shoot at the buttons)
+                    if (Input.GetButtonDown("Use Item (R)")) {
+                        Character.UseItemInSlot(EquipSlot.RightHand);
+                        Client.Send(PktType.InventoryAction, new InventoryActionPkt(InventoryAction.Use, (int) EquipSlot.RightHand));
+                    }
+                    if (Input.GetButtonDown("Use Item (L)")) {
+                        Character.UseItemInSlot(EquipSlot.LeftHand);
+                        Client.Send(PktType.InventoryAction, new InventoryActionPkt(InventoryAction.Use, (int) EquipSlot.LeftHand));
+                    }
                 }
             } else if (Character.Moving()) {
                 // The debug console is open, stop the player.

@@ -182,13 +182,13 @@ namespace Cyber.Controls {
                     IconExplainerText.SetTextProperties(Props);
 
 
-                    IconInventory.material.SetColor("_EmissionColor", new Color(IconInventoryColor.r * InvBrightness, 
+                    IconInventory.material.SetColor("_EmissionColor", new Color(IconInventoryColor.r * InvBrightness,
                         IconInventoryColor.g * InvBrightness, IconInventoryColor.b * InvBrightness));
-                    IconStatus.material.SetColor("_EmissionColor", new Color(IconStatusColor.r * StsBrightness, 
+                    IconStatus.material.SetColor("_EmissionColor", new Color(IconStatusColor.r * StsBrightness,
                         IconStatusColor.g * StsBrightness, IconStatusColor.b * StsBrightness));
-                    IconSocial.material.SetColor("_EmissionColor", new Color(IconSocialColor.r * SclBrightness, 
+                    IconSocial.material.SetColor("_EmissionColor", new Color(IconSocialColor.r * SclBrightness,
                         IconSocialColor.g * SclBrightness, IconSocialColor.b * SclBrightness));
-                    IconMap.material.SetColor("_EmissionColor", new Color(IconMapColor.r * MapBrightness, 
+                    IconMap.material.SetColor("_EmissionColor", new Color(IconMapColor.r * MapBrightness,
                         IconMapColor.g * MapBrightness, IconMapColor.b * MapBrightness));
                 }
             } else {
@@ -243,8 +243,8 @@ namespace Cyber.Controls {
                         if ((ItemGridSelector.position - ItemGridCells[i].position).magnitude < 0.01f) {
                             ItemGridSelector.position = ItemGridCells[i].position;
                         } else {
-                            ItemGridSelector.position = 
-                                Vector3.Lerp(ItemGridSelector.position, 
+                            ItemGridSelector.position =
+                                Vector3.Lerp(ItemGridSelector.position,
                                     ItemGridCells[i].position, 20f * Time.deltaTime);
                         }
                         Vector3 NewRot = ItemGridSelector.localEulerAngles;

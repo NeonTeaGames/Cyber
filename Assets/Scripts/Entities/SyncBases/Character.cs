@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using Cyber.Networking.Clientside;
+using Cyber.Items;
 
 namespace Cyber.Entities.SyncBases {
     
@@ -24,6 +25,11 @@ namespace Cyber.Entities.SyncBases {
         /// The character controller, used to move the character. Handles collisions.
         /// </summary>
         public CharacterController CharacterController;
+
+        /// <summary>
+        /// The inventory of this player.
+        /// </summary>
+        public Inventory Inventory;
 
         /// <summary>
         /// The head transform for looking around.
@@ -52,6 +58,16 @@ namespace Cyber.Entities.SyncBases {
         public void Stop() {
             if (Moving()) {
                 MovementDirection = new Vector3();
+            }
+        }
+
+        /// <summary>
+        /// Uses the item in the left hand if something is equipped.
+        /// </summary>
+        public void UseItemInSlot(EquipSlot slot) {
+            Item Equipped = Inventory.Equipped.GetItem(slot);
+            if (Equipped != null && Equipped.Action != null) {
+                Equipped.Action(this);
             }
         }
 

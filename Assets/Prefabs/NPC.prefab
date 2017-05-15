@@ -507,6 +507,7 @@ MonoBehaviour:
   MovementSpeed: 5
   InteractionDistance: 2
   CharacterController: {fileID: 143753897266899886}
+  Inventory: {fileID: 114934786006823366}
   Head: {fileID: 4900355877646882}
 --- !u!114 &114629890146295716
 MonoBehaviour:
