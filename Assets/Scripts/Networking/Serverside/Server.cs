@@ -250,27 +250,10 @@ namespace Cyber.Networking.Serverside {
                 Inventory CurrInventory = Character.GetComponent<Inventory>();
                 InventoryActionPkt.SyncBaseID = CurrInventory.ID;
 
-                switch (InventoryActionPkt.Action) {
-                case InventoryAction.Equip:
-                    Item Item = ItemDB.Singleton.Get(InventoryActionPkt.RelatedInt);
-                    CurrInventory.Equipped.SetSlot(Item.Slot, Item);
-                    break;
-                case InventoryAction.Unequip:
-                    EquipSlot Slot = (EquipSlot) InventoryActionPkt.RelatedInt;
-                    CurrInventory.Equipped.ClearSlot(Slot);
-                    break;
-                case InventoryAction.Use:
-                    EquipSlot UseSlot = (EquipSlot) InventoryActionPkt.RelatedInt;
-                    Item UseItem = CurrInventory.Equipped.GetItem(UseSlot);
-                    if (UseItem != null && UseItem.Action != null && Character != null) {
-                        // Item exists, it has an action, and the character 
-                        // isn't controlled by the client (no double-actions).
-                        UseItem.Action(Character);
-                    }
-                    break;
+                if (CurrInventory.ActionHandler.HandleAction(InventoryActionPkt.Action, InventoryActionPkt.RelatedInt)) {
+                    SendToAll(PktType.InventoryAction, InventoryActionPkt);
                 }
 
-                SendToAll(PktType.InventoryAction, InventoryActionPkt);
                 break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);

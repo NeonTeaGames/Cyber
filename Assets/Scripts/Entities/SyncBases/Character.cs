@@ -62,16 +62,6 @@ namespace Cyber.Entities.SyncBases {
         }
 
         /// <summary>
-        /// Uses the item in the left hand if something is equipped.
-        /// </summary>
-        public void UseItemInSlot(EquipSlot slot) {
-            Item Equipped = Inventory.Equipped.GetItem(slot);
-            if (Equipped != null && Equipped.Action != null) {
-                Equipped.Action(this);
-            }
-        }
-
-        /// <summary>
         /// Sets the character's rotation.
         /// </summary>
         /// <param name="EulerAngles">Rotation in euler angles.</param>

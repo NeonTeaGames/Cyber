@@ -4,7 +4,6 @@ using Cyber.Items;
 using Cyber.Networking;
 using Cyber.Networking.Serverside;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Entities.SyncBases {
@@ -23,6 +22,13 @@ namespace Cyber.Entities.SyncBases {
         /// This entity's <see cref="Items.Equipped"/> <see cref="Item"/>s.
         /// </summary>
         public Equipped Equipped;
+
+        /// <summary>
+        /// The possible <see cref="Character"/> component associated with this Inventory. Used in <see cref="UseItemInSlot(EquipSlot)"/>.
+        /// </summary>
+        public Character Character;
+
+        public InventoryActionHandler ActionHandler;
 
         /// <summary>
         /// Creates the Inventory-component for a game object.
@@ -61,6 +67,16 @@ namespace Cyber.Entities.SyncBases {
         /// <returns></returns>
         public override SyncHandletype GetSyncHandletype() {
             return new SyncHandletype(true, 10);
+        }
+
+        /// <summary>
+        /// Uses the item in the left hand if something is equipped.
+        /// </summary>
+        public void UseItemInSlot(EquipSlot slot) {
+            Item Item = Equipped.GetItem(slot);
+            if (Item != null && Item.Action != null && Character != null) {
+                Item.Action(Character);
+            }
         }
 
         /// <summary>
@@ -143,6 +159,11 @@ namespace Cyber.Entities.SyncBases {
             writer.WriteBytesFull(EquippedByteArray[1]);
             writer.WriteBytesFull(EquippedByteArray[2]);
             writer.WriteBytesFull(EquippedByteArray[3]);
+        }
+
+        private void Start() {
+            Character = GetComponent<Character>();
+            ActionHandler = new InventoryActionHandler(this, Character);
         }
     }
 }

@@ -20,5 +20,6 @@ namespace Cyber.Items {
         /// Use the item in the given slot.
         /// </summary>
         Use
+
     }
 }

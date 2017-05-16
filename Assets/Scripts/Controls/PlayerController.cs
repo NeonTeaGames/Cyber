@@ -81,12 +81,12 @@ namespace Cyber.Controls {
                     // Don't use equipment if you're interacting with something
                     // (ie. don't shoot at the buttons)
                     if (Input.GetButtonDown("Use Item (R)")) {
-                        Character.UseItemInSlot(EquipSlot.RightHand);
-                        Client.Send(PktType.InventoryAction, new InventoryActionPkt(InventoryAction.Use, (int) EquipSlot.RightHand));
+                        Character.Inventory.UseItemInSlot(EquipSlot.RightHand);
+                        Client.Send(PktType.InventoryAction, Character.Inventory.ActionHandler.BuildUseItem(EquipSlot.RightHand));
                     }
                     if (Input.GetButtonDown("Use Item (L)")) {
-                        Character.UseItemInSlot(EquipSlot.LeftHand);
-                        Client.Send(PktType.InventoryAction, new InventoryActionPkt(InventoryAction.Use, (int) EquipSlot.LeftHand));
+                        Character.Inventory.UseItemInSlot(EquipSlot.LeftHand);
+                        Client.Send(PktType.InventoryAction, Character.Inventory.ActionHandler.BuildUseItem(EquipSlot.LeftHand));
                     }
                 }
             } else if (Character.Moving()) {

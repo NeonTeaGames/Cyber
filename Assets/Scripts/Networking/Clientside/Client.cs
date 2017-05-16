@@ -111,11 +111,14 @@ namespace Cyber.Networking.Clientside {
         }
 
         /// <summary>
-        /// Returns the connected player.
+        /// Returns the connected player, or null if no client is active.
         /// </summary>
         /// <returns>The connected player.</returns>
         public static CConnectedPlayer GetConnectedPlayer() {
-            return Singleton.Player;
+            if (IsRunning()) {
+                return Singleton.Player;
+            }
+            return null;
         }
 
         /// <summary>
@@ -279,27 +282,8 @@ namespace Cyber.Networking.Clientside {
                     break;
                 }
 
-                switch (InventoryActionPkt.Action) {
-                case InventoryAction.Equip:
-                    Item Item = ItemDB.Singleton.Get(InventoryActionPkt.RelatedInt);
-                    Inventory.Equipped.SetSlot(Item.Slot, Item);
-                    break;
-                case InventoryAction.Unequip:
-                    EquipSlot Slot = (EquipSlot) InventoryActionPkt.RelatedInt;
-                    Inventory.Equipped.ClearSlot(Slot);
-                    break;
-                case InventoryAction.Use:
-                    EquipSlot UseSlot = (EquipSlot) InventoryActionPkt.RelatedInt;
-                    Item UseItem = Inventory.Equipped.GetItem(UseSlot);
-                    Character Character = CurrSyncBase.GetComponent<Character>();
-                    if (UseItem != null && UseItem.Action != null && Character != null &&
-                            Player.Character != Character) {
-                        // Item exists, it has an action, and the character 
-                        // isn't controlled by the client (no double-actions).
-                        UseItem.Action(Character);
-                    }
-                    break;
-                }
+                Inventory.ActionHandler.HandleAction(InventoryActionPkt.Action, InventoryActionPkt.RelatedInt);
+
                 break;
             default:
                 Debug.LogError("Received an unknown packet, id: " + msg.msgType);
