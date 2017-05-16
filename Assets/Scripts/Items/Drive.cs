@@ -99,10 +99,10 @@ namespace Cyber.Items {
         }
 
         /// <summary>
-        /// 
+        /// Switches two slots at given indices, allowing moving items around the inventory.
         /// </summary>
-        /// <param name="idx1"></param>
-        /// <param name="idx2"></param>
+        /// <param name="idx1">The first index.</param>
+        /// <param name="idx2">The second index.</param>
         public void SwitchSlots(int idx1, int idx2) {
             Slot Slot1 = GetSlotAt(idx1);
             Slot Slot2 = GetSlotAt(idx2);
