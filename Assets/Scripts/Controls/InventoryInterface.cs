@@ -155,7 +155,6 @@ namespace Cyber.Controls {
                                 ItemGridSelectedIndex == CurrentIndex) {
                             // This item has been selected for at least a frame, 
                             // and the mouse is moving, this counts as dragging
-                            Debug.Log("Grabbed!");
                             GrabbedItem = LookedAt.collider.transform;
                             GrabbedItemIndex = CurrentIndex;
                         }
@@ -193,8 +192,9 @@ namespace Cyber.Controls {
                             // Reset grabbing
                             GrabbedItem = null;
                             GrabbedItemIndex = -1;
+                            ItemGridSelectedIndex = CurrentIndex;
                         } else {
-                            
+                            ItemGridCellMeshes[GrabbedItemIndex].transform.position = LookedAt.point;
                         }
                     }
                 } else if (Mesh != null) {
