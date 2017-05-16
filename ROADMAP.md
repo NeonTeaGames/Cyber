@@ -4,6 +4,15 @@ This file contains all the intended features for each version, so in addition to
 
 Yes, the plans go so far into the future that the universe will probably die a heat death before we are done with this list. Mostly because generating version names is fun.
 
+Version 0.8.0 - Purgatory
+-------------------------
+Like the name suggests, the purgatory. This is our first _"release"_ and possibly
+our first proper milestone as a game. This is quite an "all-around" update, but
+mostly it'll focus on getting out a deathmatch-style gamemode to test out.
+- [ ] Cleaning up and fixing some bugs
+- [ ] Create an actual deathmatch map
+- [ ] Create some proper deathmatch mechanics and stuff
+
 Version 0.7.0 - Crazy
 ---------------------
 - [ ] Generated room layouts.
@@ -26,20 +35,23 @@ Version 0.5.0 - Overrate
 
 Version 0.4.0 - Hug
 -------------------
-- [ ] Items and inventory.
-- [ ] Equipment, can wear items (just basic cubes) on head and hands.
-- [ ] Equipment, can cause some effect by "using" an item equipped in hand.
+- [x] Items and inventory.
+- [x] Equipment, can wear items (just basic cubes) on head and hands.
+- [x] Equipment, can cause some effect by "using" an item equipped in hand.
+- [x] Reorganizing inventory and polishing stuff like that
 
-Version 0.3.0 - Mortician
--------------------------
-- [x] In-game console.
-- [x] API for the console, should be able to print stuff on the screen on command.
-
-Version 0.2.0 - Juniper
+Version 0.3.0 - Juniper
 -----------------------
+_(previously 0.2.0)_
 - [x] Basic interactions and an environment for testing.
   - [x] A room with a door, a button and a screen.
   - [x] Both players should be able to open the door and press the button, and see a reaction in the world (door opening, screen flashing).
+
+Version 0.2.0 - Mortician
+-------------------------
+_(previously 0.3.0)_
+- [x] In-game console.
+- [x] API for the console, should be able to print stuff on the screen on command.
 
 Version 0.1.0 - Gigantic
 ------------------------
