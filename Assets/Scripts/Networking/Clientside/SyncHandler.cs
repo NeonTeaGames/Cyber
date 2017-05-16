@@ -14,6 +14,8 @@ namespace Cyber.Networking.Clientside {
     /// </summary>
     public class SyncHandler {
 
+        public static double LastTimestamp = NetworkHelper.GetCurrentSystemTime();
+
         private SyncDB SyncDB;
         private int LatestSyncID = -1;
 
@@ -47,7 +49,11 @@ namespace Cyber.Networking.Clientside {
                         }
                     }
 
-                    Client.Send(PktType.FailedChecksums, new IntListPkt(FailedSyncBases.ToArray()));
+                    if (FailedSyncBases.Count > 0) {
+                        Client.Send(PktType.FailedChecksums, new IntListPkt(FailedSyncBases.ToArray()));
+                    }
+
+                    LastTimestamp = SyncPacket.Timestamp;
                 }
             }
             // Otherwise disregard the sync.

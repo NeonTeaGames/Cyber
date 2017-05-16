@@ -62,7 +62,8 @@ namespace Cyber.Networking.Serverside {
 
             if (QueuedSyncs.Count > 0) {
                 int[] SyncIDs = QueuedSyncs.ToArray();
-                SyncPkt SyncPacket = new SyncPkt(Database, SyncIDs, checksummedIds.ToArray(), checksums.ToArray(), NextSyncID());
+                SyncPkt SyncPacket = new SyncPkt(Database, SyncIDs, checksummedIds.ToArray(), 
+                    checksums.ToArray(), NextSyncID(), NetworkHelper.GetCurrentSystemTime());
                 Server.SendToAllByChannel(PktType.Sync, SyncPacket, NetworkChannelID.Unreliable);
 
                 QueuedSyncs.Clear();

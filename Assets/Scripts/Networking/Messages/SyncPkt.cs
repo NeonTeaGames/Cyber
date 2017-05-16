@@ -11,6 +11,11 @@ namespace Cyber.Networking.Messages {
     public class SyncPkt : MessageBase {
 
         /// <summary>
+        /// Timestamp of the sync packet when sent from the server.
+        /// </summary>
+        public double Timestamp;
+
+        /// <summary>
         /// The Sync Packet ID of this packet.
         /// </summary>
         public int SyncPacketID;
@@ -40,12 +45,13 @@ namespace Cyber.Networking.Messages {
         /// <param name="checksummedSyncBases"></param>
         /// <param name="checksums"></param>
         /// <param name="syncPacketID">ID of the sync packet itself.</param>
-        public SyncPkt(SyncDB syncDB, int[] syncBases, int[] checksummedSyncBases, int[] checksums, int syncPacketID) {
+        public SyncPkt(SyncDB syncDB, int[] syncBases, int[] checksummedSyncBases, int[] checksums, int syncPacketID, double timestamp) {
             SyncPacketID = syncPacketID;
             SyncDB = syncDB;
             SyncedSyncBases = syncBases;
             ChecksummedSyncBases = checksummedSyncBases;
             Checksums = checksums;
+            timestamp = Timestamp;
         }
 
         /// <summary>

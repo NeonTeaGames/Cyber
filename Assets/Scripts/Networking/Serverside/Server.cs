@@ -200,7 +200,6 @@ namespace Cyber.Networking.Serverside {
                     if (Player.Value.Connection.connectionId == msg.conn.connectionId) {
                         continue;
                     }
-                    MoveCreature.Timestamp = NetworkHelper.GetCurrentSystemTime();
                     NetworkServer.SendToClient(Player.Value.Connection.connectionId, PktType.MoveCreature, MoveCreature);
                 }
                 break;

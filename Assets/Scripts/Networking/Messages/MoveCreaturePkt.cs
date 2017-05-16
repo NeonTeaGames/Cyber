@@ -20,11 +20,6 @@ namespace Cyber.Networking.Messages {
         public int SyncBaseID;
 
         /// <summary>
-        /// Time when server received this request. Used for compensating ping.
-        /// </summary>
-        public double Timestamp;
-
-        /// <summary>
         /// Creates a MoveCreaturePkt which contains the direction of desired movement (or (0, 0, 0) for stopping)
         /// </summary>
         /// <param name="direction">Direction of movement</param>
@@ -48,7 +43,6 @@ namespace Cyber.Networking.Messages {
         public override void Deserialize(NetworkReader reader) {
             Direction = reader.ReadVector3();
             SyncBaseID = reader.ReadInt32();
-            Timestamp = reader.ReadDouble();
         }
 
         /// <summary>
@@ -58,7 +52,6 @@ namespace Cyber.Networking.Messages {
         public override void Serialize(NetworkWriter writer) {
             writer.Write(Direction);
             writer.Write(SyncBaseID);
-            writer.Write(Timestamp);
         }
 
     }
