@@ -71,7 +71,7 @@ namespace Cyber.Networking.Clientside {
         }
 
         public float GetPing() {
-            return (float) ((NetworkHelper.GetTime() - LastTimestamp) / 1000f);
+            return (float) ((NetworkHelper.GetTime() - LastTimestamp) * 1000f);
         }
 
         public float GetPacketLoss() {
