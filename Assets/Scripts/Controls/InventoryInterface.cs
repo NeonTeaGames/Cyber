@@ -187,7 +187,7 @@ namespace Cyber.Controls {
                             Lerper.LerpTransformPosition(ItemGridCellMeshes[CurrentIndex].transform, new Vector3(), 10f);
 
                             // Switch items
-                            Inventory.Drive.SwitchSlots(GrabbedItemIndex, CurrentIndex);
+                            Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildSlotSwitch(GrabbedItemIndex, CurrentIndex));
 
                             // Reset grabbing
                             GrabbedItem = null;
