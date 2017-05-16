@@ -28,6 +28,9 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         public Character Character;
 
+        /// <summary>
+        /// The <see cref="InventoryActionHandler"/> which handles inventory actions properly.
+        /// </summary>
         public InventoryActionHandler ActionHandler;
 
         /// <summary>
