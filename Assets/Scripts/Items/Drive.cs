@@ -99,6 +99,25 @@ namespace Cyber.Items {
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="idx1"></param>
+        /// <param name="idx2"></param>
+        public void SwitchSlots(int idx1, int idx2) {
+            Slot Slot1 = GetSlotAt(idx1);
+            Slot Slot2 = GetSlotAt(idx2);
+            SetSlotAt(idx1, Slot2);
+            SetSlotAt(idx2, Slot1);
+        }
+
+        private void SetSlotAt(int idx, Slot slot) {
+            if (idx >= Slots.Length) {
+                IncreaseCapacity(idx - Slots.Length + 1);
+            }
+            Slots[idx] = slot;
+        }
+
+        /// <summary>
         /// Gets the item at the given index, or null if there is nothing.
         /// </summary>
         /// <param name="idx">The index of the desired item</param>

@@ -205,7 +205,7 @@ namespace Cyber.Controls {
                 for (int x = 0; x < ItemGridDimensions.x; x++) {
                     // Find the item and mesh
                     int i = x + y * (int) ItemGridDimensions.x;
-                    Item Item = Inventory.Drive.GetItemAt(x + y * (int) ItemGridDimensions.y);
+                    Item Item = Inventory.Drive.GetItemAt(x + y * (int) ItemGridDimensions.x);
                     Mesh Mesh = null;
                     if (Item != null) {
                         Mesh = MeshDB.GetMesh(Item.ModelID);
