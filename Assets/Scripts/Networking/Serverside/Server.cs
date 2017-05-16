@@ -246,7 +246,8 @@ namespace Cyber.Networking.Serverside {
                 InventoryActionPkt InventoryActionPkt = new InventoryActionPkt();
                 InventoryActionPkt.Deserialize(msg.reader);
 
-                Inventory CurrInventory = Players[msg.conn.connectionId].Character.GetComponent<Inventory>();
+                Character Character = Players[msg.conn.connectionId].Character;
+                Inventory CurrInventory = Character.GetComponent<Inventory>();
                 InventoryActionPkt.SyncBaseID = CurrInventory.ID;
 
                 switch (InventoryActionPkt.Action) {
@@ -257,6 +258,15 @@ namespace Cyber.Networking.Serverside {
                 case InventoryAction.Unequip:
                     EquipSlot Slot = (EquipSlot) InventoryActionPkt.RelatedInt;
                     CurrInventory.Equipped.ClearSlot(Slot);
+                    break;
+                case InventoryAction.Use:
+                    EquipSlot UseSlot = (EquipSlot) InventoryActionPkt.RelatedInt;
+                    Item UseItem = CurrInventory.Equipped.GetItem(UseSlot);
+                    if (UseItem != null && UseItem.Action != null && Character != null) {
+                        // Item exists, it has an action, and the character 
+                        // isn't controlled by the client (no double-actions).
+                        UseItem.Action(Character);
+                    }
                     break;
                 }
 

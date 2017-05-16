@@ -6,6 +6,9 @@ namespace Cyber.Items {
     /// An item, containing itemmy information.
     /// </summary>
     public class Item {
+        /// <summary>
+        /// Delegate for actions that items can do.
+        /// </summary>
         public delegate void ItemAction(Character host);
 
         /// <summary>
@@ -52,6 +55,7 @@ namespace Cyber.Items {
         /// <param name="weight">The Weight of the item.</param>
         /// <param name="slot">The equip slot of the item.</param>
         /// <param name="description">The description of the item.</param>
+        /// <param name="action">The action which is ran when the item is used.</param>
         public Item(int id, int modelId, string name, float weight, EquipSlot slot, string description, ItemAction action = null) {
             ID = id;
             ModelID = modelId;
