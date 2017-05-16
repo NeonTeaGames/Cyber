@@ -143,16 +143,15 @@ namespace Cyber.Controls {
                     }
                     if (Input.GetButtonDown("Equip")) {
                         // Selected index was already this => equip (double-clicked)
-                        Item SelectedItem = Inventory.Drive.Interface.GetItemAt(ItemGridSelectedIndex % (int) ItemGridDimensions.x,
-                            ItemGridSelectedIndex / (int) ItemGridDimensions.y);
+                        Item SelectedItem = Inventory.Drive.GetItemAt(ItemGridSelectedIndex);
                         if (SelectedItem != null) {
-                            Item Equipped = Inventory.Equipped.GetItem(SelectedItem.Slot);
+                            Item Equipped = Inventory.Drive.GetSlot(SelectedItem.Slot);
                             if (Equipped != null && Equipped.ID == SelectedItem.ID) {
-                                Inventory.Equipped.ClearSlot(SelectedItem.Slot);
+                                Inventory.Drive.UnequipSlot(SelectedItem.Slot);
                                 Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildClearSlot(SelectedItem.Slot));
                             } else {
-                                Inventory.Equipped.SetSlot(SelectedItem.Slot, SelectedItem);
-                                Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildEquipItem(SelectedItem.ID));
+                                Inventory.Drive.EquipItem(ItemGridSelectedIndex);
+                                Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildEquipItem(ItemGridSelectedIndex));
                             }
                         }
                     }
@@ -206,7 +205,7 @@ namespace Cyber.Controls {
                 for (int x = 0; x < ItemGridDimensions.x; x++) {
                     // Find the item and mesh
                     int i = x + y * (int) ItemGridDimensions.x;
-                    Item Item = Inventory.Drive.Interface.GetItemAt(x, y);
+                    Item Item = Inventory.Drive.GetItemAt(x + y * (int) ItemGridDimensions.y);
                     Mesh Mesh = null;
                     if (Item != null) {
                         Mesh = MeshDB.GetMesh(Item.ModelID);

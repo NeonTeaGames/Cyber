@@ -48,7 +48,7 @@ namespace Cyber.Controls {
 
         private void Update() {
             if (Time.time - LastUpdateTime >= 1f / UpdateFrequency) {
-                Dictionary<EquipSlot, Item> Equips = Inventory.Equipped.GetEquippedDict();
+                Dictionary<EquipSlot, Item> Equips = Inventory.Drive.GetEquippedItems();
                 // Empty all slots
                 for (int i = 0; i < Slots.Length; i++) {
                     Slots[i].Mesh.mesh = null;

@@ -4,6 +4,7 @@ using Cyber.Items;
 using Cyber.Networking;
 using Cyber.Networking.Serverside;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Entities.SyncBases {
@@ -17,11 +18,6 @@ namespace Cyber.Entities.SyncBases {
         /// Refrence of the actual <see cref="Drive"/>.
         /// </summary>
         public Drive Drive;
-
-        /// <summary>
-        /// This entity's <see cref="Items.Equipped"/> <see cref="Item"/>s.
-        /// </summary>
-        public Equipped Equipped;
 
         /// <summary>
         /// The possible <see cref="Character"/> component associated with this Inventory. Used in <see cref="UseItemInSlot(EquipSlot)"/>.
@@ -38,7 +34,6 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         public Inventory() {
             Drive = new Drive(10f);
-            Equipped = new Equipped();
             if (Server.IsRunning()) {
                 Drive.AddItem(ItemDB.Singleton.Get(0));
                 Drive.AddItem(ItemDB.Singleton.Get(1));
@@ -51,15 +46,11 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         /// <returns>A checksum of the IDs of the items</returns>
         public override int GenerateChecksum() {
-            var Items = Drive.GetItems().ToArray();
+            var Slots = Drive.GetSlots();
             int Checksum = 0;
-            for (int i = 0; i < Items.Length; i++) {
+            for (int i = 0; i < Slots.Length; i++) {
                 // Times with primes and sprinkle some i to spice up the stew
-                Checksum += (Items[i].ID + 1) * 509 * (i + 1) * 53;
-            }
-            var EquippedItems = Equipped.GetEquippedList().ToArray();
-            for (int i = 0; i < EquippedItems.Length; i++) {
-                Checksum += (EquippedItems[i].ID + 1) * 859 * (i + 1) * 97;
+                Checksum += (((Slots[i].Item != null) ? Slots[i].Item.ID : i) + 1) * 509 * (i + 1) * 53 + (Slots[i].Equipped ? 1789 : 431);
             }
             return Checksum;
         }
@@ -76,7 +67,7 @@ namespace Cyber.Entities.SyncBases {
         /// Uses the item in the left hand if something is equipped.
         /// </summary>
         public void UseItemInSlot(EquipSlot slot) {
-            Item Item = Equipped.GetItem(slot);
+            Item Item = Drive.GetSlot(slot);
             if (Item != null && Item.Action != null && Character != null) {
                 Item.Action(Character);
             }
@@ -95,29 +86,15 @@ namespace Cyber.Entities.SyncBases {
             ByteArray[3] = reader.ReadBytesAndSize();
             int[] IDs = NetworkHelper.DeserializeIntArray(ByteArray);
 
+            byte[] Equippeds = reader.ReadBytesAndSize();
+
             Drive.Clear();
-            foreach (int id in IDs) {
-                Drive.AddItem(ItemDB.Singleton.Get(id));
-            }
-
-            bool ReceivedSlots = reader.ReadBoolean();
-            if (!ReceivedSlots) {
-                Equipped.ClearAllEquipped();
-                return;
-            }
-
-            byte[] Slots = reader.ReadBytesAndSize();
-
-            byte[][] EquippedIdsBytes = new byte[4][];
-            EquippedIdsBytes[0] = reader.ReadBytesAndSize();
-            EquippedIdsBytes[1] = reader.ReadBytesAndSize();
-            EquippedIdsBytes[2] = reader.ReadBytesAndSize();
-            EquippedIdsBytes[3] = reader.ReadBytesAndSize();
-            int[] EquippedIds = NetworkHelper.DeserializeIntArray(EquippedIdsBytes);
-
-            Equipped.ClearAllEquipped();
-            for (int i = 0; i < Slots.Length; i++) {
-                Equipped.SetSlot((EquipSlot) Slots[i], ItemDB.Singleton.Get(EquippedIds[i]));
+            for (int i = 0; i < IDs.Length; i++) {
+                int ID = IDs[i];
+                if (ID >= 0) {
+                    Drive.AddItemToIndex(ItemDB.Singleton.Get(ID), i);
+                    Drive.GetSlots()[i].Equipped = (Equippeds[i] == 1 ? true : false);
+                }
             }
         }
 
@@ -126,11 +103,19 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
-            var Items = Drive.GetItems();
-            int[] IDs = new int[Items.Count];
-            for (int i = 0; i < Items.Count; i++) {
-                IDs[i] = Items[i].ID;
+            Slot[] Slots = Drive.GetSlots();
+
+            int[] IDs = new int[Slots.Length];
+            byte[] Equippeds = new byte[Slots.Length];
+            for (int i = 0; i < Slots.Length; i++) {
+                if (Slots[i].Item == null) {
+                    IDs[i] = -1;
+                } else {
+                    IDs[i] = Slots[i].Item.ID;
+                }
+                Equippeds[i] = (byte) ((Slots[i].Equipped) ? 1 : 0);
             }
+            
             byte[][] ByteArray = NetworkHelper.SerializeIntArray(IDs);
 
             writer.WriteBytesFull(ByteArray[0]);
@@ -138,30 +123,7 @@ namespace Cyber.Entities.SyncBases {
             writer.WriteBytesFull(ByteArray[2]);
             writer.WriteBytesFull(ByteArray[3]);
 
-            var slotList = new List<EquipSlot>(Equipped.GetEquippedDict().Keys).ConvertAll(x => (byte) x);
-
-            if (slotList.Count > 0) {
-                writer.Write(true);
-            } else {
-                writer.Write(false);
-            }
-
-            slotList.Sort((a, b) => {
-                return b - a;
-            });
-
-            var idList = new List<int>();
-            slotList.ForEach(x => {
-                idList.Add(Equipped.GetItem((EquipSlot) x).ID);
-            });
-
-            writer.WriteBytesFull(slotList.ToArray());
-
-            byte[][] EquippedByteArray = NetworkHelper.SerializeIntArray(idList.ToArray());
-            writer.WriteBytesFull(EquippedByteArray[0]);
-            writer.WriteBytesFull(EquippedByteArray[1]);
-            writer.WriteBytesFull(EquippedByteArray[2]);
-            writer.WriteBytesFull(EquippedByteArray[3]);
+            writer.WriteBytesFull(Equippeds);
         }
 
         private void Start() {

@@ -44,10 +44,10 @@ namespace Cyber.Items {
         /// <summary>
         /// Builds a <see cref="InventoryAction.Equip"/> packet.
         /// </summary>
-        /// <param name="itemID">The item ID to equip.</param>
+        /// <param name="itemIdx">The item index to equip.</param>
         /// <returns></returns>
-        public InventoryActionPkt BuildEquipItem(int itemID) {
-            return new InventoryActionPkt(InventoryAction.Equip, itemID);
+        public InventoryActionPkt BuildEquipItem(int itemIdx) {
+            return new InventoryActionPkt(InventoryAction.Equip, itemIdx);
         }
 
         /// <summary>
@@ -59,16 +59,15 @@ namespace Cyber.Items {
         public bool HandleAction(InventoryAction action, int relatedInt) {
             switch (action) {
             case InventoryAction.Equip:
-                Item Item = ItemDB.Singleton.Get(relatedInt);
-                Inventory.Equipped.SetSlot(Item.Slot, Item);
+                Inventory.Drive.EquipItem(relatedInt);
                 return true;
             case InventoryAction.Unequip:
                 EquipSlot Slot = (EquipSlot) relatedInt;
-                Inventory.Equipped.ClearSlot(Slot);
+                Inventory.Drive.UnequipSlot(Slot);
                 return true;
             case InventoryAction.Use:
                 EquipSlot UseSlot = (EquipSlot) relatedInt;
-                Item UseItem = Inventory.Equipped.GetItem(UseSlot);
+                Item UseItem = Inventory.Drive.GetSlot(UseSlot);
                 if (UseItem != null && UseItem.Action != null && Character != null &&
                         (!Client.IsRunning() || Client.GetConnectedPlayer().Character != Character)) {
                     // Item exists, it has an action, and the character 
