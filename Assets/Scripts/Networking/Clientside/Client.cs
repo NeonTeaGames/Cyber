@@ -209,7 +209,7 @@ namespace Cyber.Networking.Clientside {
             case (PktType.MassIdentity):
                 IntListPkt Identities = new IntListPkt();
                 Identities.Deserialize(msg.reader);
-                foreach (int currId in Identities.IdList) {
+                foreach (int currId in Identities.IntList) {
                     Players.Add(currId, new CConnectedPlayer(currId));
                 }
                 break;
@@ -268,7 +268,7 @@ namespace Cyber.Networking.Clientside {
             case (PktType.StaticObjectIds):
                 IntListPkt StaticIds = new IntListPkt();
                 StaticIds.Deserialize(msg.reader);
-                Spawner.SyncDB.SetStaticObjectsIDs(StaticIds.IdList);
+                Spawner.SyncDB.SetStaticObjectsIDs(StaticIds.IntList);
                 break;
             case (PktType.Disconnect):
                 DisconnectPkt Disconnect = new DisconnectPkt();
@@ -290,7 +290,7 @@ namespace Cyber.Networking.Clientside {
                     break;
                 }
 
-                Inventory.ActionHandler.HandleAction(InventoryActionPkt.Action, InventoryActionPkt.RelatedInt);
+                Inventory.ActionHandler.HandleAction(InventoryActionPkt.Action, InventoryActionPkt.IntList);
 
                 break;
             default:

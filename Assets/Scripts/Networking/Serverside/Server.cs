@@ -237,7 +237,7 @@ namespace Cyber.Networking.Serverside {
             case PktType.FailedChecksums:
                 IntListPkt FailedSyncs = new IntListPkt();
                 FailedSyncs.Deserialize(msg.reader);
-                foreach (int SyncBaseId in FailedSyncs.IdList) {
+                foreach (int SyncBaseId in FailedSyncs.IntList) {
                     Syncer.DirtSyncBase(SyncBaseId);
                 }
                 break;
@@ -249,7 +249,7 @@ namespace Cyber.Networking.Serverside {
                 Inventory CurrInventory = Character.GetComponent<Inventory>();
                 InventoryActionPkt.SyncBaseID = CurrInventory.ID;
 
-                if (CurrInventory.ActionHandler.HandleAction(InventoryActionPkt.Action, InventoryActionPkt.RelatedInt)) {
+                if (CurrInventory.ActionHandler.HandleAction(InventoryActionPkt.Action, InventoryActionPkt.IntList)) {
                     SendToAll(PktType.InventoryAction, InventoryActionPkt);
                 }
 

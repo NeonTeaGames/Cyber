@@ -56,17 +56,17 @@ namespace Cyber.Items {
         /// <param name="action">The <see cref="InventoryAction"/> to run</param>
         /// <param name="relatedInt">The item related to the action.</param>
         /// <returns>Weather the action failed or not.</returns>
-        public bool HandleAction(InventoryAction action, int relatedInt) {
+        public bool HandleAction(InventoryAction action, int[] intList) {
             switch (action) {
             case InventoryAction.Equip:
-                Inventory.Drive.EquipItem(relatedInt);
+                Inventory.Drive.EquipItem(intList[0]);
                 return true;
             case InventoryAction.Unequip:
-                EquipSlot Slot = (EquipSlot) relatedInt;
+                EquipSlot Slot = (EquipSlot) intList[0];
                 Inventory.Drive.UnequipSlot(Slot);
                 return true;
             case InventoryAction.Use:
-                EquipSlot UseSlot = (EquipSlot) relatedInt;
+                EquipSlot UseSlot = (EquipSlot) intList[0];
                 Item UseItem = Inventory.Drive.GetSlot(UseSlot);
                 if (UseItem != null && UseItem.Action != null && Character != null &&
                         (!Client.IsRunning() || Client.GetConnectedPlayer().Character != Character)) {

@@ -11,14 +11,14 @@ namespace Cyber.Networking.Messages {
         /// <summary>
         /// List of Integers.
         /// </summary>
-        public int[] IdList;
+        public int[] IntList;
 
         /// <summary>
         /// Create a packet containing integers.
         /// </summary>
         /// <param name="idList"></param>
         public IntListPkt(int[] idList) {
-            IdList = idList;
+            IntList = idList;
         }
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Cyber.Networking.Messages {
             ByteArray[1] = reader.ReadBytesAndSize();
             ByteArray[2] = reader.ReadBytesAndSize();
             ByteArray[3] = reader.ReadBytesAndSize();
-            IdList = NetworkHelper.DeserializeIntArray(ByteArray);
+            IntList = NetworkHelper.DeserializeIntArray(ByteArray);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Cyber.Networking.Messages {
         /// </summary>
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
-            byte[][] ByteArray = NetworkHelper.SerializeIntArray(IdList);
+            byte[][] ByteArray = NetworkHelper.SerializeIntArray(IntList);
             writer.WriteBytesFull(ByteArray[0]);
             writer.WriteBytesFull(ByteArray[1]);
             writer.WriteBytesFull(ByteArray[2]);

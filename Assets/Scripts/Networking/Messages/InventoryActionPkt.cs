@@ -15,9 +15,9 @@ namespace Cyber.Networking.Messages {
         public InventoryAction Action;
 
         /// <summary>
-        /// The related int to the <see cref="InventoryAction"/>
+        /// The related int list to the <see cref="InventoryAction"/>
         /// </summary>
-        public int RelatedInt;
+        public int[] IntList;
 
         /// <summary>
         /// The inventory SyncBaseID this happened in. Only set by server.
@@ -29,9 +29,19 @@ namespace Cyber.Networking.Messages {
         /// </summary>
         /// <param name="action">The action done.</param>
         /// <param name="relatedInt"></param>
+        public InventoryActionPkt(InventoryAction action, int[] intList) {
+            Action = action;
+            IntList = intList;
+        }
+
+        /// <summary>
+        /// Creates an inventory packet containing only one int.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="relatedInt"></param>
         public InventoryActionPkt(InventoryAction action, int relatedInt) {
             Action = action;
-            RelatedInt = relatedInt;
+            IntList = new int[1] { relatedInt };
         }
 
         /// <summary>
@@ -45,7 +55,7 @@ namespace Cyber.Networking.Messages {
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
             Action = (InventoryAction) reader.ReadByte();
-            RelatedInt = reader.ReadInt32();
+            IntList = reader.ReadMessage<IntListPkt>().IntList;
             SyncBaseID = reader.ReadInt32();
         }
         
@@ -55,7 +65,7 @@ namespace Cyber.Networking.Messages {
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
             writer.Write((byte) Action);
-            writer.Write(RelatedInt);
+            writer.Write(new IntListPkt(IntList));
             writer.Write(SyncBaseID);
         }
     }
