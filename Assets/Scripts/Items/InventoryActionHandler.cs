@@ -81,7 +81,9 @@ namespace Cyber.Items {
                 }
                 return false;
             case InventoryAction.Switch:
-                Inventory.Drive.SwitchSlots(intList[0], intList[1]);
+                if (!Client.IsRunning() || Client.GetConnectedPlayer().Character != Character) {
+                    Inventory.Drive.SwitchSlots(intList[0], intList[1]);
+                }
                 return true;
             }
             return false;

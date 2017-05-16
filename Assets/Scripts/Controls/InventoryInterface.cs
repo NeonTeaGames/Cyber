@@ -182,11 +182,11 @@ namespace Cyber.Controls {
                             // Grab was released, drop item here
                             // Lerp things
                             ItemGridCellMeshes[GrabbedItemIndex].transform.position = ItemGridCells[CurrentIndex].position;
-                            ItemGridCellMeshes[CurrentIndex].transform.position = ItemGridCells[GrabbedItemIndex].position;
                             Lerper.LerpTransformPosition(ItemGridCellMeshes[GrabbedItemIndex].transform, new Vector3(), 10f);
                             Lerper.LerpTransformPosition(ItemGridCellMeshes[CurrentIndex].transform, new Vector3(), 10f);
 
                             // Switch items
+                            Inventory.Drive.SwitchSlots(GrabbedItemIndex, CurrentIndex);
                             Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildSlotSwitch(GrabbedItemIndex, CurrentIndex));
 
                             // Reset grabbing
