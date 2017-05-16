@@ -1,5 +1,4 @@
 ﻿
-using Cyber.Console;
 using Cyber.Entities;
 using UnityEngine.Networking;
 
@@ -13,7 +12,7 @@ namespace Cyber.Networking.Messages {
         /// <summary>
         /// Timestamp of the sync packet when sent from the server.
         /// </summary>
-        public double Timestamp;
+        public float Timestamp;
 
         /// <summary>
         /// The Sync Packet ID of this packet.
@@ -45,13 +44,13 @@ namespace Cyber.Networking.Messages {
         /// <param name="checksummedSyncBases"></param>
         /// <param name="checksums"></param>
         /// <param name="syncPacketID">ID of the sync packet itself.</param>
-        public SyncPkt(SyncDB syncDB, int[] syncBases, int[] checksummedSyncBases, int[] checksums, int syncPacketID, double timestamp) {
+        public SyncPkt(SyncDB syncDB, int[] syncBases, int[] checksummedSyncBases, int[] checksums, int syncPacketID, float timestamp) {
             SyncPacketID = syncPacketID;
             SyncDB = syncDB;
             SyncedSyncBases = syncBases;
             ChecksummedSyncBases = checksummedSyncBases;
             Checksums = checksums;
-            timestamp = Timestamp;
+            Timestamp = timestamp;
         }
 
         /// <summary>
@@ -70,6 +69,8 @@ namespace Cyber.Networking.Messages {
         /// <param name="reader"></param>
         public override void Deserialize(NetworkReader reader) {
             SyncPacketID = reader.ReadInt32();
+            
+            Timestamp = (float) reader.ReadDouble();
         }
 
         /// <summary>
@@ -77,6 +78,7 @@ namespace Cyber.Networking.Messages {
         /// </summary>
         /// <param name="reader"></param>
         public void ApplySync(NetworkReader reader) {
+
             byte[][] ByteArray = new byte[4][];
             ByteArray[0] = reader.ReadBytesAndSize();
             ByteArray[1] = reader.ReadBytesAndSize();
@@ -114,6 +116,8 @@ namespace Cyber.Networking.Messages {
         /// <param name="writer"></param>
         public override void Serialize(NetworkWriter writer) {
             writer.Write(SyncPacketID);
+
+            writer.Write((double) Timestamp);
 
             byte[][] SyncedIdsByteArray = NetworkHelper.SerializeIntArray(SyncedSyncBases);
             writer.WriteBytesFull(SyncedIdsByteArray[0]);

@@ -29,13 +29,13 @@ namespace Cyber.Networking.Clientside {
 
         private Spawner Spawner;
 
-        private SyncHandler SyncHandler;
-
         /// <summary>
         /// The player of this client
         /// </summary>
         private CConnectedPlayer Player;
         private Dictionary<int, CConnectedPlayer> Players = new Dictionary<int, CConnectedPlayer>();
+
+        private SyncHandler SyncHandler;
 
         /// <summary>
         /// Creates the client and sets it as the signleton.
@@ -133,6 +133,14 @@ namespace Cyber.Networking.Clientside {
             } else {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Get the Client <see cref="SyncHandler"/>, null if client is not active.
+        /// </summary>
+        /// <returns></returns>
+        public static SyncHandler GetSyncHandler() {
+            return Singleton.SyncHandler;
         }
 
         private void Start() {
