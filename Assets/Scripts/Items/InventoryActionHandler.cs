@@ -50,6 +50,10 @@ namespace Cyber.Items {
             return new InventoryActionPkt(InventoryAction.Equip, itemIdx);
         }
 
+        public InventoryActionPkt BuildSlotSwitch(int switchFrom, int switchTo) {
+            return new InventoryActionPkt(InventoryAction.Switch, new int[]{ switchFrom, switchTo });
+        }
+
         /// <summary>
         /// Handles an <see cref="InventoryActionPkt"/> to handle. Ran on server and client.
         /// </summary>
@@ -76,6 +80,9 @@ namespace Cyber.Items {
                     return true;
                 }
                 return false;
+            case InventoryAction.Switch:
+                Inventory.Drive.SwitchSlots(intList[0], intList[1]);
+                return true;
             }
             return false;
         }

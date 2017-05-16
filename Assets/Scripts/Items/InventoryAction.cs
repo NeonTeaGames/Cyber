@@ -19,7 +19,12 @@ namespace Cyber.Items {
         /// <summary>
         /// Use the item in the given slot.
         /// </summary>
-        Use
+        Use,
+
+        /// <summary>
+        /// Switch items between two slots.
+        /// </summary>
+        Switch
 
     }
 }

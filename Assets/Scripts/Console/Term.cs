@@ -35,11 +35,11 @@ namespace Cyber.Console {
         /// See <see cref="DebugConsole.Println"/>.
         /// </summary>
         /// <param name="text">Text.</param>
-        public static void Println(string text) {
+        public static void Println(object text) {
             if (Console == null) {
                 Debug.Log(text);
             } else {
-                Console.Println(text);
+                Console.Println(text.ToString());
             }
         }
 
@@ -47,11 +47,11 @@ namespace Cyber.Console {
         /// See <see cref="DebugConsole.Print"/>.
         /// </summary>
         /// <param name="text">Text.</param>
-        public static void Print(string text) {
+        public static void Print(object text) {
             if (Console == null) {
                 Debug.Log(text);
             } else {
-                Console.Print(text);
+                Console.Print(text.ToString());
             }
         }
 
