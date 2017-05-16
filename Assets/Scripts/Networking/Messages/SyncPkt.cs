@@ -1,4 +1,5 @@
 ﻿
+using Cyber.Console;
 using Cyber.Entities;
 using UnityEngine.Networking;
 
@@ -12,7 +13,7 @@ namespace Cyber.Networking.Messages {
         /// <summary>
         /// Timestamp of the sync packet when sent from the server.
         /// </summary>
-        public float Timestamp;
+        public double Timestamp;
 
         /// <summary>
         /// The Sync Packet ID of this packet.
@@ -44,7 +45,7 @@ namespace Cyber.Networking.Messages {
         /// <param name="checksummedSyncBases"></param>
         /// <param name="checksums"></param>
         /// <param name="syncPacketID">ID of the sync packet itself.</param>
-        public SyncPkt(SyncDB syncDB, int[] syncBases, int[] checksummedSyncBases, int[] checksums, int syncPacketID, float timestamp) {
+        public SyncPkt(SyncDB syncDB, int[] syncBases, int[] checksummedSyncBases, int[] checksums, int syncPacketID, double timestamp) {
             SyncPacketID = syncPacketID;
             SyncDB = syncDB;
             SyncedSyncBases = syncBases;
@@ -70,7 +71,7 @@ namespace Cyber.Networking.Messages {
         public override void Deserialize(NetworkReader reader) {
             SyncPacketID = reader.ReadInt32();
             
-            Timestamp = (float) reader.ReadDouble();
+            Timestamp = reader.ReadDouble();
         }
 
         /// <summary>

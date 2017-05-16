@@ -1,4 +1,5 @@
 ﻿
+using Cyber.Console;
 using Cyber.Entities;
 using Cyber.Networking.Messages;
 using System;
@@ -63,7 +64,7 @@ namespace Cyber.Networking.Serverside {
             if (QueuedSyncs.Count > 0) {
                 int[] SyncIDs = QueuedSyncs.ToArray();
                 SyncPkt SyncPacket = new SyncPkt(Database, SyncIDs, checksummedIds.ToArray(), 
-                    checksums.ToArray(), NextSyncID(), (float) NetworkHelper.GetTime());
+                    checksums.ToArray(), NextSyncID(), NetworkHelper.GetTime());
                 Server.SendToAllByChannel(PktType.Sync, SyncPacket, NetworkChannelID.Unreliable);
 
                 QueuedSyncs.Clear();

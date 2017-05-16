@@ -23,6 +23,8 @@ namespace Cyber.Networking.Clientside {
         private int LastSyncID = -1;
         private int SyncPacketsTotal = -1;
 
+        private double LastPing = 0;
+
         /// <summary>
         /// Creates the SyncHandler with SyncDB.
         /// </summary>
@@ -60,6 +62,8 @@ namespace Cyber.Networking.Clientside {
 
                 LastTimestamp = SyncPacket.Timestamp;
 
+                LastPing = NetworkHelper.GetTime() - LastTimestamp;
+
                 LastSyncID = SyncPacket.SyncPacketID;
                 if (SmallestSyncID == -1) {
                     SmallestSyncID = SyncPacket.SyncPacketID;
@@ -70,8 +74,8 @@ namespace Cyber.Networking.Clientside {
 
         }
 
-        public float GetPing() {
-            return (float) ((NetworkHelper.GetTime() - LastTimestamp) * 1000f);
+        public double GetPing() {
+            return LastPing * 1000.0;
         }
 
         public float GetPacketLoss() {

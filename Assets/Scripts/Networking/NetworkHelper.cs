@@ -56,7 +56,9 @@ namespace Cyber.Networking {
         /// </summary>
         /// <returns>The system time in seconds.</returns>
         public static double GetTime() {
-            return Network.time;
+            return DateTime.Now.ToUniversalTime().Subtract(
+                   new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+                   .TotalMilliseconds * 1.0 / 1000;
         }
 
     }
