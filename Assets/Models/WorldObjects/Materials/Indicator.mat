@@ -6,7 +6,7 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: WindowApt
+  m_Name: Indicator
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
@@ -59,7 +59,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
@@ -71,5 +71,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.39705884, g: 0.0642301, b: 0.36506897, a: 1}
-    - _EmissionColor: {r: 0.9858012, g: 0.74264705, b: 1, a: 1}
+    - _Color: {r: 0.93671393, g: 0.71323526, b: 1, a: 1}
+    - _EmissionColor: {r: 0.7748479, g: 0.6176471, b: 0.8, a: 1}
