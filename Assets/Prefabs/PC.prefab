@@ -4955,6 +4955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Character: {fileID: 114575501420754388}
+  InventoryInterface: {fileID: 114383476058023772}
   Camera: {fileID: 20678872378488080}
 --- !u!114 &114390919699494652
 MonoBehaviour:
@@ -5162,6 +5163,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
+  Character: {fileID: 114575501420754388}
 --- !u!114 &114741357428691828
 MonoBehaviour:
   m_ObjectHideFlags: 1

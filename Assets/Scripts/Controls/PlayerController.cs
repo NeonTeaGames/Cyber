@@ -22,6 +22,11 @@ namespace Cyber.Controls {
         public Character Character;
 
         /// <summary>
+        /// The inventory interface.
+        /// </summary>
+        public InventoryInterface InventoryInterface;
+
+        /// <summary>
         /// The camera the player is seeing the world through.
         /// </summary>
         public Camera Camera;
@@ -77,7 +82,7 @@ namespace Cyber.Controls {
                 }
 
                 // Equipment actions
-                if (!Interacted) {
+                if (!Interacted && !InventoryInterface.IsOpen()) {
                     // Don't use equipment if you're interacting with something
                     // (ie. don't shoot at the buttons)
                     if (Input.GetButtonDown("Use Item (R)")) {

@@ -541,6 +541,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 0
+  Character: {fileID: 114052379458543858}
 --- !u!143 &143753897266899886
 CharacterController:
   m_ObjectHideFlags: 1

@@ -98,11 +98,21 @@ namespace Cyber.Controls {
         private List<Transform> ItemGridCells;
         private List<MeshFilter> ItemGridCellMeshes;
         private int ItemGridSelectedIndex;
+        private Transform GrabbedItem;
+        private int GrabbedItemIndex = -1;
 
         private Color IconInventoryColor;
         private Color IconStatusColor;
         private Color IconSocialColor;
         private Color IconMapColor;
+
+        /// <summary>
+        /// Whether the inventory is currently open and interactible.
+        /// </summary>
+        /// <returns><c>true</c> if this instance is open; otherwise, <c>false</c>.</returns>
+        public bool IsOpen() {
+            return InventoryOpen;
+        }
 
         private void Start() {
             int ItemGridSize = (int) ItemGridDimensions.x * (int) ItemGridDimensions.y;
@@ -138,21 +148,53 @@ namespace Cyber.Controls {
                 if (ItemGridCells.Contains(LookedAt.collider.transform)) {
                     // Interacting with the item list
                     CurrentIndex = int.Parse(LookedAt.collider.name.Split(' ')[1]);
-                    if (Input.GetButtonDown("Activate") || Input.GetButtonDown("Equip")) {
-                        ItemGridSelectedIndex = CurrentIndex;
-                    }
-                    if (Input.GetButtonDown("Equip")) {
-                        // Selected index was already this => equip (double-clicked)
-                        Item SelectedItem = Inventory.Drive.GetItemAt(ItemGridSelectedIndex);
-                        if (SelectedItem != null) {
-                            Item Equipped = Inventory.Drive.GetSlot(SelectedItem.Slot);
-                            if (Equipped != null && Equipped.ID == SelectedItem.ID) {
-                                Inventory.Drive.UnequipSlot(SelectedItem.Slot);
-                                Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildClearSlot(SelectedItem.Slot));
-                            } else {
-                                Inventory.Drive.EquipItem(ItemGridSelectedIndex);
-                                Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildEquipItem(ItemGridSelectedIndex));
+                    if (GrabbedItem == null) {
+                        // Nothing is currently being dragged, continue as normal
+                        if (Input.GetButton("Activate") && 
+                                (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0) && 
+                                ItemGridSelectedIndex == CurrentIndex) {
+                            // This item has been selected for at least a frame, 
+                            // and the mouse is moving, this counts as dragging
+                            Debug.Log("Grabbed!");
+                            GrabbedItem = LookedAt.collider.transform;
+                            GrabbedItemIndex = CurrentIndex;
+                        }
+                        if (Input.GetButtonDown("Activate") || Input.GetButtonDown("Equip")) {
+                            // Select things
+                            ItemGridSelectedIndex = CurrentIndex;
+                        }
+                        if (Input.GetButtonDown("Equip")) {
+                            // Equip things
+                            Item SelectedItem = Inventory.Drive.GetItemAt(ItemGridSelectedIndex);
+                            if (SelectedItem != null) {
+                                Item Equipped = Inventory.Drive.GetSlot(SelectedItem.Slot);
+                                if (Equipped != null && Equipped.ID == SelectedItem.ID) {
+                                    Inventory.Drive.UnequipSlot(SelectedItem.Slot);
+                                    Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildClearSlot(SelectedItem.Slot));
+                                } else {
+                                    Inventory.Drive.EquipItem(ItemGridSelectedIndex);
+                                    Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildEquipItem(ItemGridSelectedIndex));
+                                }
                             }
+                        }
+                    } else {
+                        // Something is grabbed, make things react to this
+                        if (Input.GetButtonUp("Activate")) {
+                            // Grab was released, drop item here
+                            // Lerp things
+                            ItemGridCellMeshes[GrabbedItemIndex].transform.position = ItemGridCells[CurrentIndex].position;
+                            ItemGridCellMeshes[CurrentIndex].transform.position = ItemGridCells[GrabbedItemIndex].position;
+                            Lerper.LerpTransformPosition(ItemGridCellMeshes[GrabbedItemIndex].transform, new Vector3(), 10f);
+                            Lerper.LerpTransformPosition(ItemGridCellMeshes[CurrentIndex].transform, new Vector3(), 10f);
+
+                            // Switch items
+                            Inventory.Drive.SwitchSlots(GrabbedItemIndex, CurrentIndex);
+
+                            // Reset grabbing
+                            GrabbedItem = null;
+                            GrabbedItemIndex = -1;
+                        } else {
+                            
                         }
                     }
                 } else if (Mesh != null) {

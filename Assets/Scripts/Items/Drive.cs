@@ -104,6 +104,9 @@ namespace Cyber.Items {
         /// <param name="idx1">The first index.</param>
         /// <param name="idx2">The second index.</param>
         public void SwitchSlots(int idx1, int idx2) {
+            if (idx1 == idx2) {
+                return;
+            }
             Slot Slot1 = GetSlotAt(idx1);
             Slot Slot2 = GetSlotAt(idx2);
             SetSlotAt(idx1, Slot2);
