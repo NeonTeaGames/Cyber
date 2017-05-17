@@ -50,11 +50,11 @@ MonoBehaviour:
       ambientOnly: 0
       highPrecision: 0
   screenSpaceReflection:
-    m_Enabled: 0
+    m_Enabled: 1
     m_Settings:
       reflection:
         blendType: 0
-        reflectionQuality: 2
+        reflectionQuality: 0
         maxDistance: 100
         iterationCount: 256
         stepSize: 3
@@ -65,9 +65,9 @@ MonoBehaviour:
         reflectionMultiplier: 1
         fadeDistance: 100
         fresnelFade: 1
-        fresnelFadePower: 1
+        fresnelFadePower: 2.05
       screenEdgeMask:
-        intensity: 0.03
+        intensity: 0.075
   depthOfField:
     m_Enabled: 0
     m_Settings:
