@@ -1,9 +1,9 @@
 ﻿
-using Cyber.Console;
 using Cyber.Entities;
 using Cyber.Entities.SyncBases;
 using Cyber.Networking.Messages;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace Cyber.Networking.Clientside {
@@ -14,10 +14,14 @@ namespace Cyber.Networking.Clientside {
     /// </summary>
     public class SyncHandler {
 
-        public static double LastTimestamp = NetworkHelper.GetCurrentSystemTime();
+        public static double LastTimestamp = NetworkHelper.GetTime();
 
         private SyncDB SyncDB;
         private int LatestSyncID = -1;
+
+        private int SmallestSyncID = -1;
+        private int LastSyncID = -1;
+        private int SyncPacketsTotal = -1;
 
         /// <summary>
         /// Creates the SyncHandler with SyncDB.
@@ -52,12 +56,30 @@ namespace Cyber.Networking.Clientside {
                     if (FailedSyncBases.Count > 0) {
                         Client.Send(PktType.FailedChecksums, new IntListPkt(FailedSyncBases.ToArray()));
                     }
-
-                    LastTimestamp = SyncPacket.Timestamp;
                 }
+
+                LastTimestamp = SyncPacket.Timestamp;
+
+                LastSyncID = SyncPacket.SyncPacketID;
+                if (SmallestSyncID == -1) {
+                    SmallestSyncID = SyncPacket.SyncPacketID;
+                }
+                SyncPacketsTotal++;
             }
             // Otherwise disregard the sync.
 
+        }
+
+        public float GetPing() {
+            return (float) ((NetworkHelper.GetTime() - LastTimestamp) / 1000f);
+        }
+
+        public float GetPacketLoss() {
+            return 1f - (SyncPacketsTotal * 1f / (LastSyncID - SmallestSyncID));
+        }
+
+        public int GetSyncPacketsReceived() {
+            return SyncPacketsTotal;
         }
 
     }
