@@ -43,6 +43,7 @@ sysinfo.txt
 
 # Blender #
 *.blend1
+*.blend1.meta
 
 # Emacs #
 *~
