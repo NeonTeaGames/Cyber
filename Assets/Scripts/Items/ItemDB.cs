@@ -23,6 +23,7 @@ namespace Cyber.Items {
             AddItem(new Item(Counter++, 0, "Very Long Item Name", 1.5f, EquipSlot.Hat, "This item is a rare piece of the \"way too long of a name\" technology, invented by space goblins in ancient times."));
             AddItem(new Item(Counter++, 1, "Outworldly Spherical Tube", .5f, EquipSlot.RightHand, "It's so spherical and smooth that it seems like it's not even from this world!"));
             AddItem(new Item(Counter++, 0, "Cube Of Debuggery", 1.5f, EquipSlot.LeftHand, "Does some debuggery when you poke it.", (host) => { Term.Println("*DEBUGGERY*"); }));
+            AddItem(new Item(Counter++, 2, "Punk Revolver", 1f, EquipSlot.RightHand, "It only knows three chords. Shoots five times though.", (host) => { Term.Println("*BANG*"); }));
         }
 
         /// <summary>

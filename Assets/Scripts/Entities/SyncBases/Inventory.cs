@@ -38,6 +38,7 @@ namespace Cyber.Entities.SyncBases {
                 Drive.AddItem(ItemDB.Singleton.Get(0));
                 Drive.AddItem(ItemDB.Singleton.Get(1));
                 Drive.AddItem(ItemDB.Singleton.Get(2));
+                Drive.AddItem(ItemDB.Singleton.Get(3));
             }
         }
 
