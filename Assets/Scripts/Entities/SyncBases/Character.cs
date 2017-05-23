@@ -36,6 +36,11 @@ namespace Cyber.Entities.SyncBases {
         /// </summary>
         public Transform Head;
 
+        /// <summary>
+        /// The head bone for rotation.
+        /// </summary>
+        public Transform HeadBone;
+
         private Vector3 MovementDirection = new Vector3();
         private Vector3 ServerPosition = new Vector3();
         private bool ServerPositionShouldLerpSync = false;
@@ -70,6 +75,10 @@ namespace Cyber.Entities.SyncBases {
             HeadRot.x = EulerAngles.x;
             HeadRot.z = EulerAngles.z;
             Head.localEulerAngles = HeadRot;
+            
+            Vector3 HeadBoneRot = HeadBone.localEulerAngles;
+            HeadBoneRot.z = EulerAngles.x;
+            HeadBone.localEulerAngles = HeadBoneRot;
 
             Vector3 BodyRot = transform.localEulerAngles;
             BodyRot.y = EulerAngles.y;
