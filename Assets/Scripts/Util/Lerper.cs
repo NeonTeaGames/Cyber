@@ -30,7 +30,7 @@ namespace Cyber.Util {
         }
 
         /// <summary>
-        /// Lerps the transform local position.
+        /// Lerps the transform world position.
         /// </summary>
         /// <param name="transform">Transform.</param>
         /// <param name="to">To.</param>
@@ -41,13 +41,17 @@ namespace Cyber.Util {
             }
         }
 
-        private void Update() {
+        private void LateUpdate() {
             List<Transform> RemoveThese = new List<Transform>();
             foreach (Transform Transform in PositionLerps.Keys) {
-                Transform.localPosition = Vector3.Lerp(Transform.localPosition, 
+                if (Transform == null) {
+                    PositionLerps.Remove(Transform);
+                    continue;
+                }
+                Transform.position = Vector3.Lerp(Transform.position, 
                     PositionLerps[Transform].Target, PositionLerps[Transform].Speed * Time.deltaTime);
-                if ((Transform.localPosition - PositionLerps[Transform].Target).magnitude < 0.001f) {
-                    Transform.localPosition = PositionLerps[Transform].Target;
+                if ((Transform.position - PositionLerps[Transform].Target).magnitude < 0.001f) {
+                    Transform.position = PositionLerps[Transform].Target;
                     RemoveThese.Add(Transform);
                 }
             }

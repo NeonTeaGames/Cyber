@@ -26,7 +26,7 @@ namespace Cyber.Controls {
             /// <summary>
             /// The in-world slot of the item.
             /// </summary>
-            public MeshFilter Mesh;
+            public Transform Transform;
         }
 
         /// <summary>
@@ -35,34 +35,33 @@ namespace Cyber.Controls {
         public Inventory Inventory;
 
         /// <summary>
-        /// How many times per second the visual equipment should be updated.
-        /// </summary>
-        public float UpdateFrequency = 1f;
-
-        /// <summary>
         /// The slots where the equipped items go.
         /// </summary>
         public EquipmentMesh[] Slots;
 
-        private float LastUpdateTime = 0;
+        private Dictionary<EquipSlot, Item> LastEquips = new Dictionary<EquipSlot, Item>();
 
         private void Update() {
-            if (Time.time - LastUpdateTime >= 1f / UpdateFrequency) {
-                Dictionary<EquipSlot, Item> Equips = Inventory.Drive.GetEquippedItems();
-                // Empty all slots
-                for (int i = 0; i < Slots.Length; i++) {
-                    Slots[i].Mesh.mesh = null;
-                }
-                // Equip all slots
-                foreach (EquipSlot Slot in Equips.Keys) {
-                    for (int i = 0; i < Slots.Length; i++) {
-                        if (Slots[i].Slot == Slot) {
-                            Slots[i].Mesh.mesh = MeshDB.GetMesh(Equips[Slots[i].Slot].ModelID);
-                            break;
-                        }
+            Dictionary<EquipSlot, Item> Equips = Inventory.Drive.GetEquippedItems();
+            for (int i = 0; i < Slots.Length; i++) {
+                bool Equipped = Equips.ContainsKey(Slots[i].Slot);
+                bool LastEquipped = LastEquips.ContainsKey(Slots[i].Slot);
+                // Check if this slot needs to be changed
+                if (Equipped != LastEquipped || (Equipped && Equips[Slots[i].Slot] != LastEquips[Slots[i].Slot])) {
+                    // Clear slot
+                    for (int j = 0; j < Slots[i].Transform.childCount; j++) {
+                        Destroy(Slots[i].Transform.GetChild(j).gameObject);
+                    }
+                    if (!Equipped) {
+                        // Nothing is equipped
+                        LastEquips.Remove(Slots[i].Slot);
+                    } else {
+                        // Something is equipped
+                        Item Item = Equips[Slots[i].Slot];
+                        PrefabDB.Create(Item.ModelID, Slots[i].Transform);
+                        LastEquips[Slots[i].Slot] = Item;
                     }
                 }
-                LastUpdateTime = Time.time;
             }
         }
     }

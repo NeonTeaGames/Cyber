@@ -42,9 +42,9 @@ namespace Cyber.Controls {
         public TextTextureApplier ItemDescriptionText;
 
         /// <summary>
-        /// The item preview mesh.
+        /// The item preview parent.
         /// </summary>
-        public MeshFilter ItemPreviewMesh;
+        public Transform ItemPreview;
 
         /// <summary>
         /// The item preview spinner.
@@ -92,11 +92,22 @@ namespace Cyber.Controls {
         /// </summary>
         public Vector2 ItemGridDimensions;
 
+        /// <summary>
+        /// The material of the items in the item grid.
+        /// </summary>
+        public Material ItemGridHologramMaterial;
+
+        /// <summary>
+        /// The material of the item in the item preview.
+        /// </summary>
+        public Material ItemPreviewHologramMaterial;
+
         private bool InventoryOpen = false;
         private float PreviewVisibility = 0f;
+        private int PreviewModelID = -1;
 
         private List<Transform> ItemGridCells;
-        private List<MeshFilter> ItemGridCellMeshes;
+        private Dictionary<int, Item> ItemGridContainedItems = new Dictionary<int, Item>();
         private int ItemGridSelectedIndex;
         private Transform GrabbedItem;
         private int GrabbedItemIndex = -1;
@@ -117,11 +128,9 @@ namespace Cyber.Controls {
         private void Start() {
             int ItemGridSize = (int) ItemGridDimensions.x * (int) ItemGridDimensions.y;
             ItemGridCells = new List<Transform>(ItemGridSize);
-            ItemGridCellMeshes = new List<MeshFilter>(ItemGridSize);
             for (int i = 0; i < ItemGridSize; i++) {
                 Transform Cell = ItemGridParent.GetChild(i).transform;
                 ItemGridCells.Add(Cell);
-                ItemGridCellMeshes.Add(Cell.GetComponentInChildren<MeshFilter>());
             }
 
             IconInventoryColor = IconInventory.material.GetColor("_EmissionColor");
@@ -178,23 +187,32 @@ namespace Cyber.Controls {
                         }
                     } else {
                         // Something is grabbed, make things react to this
+                        ItemGridSelectedIndex = CurrentIndex;
                         if (Input.GetButtonUp("Activate")) {
                             // Grab was released, drop item here
-                            // Lerp things
-                            ItemGridCellMeshes[GrabbedItemIndex].transform.position = ItemGridCells[CurrentIndex].position;
-                            Lerper.LerpTransformPosition(ItemGridCellMeshes[GrabbedItemIndex].transform, new Vector3(), 10f);
-                            Lerper.LerpTransformPosition(ItemGridCellMeshes[CurrentIndex].transform, new Vector3(), 10f);
+                            if (GrabbedItemIndex == CurrentIndex) {
+                                // The item was dropped in place, reset the position
+                                if (ItemGridCells[GrabbedItemIndex].childCount > 0) {
+                                    ItemGridCells[GrabbedItemIndex].GetChild(0).localPosition = new Vector3();
+                                }
+                            } else {
+                                // Lerp things (if the models are set)
+                                Vector3 ReturnToPos = ItemGridCells[GrabbedItemIndex].position;
+                                ItemGridCells[GrabbedItemIndex].position = ItemGridCells[CurrentIndex].position;
+                                Lerper.LerpTransformPosition(ItemGridCells[GrabbedItemIndex], ReturnToPos, 20f);
 
-                            // Switch items
-                            Inventory.Drive.SwitchSlots(GrabbedItemIndex, CurrentIndex);
-                            Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildSlotSwitch(GrabbedItemIndex, CurrentIndex));
+                                // Switch items
+                                Inventory.Drive.SwitchSlots(GrabbedItemIndex, CurrentIndex);
+                                Client.Send(PktType.InventoryAction, Inventory.ActionHandler.BuildSlotSwitch(GrabbedItemIndex, CurrentIndex));
+                            }
 
                             // Reset grabbing
                             GrabbedItem = null;
                             GrabbedItemIndex = -1;
-                            ItemGridSelectedIndex = CurrentIndex;
                         } else {
-                            ItemGridCellMeshes[GrabbedItemIndex].transform.position = LookedAt.point;
+                            if (ItemGridCells[GrabbedItemIndex].childCount > 0) {
+                                ItemGridCells[GrabbedItemIndex].GetChild(0).position = LookedAt.point;
+                            }
                         }
                     }
                 } else if (Mesh != null) {
@@ -248,25 +266,38 @@ namespace Cyber.Controls {
                     // Find the item and mesh
                     int i = x + y * (int) ItemGridDimensions.x;
                     Item Item = Inventory.Drive.GetItemAt(x + y * (int) ItemGridDimensions.x);
-                    Mesh Mesh = null;
-                    if (Item != null) {
-                        Mesh = MeshDB.GetMesh(Item.ModelID);
+                    if (Item != null && (!ItemGridContainedItems.ContainsKey(i) || ItemGridContainedItems[i] != Item)) {
+                        // Clear cell
+                        for (int j = 0; j < ItemGridCells[i].childCount; j++) {
+                            DestroyImmediate(ItemGridCells[i].GetChild(j).gameObject);
+                        }
+
+                        // Add new item
+                        GameObject ItemObject = PrefabDB.Create(Item.ModelID, ItemGridCells[i]);
+                        MeshUtil.SetMaterial(ItemObject, ItemGridHologramMaterial);
+                        ItemGridContainedItems[i] = Item;
+                    } else if (Item == null && ItemGridContainedItems.ContainsKey(i)) {
+                        for (int j = 0; j < ItemGridCells[i].childCount; j++) {
+                            Destroy(ItemGridCells[i].GetChild(j).gameObject);
+                        }
+                        ItemGridContainedItems.Remove(i);
                     }
-                    ItemGridCellMeshes[i].mesh = Mesh;
 
                     // Set the base scale and spin status
-                    float Scale = 0.08f;
+                    float Scale = 0.13f;
                     bool Spinning = false;
 
                     if (focused == i || ItemGridSelectedIndex == i) {
                         // Item is selected or hovered, animate
-                        Scale = 0.1f;
+                        Scale = 0.16f;
                         Spinning = true;
                     }
 
                     if (ItemGridSelectedIndex == i) {
                         // Set preview information
-                        SetPreviewMesh(Mesh);
+                        if (ItemGridCells[i].childCount > 0) {
+                            SetPreviewItem(Item);
+                        }
                         TextTextureProperties NameProps = ItemNameText.TextProperties;
                         TextTextureProperties DescriptionProps = ItemDescriptionText.TextProperties;
                         if (Item != null) {
@@ -286,7 +317,7 @@ namespace Cyber.Controls {
                         } else {
                             ItemGridSelector.position =
                                 Vector3.Lerp(ItemGridSelector.position,
-                                    ItemGridCells[i].position, 20f * Time.deltaTime);
+                                    ItemGridCells[i].position, 10f * Time.deltaTime);
                         }
                         Vector3 NewRot = ItemGridSelector.localEulerAngles;
                         NewRot.z = 0;
@@ -295,15 +326,21 @@ namespace Cyber.Controls {
 
                     if (!Spinning) {
                         // Not selected, reset rotation
-                        ItemGridCellMeshes[i].transform.LookAt(Camera.transform);
-                        Vector3 NewRot = ItemGridCellMeshes[i].transform.localEulerAngles;
-                        NewRot.z = 0;
-                        ItemGridCellMeshes[i].transform.localEulerAngles = NewRot;
+                        if (ItemGridCells[i].childCount > 0) {
+                            Transform ItemTransform = ItemGridCells[i].GetChild(0);
+                            ItemTransform.LookAt(Camera.transform);
+                            Vector3 NewRot = ItemTransform.localEulerAngles;
+                            NewRot.z = 0;
+                            NewRot.y += 90;
+                            ItemTransform.localEulerAngles = NewRot;
+                        }
                     }
 
                     // Update spinning status and scaling
                     ItemGridCells[i].GetComponent<Spinner>().Spinning = Spinning;
-                    FixMeshScaling(ItemGridCellMeshes[i], Scale);
+                    if (ItemGridCells[i].childCount > 0) {
+                        FixMeshScaling(ItemGridCells[i].GetChild(0), Scale);
+                    }
                 }
             }
 
@@ -312,7 +349,7 @@ namespace Cyber.Controls {
 
             // Clean up the preview screen if there was no item
             if (!ItemFound) {
-                SetPreviewMesh(null);
+                SetPreviewItem(null);
                 TextTextureProperties NameProps = ItemNameText.TextProperties;
                 TextTextureProperties DescriptionProps = ItemDescriptionText.TextProperties;
                 NameProps.Text = "";
@@ -325,38 +362,35 @@ namespace Cyber.Controls {
             }
         }
 
-        private void SetPreviewMesh(Mesh mesh) {
-            ItemPreviewSpinner.Spinning = mesh != null;
-            if (mesh != null) {
-                ItemPreviewMesh.mesh = mesh;
+        private void SetPreviewItem(Item item) {
+            ItemPreviewSpinner.Spinning = item != null;
+            if (item != null && PreviewModelID != item.ModelID) {
+                for (int j = 0; j < ItemPreview.childCount; j++) {
+                    DestroyImmediate(ItemPreview.GetChild(j).gameObject);
+                }
+                GameObject ItemObject = PrefabDB.Create(item.ModelID, ItemPreview);
+                MeshUtil.SetMaterial(ItemObject, ItemPreviewHologramMaterial);
+                PreviewModelID = item.ModelID;
             }
-            FixMeshScaling(ItemPreviewMesh, 0.175f * PreviewVisibility);
+            FixMeshScaling(ItemPreview, 0.35f * PreviewVisibility);
         }
 
-        private void FixMeshScaling(MeshFilter toFix, float scale) {
-            if (toFix.mesh == null) {
-                return;
-            }
-
+        private void FixMeshScaling(Transform toFix, float scale) {
+            Vector3 Extents = MeshUtil.GetMeshBounds(toFix.gameObject).extents;
             float HighestExtent = 0.1f;
-            float Height = toFix.mesh.bounds.extents.y * 2f;
-            float Width = Mathf.Sqrt(Mathf.Pow(toFix.mesh.bounds.extents.x * 2f, 2) +
-                Mathf.Pow(toFix.mesh.bounds.extents.y * 2f, 2));
-            float Depth = Mathf.Sqrt(Mathf.Pow(toFix.mesh.bounds.extents.z * 2f, 2) +
-                Mathf.Pow(toFix.mesh.bounds.extents.y * 2f, 2));
 
-            if (Height > HighestExtent) {
-                HighestExtent = Height;
+            if (Extents.x > HighestExtent) {
+                HighestExtent = Extents.x;
             }
-            if (Width > HighestExtent) {
-                HighestExtent = Width;
+            if (Extents.y > HighestExtent) {
+                HighestExtent = Extents.y;
             }
-            if (Depth > HighestExtent) {
-                HighestExtent = Depth;
+            if (Extents.z > HighestExtent) {
+                HighestExtent = Extents.z;
             }
 
-            float Scale = scale * 1f / HighestExtent;
-            toFix.transform.localScale = new Vector3(Scale, Scale, Scale);
+            float Scale = scale * 0.5f / HighestExtent;
+            toFix.localScale = new Vector3(Scale, Scale, Scale);
         }
     }
 }
